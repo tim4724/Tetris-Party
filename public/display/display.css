@@ -74,14 +74,7 @@ html, body {
 }
 
 #welcome-screen h1 {
-  font-family: 'Orbitron', sans-serif;
   font-size: clamp(2.5rem, 7vh, 6rem);
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   filter: drop-shadow(0 0 24px rgba(0, 200, 255, 0.35));
   animation: fadeDown 0.6s ease-out both;
 }
@@ -155,14 +148,7 @@ html, body {
 }
 
 #lobby-screen h1 {
-  font-family: 'Orbitron', sans-serif;
   font-size: clamp(2rem, 5vh, 5rem);
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   filter: drop-shadow(0 0 18px rgba(0, 200, 255, 0.3));
   animation: fadeDown 0.6s ease-out both;
 }
@@ -215,19 +201,9 @@ html, body {
 }
 
 .player-card {
-  display: flex;
-  align-items: center;
   justify-content: center;
   padding: clamp(0.6rem, 1.2vh, 1rem) clamp(1.2rem, 2vw, 2.2rem);
-  border-radius: var(--radius-md);
-  background: var(--bg-card);
-  border: 2px solid var(--player-color, var(--border));
-  box-shadow: 0 0 16px -4px var(--player-color, transparent);
-  font-family: 'Orbitron', sans-serif;
   font-size: clamp(0.9rem, 2vh, 1.4rem);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--player-color, var(--text-primary));
   min-width: clamp(100px, 12vw, 180px);
 }
 
@@ -360,11 +336,6 @@ html, body {
   stroke: rgba(255, 255, 255, 0.8);
 }
 
-#pause-btn .pause-icon {
-  display: flex;
-  gap: 3px;
-}
-
 #pause-btn .pause-icon::before,
 #pause-btn .pause-icon::after {
   content: '';
@@ -454,9 +425,6 @@ html, body {
 .result-row {
   gap: 1rem;
   padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(1rem, 2vw, 2rem);
-  border-radius: var(--radius-md);
-  background: rgba(18, 18, 42, 0.95);
-  border: 1px solid var(--border);
 }
 
 .result-rank {
@@ -540,14 +508,8 @@ html, body {
 }
 
 #mobile-hint h2 {
-  font-family: 'Orbitron', sans-serif;
   font-size: clamp(1.3rem, 5vw, 2rem);
-  font-weight: 900;
   letter-spacing: 0.06em;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 #mobile-hint p {

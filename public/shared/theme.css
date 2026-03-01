@@ -103,3 +103,44 @@
 .btn-secondary:active {
   scale: 0.95;
 }
+
+/* ==========================================================
+   Shared Component Classes
+   ========================================================== */
+
+.player-card {
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 2px solid var(--player-color, var(--border));
+  box-shadow: 0 0 16px -4px var(--player-color, transparent);
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--player-color, var(--text-primary));
+}
+
+.gradient-title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pause-icon {
+  display: flex;
+  gap: 3px;
+}
+
+.pause-icon::before,
+.pause-icon::after {
+  content: '';
+  width: 4px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 1.5px;
+}

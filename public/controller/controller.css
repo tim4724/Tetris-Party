@@ -80,14 +80,7 @@ html, body {
 }
 
 .controller-shell__title {
-  font-family: 'Orbitron', sans-serif;
   font-size: clamp(1.4rem, 7vw, 2.2rem);
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-green));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
   filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.15));
   animation: lobbyFadeDown 0.5s ease-out both;
 }
@@ -242,19 +235,9 @@ body.keyboard-open #name-form {
 }
 
 #player-identity-card {
-  display: flex;
-  align-items: center;
   justify-content: center;
   padding: 14px 28px;
-  border-radius: var(--radius-md);
-  background: var(--bg-card);
-  border: 2px solid var(--player-color, var(--border));
-  box-shadow: 0 0 16px -4px var(--player-color, transparent);
-  font-family: 'Orbitron', sans-serif;
   font-size: clamp(1.1rem, 5vw, 1.5rem);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--player-color, var(--text-primary));
 }
 
 #waiting-action-text {
@@ -353,19 +336,9 @@ body.keyboard-open #name-form {
 }
 
 #game-name-card {
-  display: flex;
-  align-items: center;
   height: 56px;
   padding: 0 28px;
-  border-radius: var(--radius-md);
-  background: var(--bg-card);
-  border: 2px solid var(--player-color, var(--border));
-  box-shadow: 0 0 16px -4px var(--player-color, transparent);
-  font-family: 'Orbitron', sans-serif;
   font-size: clamp(0.85rem, 4vw, 1.1rem);
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  color: var(--player-color, var(--text-primary));
   min-width: 0;
 }
 
@@ -590,9 +563,6 @@ body.keyboard-open #name-form {
 .result-row {
   gap: 12px;
   padding: 14px 16px;
-  border-radius: 10px;
-  background: rgba(18, 18, 42, 0.9);
-  border: 1px solid rgba(30, 30, 68, 0.7);
 }
 
 .result-row.is-me {
@@ -704,20 +674,6 @@ body.keyboard-open #name-form {
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.2s ease;
-}
-
-#pause-btn .pause-icon {
-  display: flex;
-  gap: 3px;
-}
-
-#pause-btn .pause-icon::before,
-#pause-btn .pause-icon::after {
-  content: '';
-  width: 4px;
-  height: 18px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 1.5px;
 }
 
 #pause-btn:active {

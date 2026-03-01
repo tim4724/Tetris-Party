@@ -18,14 +18,14 @@
   <!-- Mobile screen hint -->
   <div id="mobile-hint">
     <p class="mobile-hint-icon">🖥️</p>
-    <h2>Open on a Larger Screen</h2>
+    <h2 class="gradient-title">Open on a Larger Screen</h2>
     <p>This display is designed for TVs and computers.<br>Use your phone as a controller instead.</p>
     <button onclick="this.parentElement.remove()">Continue Anyway</button>
   </div>
 
   <!-- Welcome screen: unlocks audio via user gesture -->
   <div id="welcome-screen" class="screen">
-    <h1>TETRIS PARTY</h1>
+    <h1 class="gradient-title">TETRIS PARTY</h1>
     <div class="welcome-chips">
       <span class="welcome-chip"><i class="welcome-chip-icon">📱</i> Use your phone as controller</span>
       <span class="welcome-chip"><i class="welcome-chip-icon welcome-chip-icon--grey">👥</i> 1 – 4 players</span>
@@ -39,7 +39,7 @@
 
   <!-- Lobby screen: QR code + player list + start button -->
   <div id="lobby-screen" class="screen hidden">
-    <h1>TETRIS PARTY</h1>
+    <h1 class="gradient-title">TETRIS PARTY</h1>
     <div id="qr-container">
       <canvas id="qr-code"></canvas>
       <p id="qr-label">Scan to join</p>

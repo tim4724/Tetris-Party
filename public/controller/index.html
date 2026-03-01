@@ -20,14 +20,14 @@
   <div id="waiting-screen" class="screen controller-shell hidden">
     <div class="controller-shell__frame controller-shell__frame--waiting">
       <div class="controller-shell__brand">
-        <h1 id="lobby-title" class="controller-shell__title">TETRIS PARTY</h1>
+        <h1 id="lobby-title" class="controller-shell__title gradient-title">TETRIS PARTY</h1>
       </div>
       <div class="controller-shell__body">
         <div id="name-form">
           <input id="name-input" type="text" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" placeholder="Enter name...">
         </div>
         <div id="player-identity" class="hidden">
-          <div id="player-identity-card">
+          <div id="player-identity-card" class="player-card">
             <span id="player-identity-name"></span>
           </div>
         </div>
@@ -49,7 +49,7 @@
   <!-- Game screen with touch area -->
   <div id="game-screen" class="screen hidden">
     <div id="game-top-bar">
-      <div id="game-name-card"><span id="player-name">Player</span></div>
+      <div id="game-name-card" class="player-card"><span id="player-name">Player</span></div>
       <button id="mute-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path class="sound-waves" d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
       <button id="pause-btn" class="hidden"><span class="pause-icon"></span></button>
     </div>
@@ -79,7 +79,7 @@
   <div id="gameover-screen" class="screen controller-shell hidden">
     <div class="controller-shell__frame controller-shell__frame--results">
       <div class="controller-shell__brand controller-shell__brand--results">
-        <h1 class="controller-shell__title">TETRIS PARTY</h1>
+        <h1 class="controller-shell__title gradient-title">TETRIS PARTY</h1>
       </div>
       <div class="controller-shell__body controller-shell__body--results">
         <div id="results-list"></div>
