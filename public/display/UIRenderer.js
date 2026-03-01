@@ -153,22 +153,20 @@ class UIRenderer {
 
     // Panel background
     const nextCount = playerState.nextPieces ? Math.min(playerState.nextPieces.length, 5) : 0;
-    const boxHeight = pieceSpacing * Math.max(nextCount, 1) + this.miniSize;
+    const boxHeight = pieceSpacing * Math.max(nextCount, 1);
     this._drawPanel(panelX, startY, boxWidth, boxHeight);
 
     // Next pieces
     if (playerState.nextPieces) {
       for (let i = 0; i < Math.min(playerState.nextPieces.length, 5); i++) {
         const py = startY + i * pieceSpacing + pieceSpacing / 2;
-        // First piece slightly larger/brighter
-        const scale = i === 0 ? 1.1 : 1.0;
         const alpha = i === 0 ? 1.0 : 0.7 - i * 0.06;
         ctx.globalAlpha = alpha;
         this.drawMiniPiece(
           panelX + boxWidth / 2,
           py,
           playerState.nextPieces[i],
-          this.miniSize * scale
+          this.miniSize
         );
         ctx.globalAlpha = 1.0;
       }
