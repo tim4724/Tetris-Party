@@ -430,7 +430,7 @@ html, body {
 
 .result-row {
   gap: 1rem;
-  padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(1rem, 2vw, 2rem);
+  padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(1rem, 2vw, 2rem) clamp(0.6rem, 1.2vh, 1.2rem) clamp(0.5rem, 1vw, 1rem);
 }
 
 .result-rank {
@@ -454,7 +454,7 @@ html, body {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex-shrink: 1;
+  flex: 1;
 }
 
 .result-stats {
@@ -463,10 +463,14 @@ html, body {
   font-size: clamp(1rem, 2.2vh, 1.8rem);
   color: var(--text-secondary);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .result-stats span {
   white-space: nowrap;
+  display: inline-block;
+  min-width: 5em;
+  text-align: right;
 }
 
 #results-buttons {
