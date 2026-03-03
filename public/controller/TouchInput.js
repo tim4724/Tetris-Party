@@ -29,7 +29,6 @@ class TouchInput {
     this.isDragging = false;
     this.isSoftDropping = false;
     this.hasSoftDropped = false;
-    this.hasMovedHorizontally = false;
 
     // Ring buffer for velocity calculation (last 4 positions)
     this.posBuffer = [];
@@ -74,7 +73,6 @@ class TouchInput {
     this.isDragging = false;
     this.isSoftDropping = false;
     this.hasSoftDropped = false;
-    this.hasMovedHorizontally = false;
     this.posBuffer = [];
     if (this.onProgress) this.onProgress(null, 0);
   }
@@ -121,7 +119,7 @@ class TouchInput {
   }
 
   _tryFreshFling(totalDx, totalDy, duration, vx, vy) {
-    if (this.hasMovedHorizontally || this.hasSoftDropped) return false;
+    if (this.hasSoftDropped) return false;
     if (!this._isFreshFlingCandidate(totalDx, totalDy, duration, vx, vy)) return false;
 
     if (vy > 0 && totalDy > this.TAP_MAX_DISTANCE) {
@@ -197,20 +195,20 @@ class TouchInput {
     // Move phase only handles continuous controls.
     // Discrete fling gestures are resolved on pointerup if the session never committed.
     const dxFromAnchor = x - this.anchorX;
+    const absDxFromAnchor = Math.abs(dxFromAnchor);
+    const absDyFromStart = Math.abs(dyFromStart);
     const steps = Math.trunc(dxFromAnchor / this.RATCHET_THRESHOLD);
-    if (steps !== 0) {
+    if (steps !== 0 && absDxFromAnchor >= absDyFromStart) {
       const action = steps > 0 ? INPUT.RIGHT : INPUT.LEFT;
       for (let i = 0, n = Math.abs(steps); i < n; i++) {
         this.onInput(action);
       }
       this._haptic(10);
-      this.hasMovedHorizontally = true;
       this.anchorX += steps * this.RATCHET_THRESHOLD;
     }
 
     const { vx, vy } = this._getVelocity();
-    const freshFlingCandidate = !this.hasMovedHorizontally
-      && !this.hasSoftDropped
+    const freshFlingCandidate = !this.hasSoftDropped
       && this._isFreshFlingCandidate(dxFromStart, dyFromStart, duration, vx, vy);
 
     if (dyFromStart > this.SOFT_DROP_DEAD_ZONE && !freshFlingCandidate) {
@@ -274,7 +272,7 @@ class TouchInput {
 
     // Once continuous drag control was recognized, this touch session cannot
     // also become a discrete fling gesture on release.
-    if (this.hasMovedHorizontally || this.hasSoftDropped) {
+    if (this.hasSoftDropped) {
       this._resetState();
       return;
     }
