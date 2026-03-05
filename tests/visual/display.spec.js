@@ -59,11 +59,18 @@ test.describe('Display', () => {
     });
   });
 
+  // Falling pieces across 1P/2P/4P show all 7 tetromino types for ghost review:
+  // 1P: I | 2P: T, J | 4P: S, Z, L, O
   test('game screen - 1 player', async ({ page, context, request }) => {
     const { roomCode } = await createRoom(page);
     await joinController(context, roomCode, 'Player 1');
     await waitForDisplayPlayers(page, 1);
-    await applyScenario(request, roomCode, 'game');
+    await applyScenario(request, roomCode, 'game', {
+      pieces: [
+        { typeId: 1, x: 3, y: 2, blocks: [[0, 1], [1, 1], [2, 1], [3, 1]] }  // I
+      ],
+      ghostYs: [13]
+    });
     await waitForDisplayGame(page);
     await expect(page).toHaveScreenshot('05-game-1p.png');
   });
@@ -73,7 +80,13 @@ test.describe('Display', () => {
     await joinController(context, roomCode, 'Player 1');
     await joinController(context, roomCode, 'Player 2');
     await waitForDisplayPlayers(page, 2);
-    await applyScenario(request, roomCode, 'game');
+    await applyScenario(request, roomCode, 'game', {
+      pieces: [
+        { typeId: 6, x: 4, y: 2, blocks: [[1, 0], [0, 1], [1, 1], [2, 1]] },  // T
+        { typeId: 2, x: 3, y: 3, blocks: [[0, 0], [0, 1], [1, 1], [2, 1]] }   // J
+      ],
+      ghostYs: [14, 14]
+    });
     await waitForDisplayGame(page);
     await expect(page).toHaveScreenshot('06-game-2p.png');
   });
@@ -85,7 +98,15 @@ test.describe('Display', () => {
     await joinController(context, roomCode, 'Player 3');
     await joinController(context, roomCode, 'Player 4');
     await waitForDisplayPlayers(page, 4);
-    await applyScenario(request, roomCode, 'game');
+    await applyScenario(request, roomCode, 'game', {
+      pieces: [
+        { typeId: 5, x: 4, y: 2, blocks: [[1, 0], [2, 0], [0, 1], [1, 1]] },  // S
+        { typeId: 7, x: 3, y: 3, blocks: [[0, 0], [1, 0], [1, 1], [2, 1]] },  // Z
+        { typeId: 3, x: 3, y: 4, blocks: [[2, 0], [0, 1], [1, 1], [2, 1]] },  // L
+        { typeId: 4, x: 5, y: 3, blocks: [[1, 0], [2, 0], [1, 1], [2, 1]] }   // O
+      ],
+      ghostYs: [14, 14, 14, 14]
+    });
     await waitForDisplayGame(page);
     await expect(page).toHaveScreenshot('07-game-4p.png');
   });

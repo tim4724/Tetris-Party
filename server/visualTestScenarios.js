@@ -5,15 +5,15 @@ const { MSG, ROOM_STATE } = require('../public/shared/protocol.js');
 const LIVE_SCORE = [12450, 8320, 5100, 2800];
 const LIVE_LINES = [24, 16, 10, 5];
 const LIVE_LEVELS = [3, 2, 2, 1];
-const LIVE_GHOST_Y = [14, 14, 14, 15];
-const LIVE_HOLD = ['J', 'I', 'T', 'J'];
+const LIVE_GHOST_Y = [13, 14, 14, 14];
+const LIVE_HOLD = ['O', 'S', 'T', 'I'];
 const LIVE_NEXT = [
   ['I', 'T', 'Z', 'L', 'O'],
   ['T', 'J', 'O', 'S', 'Z'],
   ['Z', 'I', 'J', 'S', 'L'],
   ['L', 'O', 'T', 'I', 'S']
 ];
-// Falling pieces: S, L, O, Z — hold shows J, I, T, J — all 7 types covered
+// Default falling pieces (used when no override provided)
 const LIVE_PIECES = [
   { typeId: 5, x: 4, y: 2, blocks: [[1, 0], [2, 0], [0, 1], [1, 1]] },   // S
   { typeId: 3, x: 3, y: 4, blocks: [[2, 0], [0, 1], [1, 1], [2, 1]] },   // L
@@ -85,6 +85,8 @@ function buildGameState(room, options) {
   const players = getPlayers(room);
   const deadIds = new Set(options.deadPlayerIds || []);
   const allDead = !!options.allDead;
+  const pieces = options.pieces || LIVE_PIECES;
+  const ghostYs = options.ghostYs || LIVE_GHOST_Y;
 
   return {
     players: players.map((player, index) => ({
@@ -95,12 +97,12 @@ function buildGameState(room, options) {
       level: LIVE_LEVELS[index] || LIVE_LEVELS[LIVE_LEVELS.length - 1],
       grid: cloneGrid(index === 0 ? createPrimaryGrid() : createSecondaryGrid()),
       currentPiece: {
-        typeId: LIVE_PIECES[index]?.typeId || LIVE_PIECES[0].typeId,
-        x: LIVE_PIECES[index]?.x || LIVE_PIECES[0].x,
-        y: LIVE_PIECES[index]?.y || LIVE_PIECES[0].y,
-        blocks: (LIVE_PIECES[index]?.blocks || LIVE_PIECES[0].blocks).map((block) => block.slice())
+        typeId: pieces[index]?.typeId || pieces[0].typeId,
+        x: pieces[index]?.x || pieces[0].x,
+        y: pieces[index]?.y || pieces[0].y,
+        blocks: (pieces[index]?.blocks || pieces[0].blocks).map((block) => block.slice())
       },
-      ghostY: LIVE_GHOST_Y[index] || LIVE_GHOST_Y[LIVE_GHOST_Y.length - 1],
+      ghostY: ghostYs[index] != null ? ghostYs[index] : ghostYs[ghostYs.length - 1],
       holdPiece: LIVE_HOLD[index] || LIVE_HOLD[LIVE_HOLD.length - 1],
       nextPieces: (LIVE_NEXT[index] || LIVE_NEXT[LIVE_NEXT.length - 1]).slice(),
       pendingGarbage: index === 0 ? 3 : index === 2 ? 2 : 0,
