@@ -5,19 +5,20 @@ const { MSG, ROOM_STATE } = require('../public/shared/protocol.js');
 const LIVE_SCORE = [12450, 8320, 5100, 2800];
 const LIVE_LINES = [24, 16, 10, 5];
 const LIVE_LEVELS = [3, 2, 2, 1];
-const LIVE_GHOST_Y = [12, 14, 13, 15];
-const LIVE_HOLD = ['I', 'T', 'Z', 'O'];
+const LIVE_GHOST_Y = [14, 14, 14, 15];
+const LIVE_HOLD = ['J', 'I', 'T', 'J'];
 const LIVE_NEXT = [
-  ['L', 'S', 'Z', 'O', 'J'],
-  ['T', 'I', 'L', 'S', 'Z'],
-  ['O', 'J', 'T', 'I', 'L'],
-  ['S', 'Z', 'O', 'J', 'T']
+  ['I', 'T', 'Z', 'L', 'O'],
+  ['T', 'J', 'O', 'S', 'Z'],
+  ['Z', 'I', 'J', 'S', 'L'],
+  ['L', 'O', 'T', 'I', 'S']
 ];
+// Falling pieces: S, L, O, Z — hold shows J, I, T, J — all 7 types covered
 const LIVE_PIECES = [
-  { typeId: 6, x: 4, y: 2, blocks: [[0, 0], [1, 0], [2, 0], [1, 1]] },
-  { typeId: 1, x: 3, y: 4, blocks: [[0, 0], [1, 0], [2, 0], [3, 0]] },
-  { typeId: 3, x: 5, y: 6, blocks: [[0, 0], [0, 1], [1, 1], [2, 1]] },
-  { typeId: 5, x: 1, y: 8, blocks: [[0, 0], [1, 0], [0, 1], [1, 1]] }
+  { typeId: 5, x: 4, y: 2, blocks: [[1, 0], [2, 0], [0, 1], [1, 1]] },   // S
+  { typeId: 3, x: 3, y: 4, blocks: [[2, 0], [0, 1], [1, 1], [2, 1]] },   // L
+  { typeId: 4, x: 5, y: 3, blocks: [[1, 0], [2, 0], [1, 1], [2, 1]] },   // O
+  { typeId: 7, x: 2, y: 5, blocks: [[0, 0], [1, 0], [1, 1], [2, 1]] }    // Z
 ];
 const RESULT_SCORE = [24800, 18200, 12100, 5400];
 const RESULT_LINES = [48, 36, 24, 10];
