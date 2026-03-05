@@ -21,11 +21,11 @@ const PIECE_COLORS = {
 // Low-luminance hues (blue, purple, red) get extra boost.
 const GHOST_COLORS = {
   1: 'rgba(80, 240, 240, 0.38)',   // I - cyan
-  2: 'rgba(120, 120, 255, 0.5)',   // J - blue  (lowest luminance)
+  2: 'rgba(140, 140, 255, 0.4)',   // J - blue  (lightened to compensate low luminance)
   3: 'rgba(240, 180, 60, 0.4)',    // L - orange
   4: 'rgba(240, 240, 80, 0.35)',   // O - yellow (highest luminance)
   5: 'rgba(80, 240, 80, 0.35)',    // S - green
-  6: 'rgba(180, 80, 255, 0.45)',   // T - purple
+  6: 'rgba(200, 120, 255, 0.4)',   // T - purple (lightened to compensate low luminance)
   7: 'rgba(255, 80, 80, 0.45)'    // Z - red
 };
 
