@@ -188,17 +188,18 @@ class BoardRenderer {
     const x = this.x + col * this.cellSize;
     const y = this.y + row * this.cellSize;
     const size = this.cellSize;
-    const inset = 1.5;
+    const inset = 1;
 
-    // Dotted outline style ghost
+    // Dotted outline ghost
     ctx.strokeStyle = color;
     ctx.lineWidth = THEME.stroke.ghost;
     ctx.setLineDash([3, 3]);
     ctx.strokeRect(x + inset, y + inset, size - inset * 2, size - inset * 2);
     ctx.setLineDash([]);
 
-    // Very faint fill
-    ctx.fillStyle = color.replace(/[\d.]+\)$/, '0.08)');
+    // Translucent fill at half the outline alpha
+    const outlineAlpha = parseFloat((color.match(/([\d.]+)\)$/) || [])[1] || 0.4);
+    ctx.fillStyle = color.replace(/[\d.]+\)$/, (outlineAlpha * 0.5).toFixed(2) + ')');
     ctx.fillRect(x + inset, y + inset, size - inset * 2, size - inset * 2);
   }
 }

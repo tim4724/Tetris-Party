@@ -17,15 +17,16 @@ const PIECE_COLORS = {
   8: '#808080'     // garbage - gray
 };
 
-// Lighter versions for ghost pieces
+// Ghost piece colors — lightened with higher opacity for dark-background visibility.
+// Low-luminance hues (blue, purple, red) get extra boost.
 const GHOST_COLORS = {
-  1: 'rgba(0, 240, 240, 0.25)',
-  2: 'rgba(0, 0, 240, 0.25)',
-  3: 'rgba(240, 160, 0, 0.25)',
-  4: 'rgba(240, 240, 0, 0.25)',
-  5: 'rgba(0, 240, 0, 0.25)',
-  6: 'rgba(160, 0, 240, 0.25)',
-  7: 'rgba(240, 0, 0, 0.25)'
+  1: 'rgba(80, 240, 240, 0.38)',   // I - cyan
+  2: 'rgba(120, 120, 255, 0.5)',   // J - blue  (lowest luminance)
+  3: 'rgba(240, 180, 60, 0.4)',    // L - orange
+  4: 'rgba(240, 240, 80, 0.35)',   // O - yellow (highest luminance)
+  5: 'rgba(80, 240, 80, 0.35)',    // S - green
+  6: 'rgba(180, 80, 255, 0.45)',   // T - purple
+  7: 'rgba(255, 80, 80, 0.45)'    // Z - red
 };
 
 // Player accent colors
