@@ -478,7 +478,7 @@ function onGarbageSent(msg) {
 
   shifted.push({
     startTime: performance.now(),
-    duration: 500,
+    duration: 1000,
     maxAlpha: 0.94,
     color: attackerColor,
     lines: msg.lines,

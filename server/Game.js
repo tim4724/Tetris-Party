@@ -148,13 +148,6 @@ class Game {
       if (board && board.alive) {
         this.dirty = true;
         board.addPendingGarbage(g.lines, g.gapColumn);
-        this.callbacks.onEvent({
-          type: 'garbage_sent',
-          senderId: g.senderId,
-          toId: g.playerId,
-          lines: g.lines,
-          gapColumn: g.gapColumn
-        });
       }
     }
 
@@ -206,7 +199,15 @@ class Game {
       const b = this.boards.get(id);
       return b && b.alive ? b.getStackHeight() : -1;
     };
-    this.garbageManager.processLineClear(playerId, lines, isTSpin, combo, backToBack, getStackHeight);
+    const result = this.garbageManager.processLineClear(playerId, lines, isTSpin, combo, backToBack, getStackHeight);
+    for (const d of result.deliveries) {
+      this.callbacks.onEvent({
+        type: 'garbage_sent',
+        senderId: d.fromId,
+        toId: d.toId,
+        lines: d.lines
+      });
+    }
   }
 
   checkWinCondition() {
