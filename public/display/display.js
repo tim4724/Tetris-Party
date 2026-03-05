@@ -28,6 +28,7 @@ let welcomeBg = null;
 //     a new user navigation.
 let popstateNavigating = false;
 let suppressPopstate = false;
+let displayGame = null;
 
 // --- DOM References ---
 const welcomeScreen = document.getElementById('welcome-screen');
@@ -244,12 +245,25 @@ function handleMessage(msg) {
     case MSG.GAME_RESUMED:
       onGameResumed();
       break;
+    case MSG.RUN_GAME_LOCALLY:
+      onRunGameLocally(msg);
+      break;
+    case MSG.RELAY_INPUT:
+      if (displayGame) displayGame.processInput(msg.playerId, msg.action);
+      break;
+    case MSG.RELAY_SOFT_DROP_START:
+      if (displayGame) displayGame.handleSoftDropStart(msg.playerId, msg.speed);
+      break;
+    case MSG.RELAY_SOFT_DROP_END:
+      if (displayGame) displayGame.handleSoftDropEnd(msg.playerId);
+      break;
     case MSG.RETURN_TO_LOBBY: {
       // popstateNavigating is true when the browser back button triggered this
       // return — the history entry is already consumed, so we skip history.back().
       // For all other triggers (button clicks, server-initiated reset), we call
       // history.back() to consume the game history entry.
       if (music) music.stop();
+      stopDisplayGame();
       const wasInGame = currentScreen === 'game' || currentScreen === 'results';
       gameState = null;
       disconnectedQRs.clear();
@@ -333,6 +347,56 @@ function renderTetrisQR(canvas, qrMatrix) {
   }
 }
 
+function stopDisplayGame() {
+  if (displayGame) {
+    displayGame.stop();
+    displayGame = null;
+  }
+}
+
+function onRunGameLocally(msg) {
+  stopDisplayGame();
+
+  var Game = window.GameEngine.Game;
+  var gamePlayers = new Map();
+  for (var i = 0; i < msg.playerIds.length; i++) {
+    gamePlayers.set(msg.playerIds[i], {});
+  }
+
+  displayGame = new Game(gamePlayers, {
+    onGameState: function(state) {
+      // Call the existing display onGameState directly
+      onGameState(state);
+      // Relay to server for controller updates
+      send(MSG.DISPLAY_GAME_STATE, state);
+    },
+    onEvent: function(event) {
+      if (event.type === 'line_clear') {
+        onLineClear(event);
+      } else if (event.type === 'player_ko') {
+        onPlayerKO(event);
+      } else if (event.type === 'garbage_sent') {
+        onGarbageSent(event);
+      }
+      send(MSG.DISPLAY_EVENT, { event: event });
+    },
+    onGameEnd: function(results) {
+      // Enrich with player names
+      if (results && results.results) {
+        for (var j = 0; j < results.results.length; j++) {
+          var r = results.results[j];
+          var pInfo = players.get(r.playerId);
+          if (pInfo) r.playerName = pInfo.playerName;
+        }
+      }
+      send(MSG.DISPLAY_GAME_END, results);
+      onGameEnd(results);
+    }
+  }, msg.seed);
+
+  displayGame.start();
+}
+
 function onRoomCreated(msg) {
   // Reset local state — new room has no players
   if (music) music.stop();
@@ -374,6 +438,7 @@ function onPlayerLeft(msg) {
 
 function onRoomReset() {
   if (music) music.stop();
+  stopDisplayGame();
   const wasInGame = currentScreen === 'game' || currentScreen === 'results';
   gameState = null;
   boardRenderers = [];
@@ -499,6 +564,7 @@ function onPlayerKO(msg) {
 
 function onGameEnd(msg) {
   if (music) music.stop();
+  stopDisplayGame();
   disconnectedQRs.clear();
   garbageIndicatorEffects.clear();
   showScreen('results');
@@ -777,12 +843,14 @@ fullscreenBtn.addEventListener('click', () => {
 
 // --- Pause ---
 function onGamePaused() {
+  if (displayGame) displayGame.pause();
   pauseOverlay.classList.remove('hidden');
   gameToolbar.classList.add('hidden');
   if (music) music.stop();
 }
 
 function onGameResumed() {
+  if (displayGame) displayGame.resume();
   pauseOverlay.classList.add('hidden');
   if (currentScreen === 'game') {
     gameToolbar.classList.remove('hidden');

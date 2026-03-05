@@ -2,7 +2,6 @@
 
 const { MSG, ROOM_STATE } = require('../public/shared/protocol.js');
 const QRCode = require('qrcode');
-const Game = require('./Game.js');
 const {
   MAX_PLAYERS,
   COUNTDOWN_SECONDS
@@ -125,7 +124,7 @@ class Room {
       player.connected = false;
       player.ws = null;
       const wasHost = playerId === this.hostId;
-      if (this.game) { this.game.stop(); this.game = null; }
+      this.game = null;
       this._lastResults = null;
       this.state = ROOM_STATE.LOBBY;
       this._removeLobbyPlayer(playerId);
@@ -274,55 +273,27 @@ class Room {
   }
 
   _startNewGame() {
-    if (this.game) {
-      this.game.stop();
-      this.game = null;
-    }
+    this.game = null;
     this.paused = false;
     this._lastResults = null;
+    this._lastDisplayState = null;
 
     this.state = ROOM_STATE.COUNTDOWN;
 
     this.startCountdown(() => {
       // Include ALL players (even disconnected) so they keep their slot
-      const gamePlayers = new Map();
-      for (const [id, p] of this.players) {
-        gamePlayers.set(id, { ws: p.ws });
+      const playerIds = [];
+      for (const [id] of this.players) {
+        playerIds.push(id);
       }
 
-      this.game = new Game(gamePlayers, {
-        onGameState: (state) => {
-          this.sendToDisplay(MSG.GAME_STATE, state);
-          if (state.players) {
-            for (const p of state.players) {
-              this.sendToPlayer(p.id, MSG.PLAYER_STATE, {
-                score: p.score,
-                level: p.level,
-                lines: p.lines,
-                alive: p.alive,
-                garbageIncoming: p.pendingGarbage || 0
-              });
-            }
-          }
-        },
-        onEvent: (event) => {
-          if (event.type === 'line_clear') {
-            this.sendToDisplay(MSG.LINE_CLEAR, event);
-          } else if (event.type === 'player_ko') {
-            this.sendToDisplay(MSG.PLAYER_KO, event);
-            this.sendToPlayer(event.playerId, MSG.GAME_OVER, { playerId: event.playerId });
-          } else if (event.type === 'garbage_sent') {
-            this.sendToDisplay(MSG.GARBAGE_SENT, event);
-          }
-        },
-        onGameEnd: (results) => {
-          this.onGameEnd(results);
-        }
-      });
+      const seed = (Math.random() * 0xFFFFFFFF) >>> 0;
 
       this.state = ROOM_STATE.PLAYING;
       this.broadcast(MSG.GAME_START, {});
-      this.game.start();
+
+      // Tell display to run the game locally
+      this.sendToDisplay(MSG.RUN_GAME_LOCALLY, { playerIds, seed });
 
       // Re-notify display about any still-disconnected players so QR overlays appear
       for (const [id, p] of this.players) {
@@ -373,7 +344,6 @@ class Room {
         this._goTimeout = null;
       }
     }
-    if (this.game) this.game.pause();
     this.broadcast(MSG.GAME_PAUSED, {});
   }
 
@@ -395,26 +365,25 @@ class Room {
       }
       return;
     }
-    if (this.game) this.game.resume();
     this.broadcast(MSG.GAME_RESUMED, {});
   }
 
   handleInput(playerId, action, seq) {
-    if (this.game && this.state === ROOM_STATE.PLAYING && !this.paused) {
-      this.game.processInput(playerId, action);
+    if (this.state === ROOM_STATE.PLAYING && !this.paused) {
+      this.sendToDisplay(MSG.RELAY_INPUT, { playerId, action });
       this.sendToPlayer(playerId, MSG.INPUT_ACK, { seq });
     }
   }
 
   handleSoftDropStart(playerId, speed) {
-    if (this.game && this.state === ROOM_STATE.PLAYING && !this.paused) {
-      this.game.handleSoftDropStart(playerId, speed);
+    if (this.state === ROOM_STATE.PLAYING && !this.paused) {
+      this.sendToDisplay(MSG.RELAY_SOFT_DROP_START, { playerId, speed });
     }
   }
 
   handleSoftDropEnd(playerId) {
-    if (this.game && this.state === ROOM_STATE.PLAYING && !this.paused) {
-      this.game.handleSoftDropEnd(playerId);
+    if (this.state === ROOM_STATE.PLAYING && !this.paused) {
+      this.sendToDisplay(MSG.RELAY_SOFT_DROP_END, { playerId });
     }
   }
 
@@ -461,15 +430,9 @@ class Room {
 
   onGameEnd(results) {
     this.state = ROOM_STATE.RESULTS;
-    // Enrich results with player names
-    if (results && results.results) {
-      for (const r of results.results) {
-        const player = this.players.get(r.playerId);
-        if (player) r.playerName = player.name;
-      }
-    }
+    // Display already enriched results with player names; relay to controllers
     this._lastResults = results;
-    this.broadcast(MSG.GAME_END, results);
+    this.broadcastToControllers(MSG.GAME_END, results);
   }
 
   returnToLobby() {
@@ -486,10 +449,8 @@ class Room {
     this._countdownRemaining = 0;
     this.paused = false;
 
-    if (this.game) {
-      this.game.stop();
-      this.game = null;
-    }
+    this.game = null;
+    this._lastDisplayState = null;
 
     const disconnectedIds = [];
     for (const [id, player] of this.players) {
@@ -545,9 +506,9 @@ class Room {
   // Extra state a reconnecting controller needs to restore its UI
   getReconnectState(playerId) {
     const info = { paused: this.paused };
-    if (this.game) {
-      const board = this.game.boards.get(playerId);
-      if (board) info.alive = board.alive;
+    if (this._lastDisplayState && this._lastDisplayState.players) {
+      const pState = this._lastDisplayState.players.find(p => p.id === playerId);
+      if (pState) info.alive = pState.alive;
     }
     if (this.state === ROOM_STATE.COUNTDOWN && this._countdownRemaining > 0) {
       info.countdown = this._countdownRemaining;
@@ -603,11 +564,9 @@ class Room {
       clearInterval(this.countdownTimer);
       this.countdownTimer = null;
     }
-    if (this.game) {
-      this.game.stop();
-      this.game = null;
-    }
+    this.game = null;
     this._lastResults = null;
+    this._lastDisplayState = null;
     for (const [, player] of this.players) {
       if (player.graceTimer) {
         clearTimeout(player.graceTimer);

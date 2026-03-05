@@ -30,6 +30,17 @@ const MSG = {
   PAUSE_GAME: 'pause_game',
   RESUME_GAME: 'resume_game',
 
+  // Server → Display (local game)
+  RUN_GAME_LOCALLY: 'run_game_locally',
+  RELAY_INPUT: 'relay_input',
+  RELAY_SOFT_DROP_START: 'relay_soft_drop_start',
+  RELAY_SOFT_DROP_END: 'relay_soft_drop_end',
+
+  // Display → Server (local game results)
+  DISPLAY_GAME_STATE: 'display_game_state',
+  DISPLAY_EVENT: 'display_event',
+  DISPLAY_GAME_END: 'display_game_end',
+
   // Server → Display
   ROOM_CREATED: 'room_created',
   ROOM_RESET: 'room_reset',

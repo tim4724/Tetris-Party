@@ -117,6 +117,26 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
+  // Serve game engine modules to browser
+  if (urlPath.startsWith('/engine/')) {
+    const engineFile = urlPath.slice('/engine/'.length);
+    const allowed = ['constants.js', 'Piece.js', 'Randomizer.js', 'Scoring.js', 'GarbageManager.js', 'PlayerBoard.js', 'Game.js'];
+    if (allowed.includes(engineFile)) {
+      const enginePath = path.join(__dirname, engineFile);
+      fs.readFile(enginePath, (err, data) => {
+        if (err) { res.writeHead(404); res.end('Not Found'); return; }
+        res.writeHead(200, {
+          'Content-Type': 'text/javascript',
+          'Cache-Control': 'no-store, no-cache, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        });
+        res.end(data);
+      });
+      return;
+    }
+  }
+
   // Health check endpoint
   if (urlPath === '/health') {
     res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -412,6 +432,35 @@ function handleDisplayMessage(room, msg) {
     case MSG.RESUME_GAME:
       room.resumeGame();
       break;
+    case MSG.DISPLAY_GAME_STATE: {
+      // Cache state for reconnect and relay to controllers
+      const { type: _t2, ...displayState } = msg;
+      room._lastDisplayState = displayState;
+      if (displayState.players) {
+        for (const p of displayState.players) {
+          room.sendToPlayer(p.id, MSG.PLAYER_STATE, {
+            score: p.score,
+            level: p.level,
+            lines: p.lines,
+            alive: p.alive,
+            garbageIncoming: p.pendingGarbage || 0
+          });
+        }
+      }
+      break;
+    }
+    case MSG.DISPLAY_EVENT:
+      if (msg.event) {
+        if (msg.event.type === 'player_ko') {
+          room.sendToPlayer(msg.event.playerId, MSG.GAME_OVER, { playerId: msg.event.playerId });
+        }
+      }
+      break;
+    case MSG.DISPLAY_GAME_END: {
+      const { type: _t, ...results } = msg;
+      room.onGameEnd(results);
+      break;
+    }
   }
 }
 

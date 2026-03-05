@@ -279,24 +279,16 @@ describe('onGameEnd', () => {
     assert.equal(room._lastResults, results);
   });
 
-  test('enriches results with player names', () => {
-    const { room } = setupRoom(ROOM_STATE.PLAYING);
-    const results = { results: [{ playerId: 1 }, { playerId: 2 }] };
-    room.onGameEnd(results);
-
-    assert.equal(results.results[0].playerName, 'Alice');
-    assert.equal(results.results[1].playerName, 'Bob');
-  });
-
-  test('broadcasts GAME_END to display and controllers', () => {
+  test('relays GAME_END to controllers (display handles locally)', () => {
     const { room, displayWs, ws1, ws2 } = setupRoom(ROOM_STATE.PLAYING);
     displayWs.sent.length = 0;
     ws1.sent.length = 0;
     ws2.sent.length = 0;
 
-    room.onGameEnd({ results: [] });
+    room.onGameEnd({ results: [{ playerId: 1, playerName: 'Alice' }] });
 
-    assert.ok(displayWs.sent.find(m => m.type === MSG.GAME_END));
+    // Display already handled game end locally — server only relays to controllers
+    assert.ok(!displayWs.sent.find(m => m.type === MSG.GAME_END));
     assert.ok(ws1.sent.find(m => m.type === MSG.GAME_END));
     assert.ok(ws2.sent.find(m => m.type === MSG.GAME_END));
   });
