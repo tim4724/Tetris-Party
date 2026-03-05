@@ -47,6 +47,7 @@ html, body {
   font-size: clamp(2.5rem, 7vh, 6rem);
   filter: drop-shadow(0 0 24px rgba(0, 200, 255, 0.35));
   animation: fadeDown 0.6s ease-out both;
+  text-align: center;
 }
 
 #new-game-btn {
