@@ -18,8 +18,16 @@ let disconnectedQRs = new Map(); // playerId -> Canvas
 let garbageIndicatorEffects = new Map(); // playerId -> transient attacker-colored meter block overlays
 let lastRoomCode = null; // remember room code for reconnect
 let welcomeBg = null;
-let popstateNavigating = false;  // true when popstate triggered the lobby return
-let suppressPopstate = false;    // true when programmatic history.back() should be ignored
+// History navigation state:
+//   popstateNavigating — set true when popstate fires from game/results;
+//     cleared in the RETURN_TO_LOBBY handler after the server round-trip
+//     completes. Prevents double history.back().
+//   suppressPopstate — set true immediately before a programmatic
+//     history.back() call; the resulting popstate is ignored and the flag
+//     is cleared. Prevents the compensating back() from being treated as
+//     a new user navigation.
+let popstateNavigating = false;
+let suppressPopstate = false;
 
 // --- DOM References ---
 const welcomeScreen = document.getElementById('welcome-screen');
@@ -237,6 +245,10 @@ function handleMessage(msg) {
       onGameResumed();
       break;
     case MSG.RETURN_TO_LOBBY: {
+      // popstateNavigating is true when the browser back button triggered this
+      // return — the history entry is already consumed, so we skip history.back().
+      // For all other triggers (button clicks, server-initiated reset), we call
+      // history.back() to consume the game history entry.
       if (music) music.stop();
       const wasInGame = currentScreen === 'game' || currentScreen === 'results';
       gameState = null;
@@ -466,7 +478,7 @@ function onGarbageSent(msg) {
 
   shifted.push({
     startTime: performance.now(),
-    duration: 1000,
+    duration: 500,
     maxAlpha: 0.94,
     color: attackerColor,
     lines: msg.lines,
@@ -662,7 +674,11 @@ window.addEventListener('popstate', (e) => {
     }
   } else if (currentScreen === 'game' || currentScreen === 'results') {
     // Back: game/results → lobby (same room, same players)
+    // Transition immediately so a second back press can't escape the site.
+    // The server response handles remaining cleanup.
     popstateNavigating = true;
+    if (music) music.stop();
+    showScreen('lobby');
     send(MSG.RETURN_TO_LOBBY);
   }
 });

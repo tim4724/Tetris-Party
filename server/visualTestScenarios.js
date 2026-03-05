@@ -163,6 +163,14 @@ function applyVisualScenario(room, scenarioName, scenarioOptions) {
   switch (scenarioName) {
     case 'game': {
       enterPlayingSnapshot(room, scenarioOptions || {});
+      // Show garbage indicator effect on Player 1 in multi-player games
+      if (players.length >= 2) {
+        room.sendToDisplay(MSG.GARBAGE_SENT, {
+          senderId: players[1].id,
+          toId: players[0].id,
+          lines: 4
+        });
+      }
       return;
     }
 

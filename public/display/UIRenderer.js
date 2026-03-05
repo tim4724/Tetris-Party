@@ -225,16 +225,21 @@ class UIRenderer {
     const meter = this.getGarbageMeterLayout();
     const rows = Math.min(pendingGarbage, meter.rows);
     const inset = THEME.size.boardInset;
-    const r = THEME.radius.block(meter.cellSize);
 
-    // Draw stacked gray blocks from bottom up (may overlap hold panel)
+    // Ghost-style blocks: outline + translucent fill (incoming but not yet applied)
     for (let i = 0; i < rows; i++) {
       const y = meter.y + this.boardHeight - (i + 1) * meter.cellSize;
-      ctx.fillStyle = THEME.color.garbage;
-      roundRect(ctx, meter.x + inset, y + inset, meter.cellSize - inset * 2, meter.cellSize - inset * 2, r);
-      ctx.fill();
-      ctx.fillStyle = `rgba(255, 255, 255, ${THEME.opacity.faint})`;
-      ctx.fillRect(meter.x + inset + 1, y + inset + 1, meter.cellSize - inset * 2 - 2, 1);
+      const bx = meter.x + inset;
+      const by = y + inset;
+      const bw = meter.cellSize - inset * 2;
+      const bh = meter.cellSize - inset * 2;
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = THEME.stroke.ghost;
+      ctx.setLineDash([3, 3]);
+      ctx.strokeRect(bx, by, bw, bh);
+      ctx.setLineDash([]);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.fillRect(bx, by, bw, bh);
     }
   }
 
@@ -248,20 +253,26 @@ class UIRenderer {
     const r = THEME.radius.block(meter.cellSize);
 
     for (const effect of effects) {
-      const alpha = this._getGarbageIndicatorAlpha(effect, now);
-      if (alpha <= 0) continue;
+      const elapsed = now - effect.startTime;
+      if (elapsed < 0 || elapsed >= effect.duration) continue;
+      // Fade out over the duration
+      const alpha = (1 - elapsed / effect.duration) * (effect.maxAlpha || 0.9);
 
       for (let row = effect.rowStart; row < effect.rowStart + effect.lines; row++) {
         if (row < 0 || row >= meter.rows) continue;
         const y = meter.y + row * meter.cellSize;
+        const bx = meter.x + inset;
+        const by = y + inset;
+        const bw = meter.cellSize - inset * 2;
+        const bh = meter.cellSize - inset * 2;
 
         ctx.save();
         ctx.globalAlpha = alpha;
         ctx.fillStyle = effect.color;
-        roundRect(ctx, meter.x + inset, y + inset, meter.cellSize - inset * 2, meter.cellSize - inset * 2, r);
+        roundRect(ctx, bx, by, bw, bh, r);
         ctx.fill();
         ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
-        ctx.fillRect(meter.x + inset + 1, y + inset + 1, meter.cellSize - inset * 2 - 2, 1);
+        ctx.fillRect(bx + 1, by + 1, bw - 2, 1);
         ctx.restore();
       }
     }
@@ -346,11 +357,6 @@ class UIRenderer {
     ctx.stroke();
   }
 
-  _getGarbageIndicatorAlpha(effect, now) {
-    const elapsed = now - effect.startTime;
-    if (elapsed < 0 || elapsed >= effect.duration) return 0;
-    return effect.maxAlpha || 0.9;
-  }
 }
 
 window.UIRenderer = UIRenderer;
