@@ -367,18 +367,29 @@ function onRunGameLocally(msg) {
     onGameState: function(state) {
       // Call the existing display onGameState directly
       onGameState(state);
-      // Relay to server for controller updates
-      send(MSG.DISPLAY_GAME_STATE, state);
+      // Relay per-player state to controllers via server
+      if (state.players) {
+        for (var k = 0; k < state.players.length; k++) {
+          var p = state.players[k];
+          send(MSG.RELAY_TO_PLAYER, { playerId: p.id, msg: {
+            type: MSG.PLAYER_STATE,
+            score: p.score, level: p.level, lines: p.lines,
+            alive: p.alive, garbageIncoming: p.pendingGarbage || 0
+          }});
+        }
+      }
     },
     onEvent: function(event) {
       if (event.type === 'line_clear') {
         onLineClear(event);
       } else if (event.type === 'player_ko') {
         onPlayerKO(event);
+        send(MSG.RELAY_TO_PLAYER, { playerId: event.playerId, msg: {
+          type: MSG.GAME_OVER, playerId: event.playerId
+        }});
       } else if (event.type === 'garbage_sent') {
         onGarbageSent(event);
       }
-      send(MSG.DISPLAY_EVENT, { event: event });
     },
     onGameEnd: function(results) {
       // Enrich with player names
@@ -389,7 +400,7 @@ function onRunGameLocally(msg) {
           if (pInfo) r.playerName = pInfo.playerName;
         }
       }
-      send(MSG.DISPLAY_GAME_END, results);
+      send(MSG.RELAY_TO_CONTROLLERS, { msg: { type: MSG.GAME_END, ...results } });
       onGameEnd(results);
     }
   }, msg.seed);

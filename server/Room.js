@@ -276,7 +276,7 @@ class Room {
     this.game = null;
     this.paused = false;
     this._lastResults = null;
-    this._lastDisplayState = null;
+    this._lastAliveState = null;
 
     this.state = ROOM_STATE.COUNTDOWN;
 
@@ -450,7 +450,7 @@ class Room {
     this.paused = false;
 
     this.game = null;
-    this._lastDisplayState = null;
+    this._lastAliveState = null;
 
     const disconnectedIds = [];
     for (const [id, player] of this.players) {
@@ -506,9 +506,8 @@ class Room {
   // Extra state a reconnecting controller needs to restore its UI
   getReconnectState(playerId) {
     const info = { paused: this.paused };
-    if (this._lastDisplayState && this._lastDisplayState.players) {
-      const pState = this._lastDisplayState.players.find(p => p.id === playerId);
-      if (pState) info.alive = pState.alive;
+    if (this._lastAliveState && this._lastAliveState[playerId] != null) {
+      info.alive = this._lastAliveState[playerId];
     }
     if (this.state === ROOM_STATE.COUNTDOWN && this._countdownRemaining > 0) {
       info.countdown = this._countdownRemaining;
@@ -566,7 +565,7 @@ class Room {
     }
     this.game = null;
     this._lastResults = null;
-    this._lastDisplayState = null;
+    this._lastAliveState = null;
     for (const [, player] of this.players) {
       if (player.graceTimer) {
         clearTimeout(player.graceTimer);

@@ -432,35 +432,27 @@ function handleDisplayMessage(room, msg) {
     case MSG.RESUME_GAME:
       room.resumeGame();
       break;
-    case MSG.DISPLAY_GAME_STATE: {
-      // Cache state for reconnect and relay to controllers
-      const { type: _t2, ...displayState } = msg;
-      room._lastDisplayState = displayState;
-      if (displayState.players) {
-        for (const p of displayState.players) {
-          room.sendToPlayer(p.id, MSG.PLAYER_STATE, {
-            score: p.score,
-            level: p.level,
-            lines: p.lines,
-            alive: p.alive,
-            garbageIncoming: p.pendingGarbage || 0
-          });
+    case MSG.RELAY_TO_PLAYER:
+      if (msg.playerId != null && msg.msg) {
+        // Cache alive status for reconnect
+        if (msg.msg.type === MSG.PLAYER_STATE && msg.msg.alive != null) {
+          if (!room._lastAliveState) room._lastAliveState = {};
+          room._lastAliveState[msg.playerId] = msg.msg.alive;
+        }
+        room.sendToPlayer(msg.playerId, msg.msg.type, msg.msg);
+      }
+      break;
+    case MSG.RELAY_TO_CONTROLLERS:
+      if (msg.msg) {
+        // Detect game end for room state transition
+        if (msg.msg.type === MSG.GAME_END) {
+          const { type: _t, ...results } = msg.msg;
+          room.onGameEnd(results);
+        } else {
+          room.broadcastToControllers(msg.msg.type, msg.msg);
         }
       }
       break;
-    }
-    case MSG.DISPLAY_EVENT:
-      if (msg.event) {
-        if (msg.event.type === 'player_ko') {
-          room.sendToPlayer(msg.event.playerId, MSG.GAME_OVER, { playerId: msg.event.playerId });
-        }
-      }
-      break;
-    case MSG.DISPLAY_GAME_END: {
-      const { type: _t, ...results } = msg;
-      room.onGameEnd(results);
-      break;
-    }
   }
 }
 
