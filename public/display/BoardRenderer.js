@@ -122,12 +122,12 @@ class BoardRenderer {
   _drawBoardBorder() {
     const ctx = this.ctx;
     const rgb = hexToRgb(this.accentColor);
-    // Subtle player-color border (matches controller touch pad)
+    // Visible player-color border
     ctx.strokeStyle = rgb
-      ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${THEME.opacity.soft})`
-      : `rgba(255, 255, 255, ${THEME.opacity.tint})`;
-    ctx.lineWidth = THEME.stroke.border;
-    ctx.strokeRect(this.x - 0.5, this.y - 0.5, this.boardWidth + 1, this.boardHeight + 1);
+      ? `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${THEME.opacity.strong})`
+      : `rgba(255, 255, 255, ${THEME.opacity.soft})`;
+    ctx.lineWidth = 2;
+    ctx.strokeRect(this.x - 1, this.y - 1, this.boardWidth + 2, this.boardHeight + 2);
   }
 
   drawBlock(col, row, color, isGarbage) {
