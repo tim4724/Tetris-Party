@@ -18,6 +18,8 @@ let disconnectedQRs = new Map(); // playerId -> Canvas
 let garbageIndicatorEffects = new Map(); // playerId -> transient attacker-colored meter block overlays
 let lastRoomCode = null; // remember room code for reconnect
 let welcomeBg = null;
+let popstateNavigating = false;  // true when popstate triggered the lobby return
+let suppressPopstate = false;    // true when programmatic history.back() should be ignored
 
 // --- DOM References ---
 const welcomeScreen = document.getElementById('welcome-screen');
@@ -234,14 +236,21 @@ function handleMessage(msg) {
     case MSG.GAME_RESUMED:
       onGameResumed();
       break;
-    case MSG.RETURN_TO_LOBBY:
+    case MSG.RETURN_TO_LOBBY: {
       if (music) music.stop();
+      const wasInGame = currentScreen === 'game' || currentScreen === 'results';
       gameState = null;
       disconnectedQRs.clear();
       garbageIndicatorEffects.clear();
       showScreen('lobby');
       updateStartButton();
+      if (wasInGame && !popstateNavigating) {
+        suppressPopstate = true;
+        history.back();
+      }
+      popstateNavigating = false;
       break;
+    }
   }
 }
 
@@ -353,6 +362,7 @@ function onPlayerLeft(msg) {
 
 function onRoomReset() {
   if (music) music.stop();
+  const wasInGame = currentScreen === 'game' || currentScreen === 'results';
   gameState = null;
   boardRenderers = [];
   uiRenderers = [];
@@ -363,10 +373,18 @@ function onRoomReset() {
   updatePlayerList();
   updateStartButton();
   showScreen('lobby');
+  if (wasInGame && !popstateNavigating) {
+    suppressPopstate = true;
+    history.back();
+  }
+  popstateNavigating = false;
 }
 
 function onCountdown(msg) {
   gameState = null;
+  if (currentScreen !== 'game') {
+    history.pushState({ screen: 'game' }, '');
+  }
   showScreen('game');
   countdownOverlay.classList.remove('hidden');
   countdownOverlay.textContent = msg.value;
@@ -622,15 +640,30 @@ newGameBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('popstate', (e) => {
-  if (currentScreen === 'welcome' && e.state && e.state.screen === 'lobby') {
-    // Forward from welcome back to lobby
+  if (suppressPopstate) {
+    suppressPopstate = false;
+    return;
+  }
+
+  const target = e.state && e.state.screen;
+
+  if (currentScreen === 'welcome' && target === 'lobby') {
+    // Forward: welcome → lobby
     connect();
     showScreen('lobby');
   } else if (currentScreen === 'lobby') {
-    resetToWelcome();
-  } else if (currentScreen !== 'welcome') {
-    // Block back during game/results
-    history.pushState({ screen: currentScreen }, '');
+    if (target === 'game') {
+      // Block forward from lobby to abandoned game
+      suppressPopstate = true;
+      history.back();
+    } else {
+      // Back: lobby → welcome
+      resetToWelcome();
+    }
+  } else if (currentScreen === 'game' || currentScreen === 'results') {
+    // Back: game/results → lobby (same room, same players)
+    popstateNavigating = true;
+    send(MSG.RETURN_TO_LOBBY);
   }
 });
 

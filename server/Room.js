@@ -472,6 +472,18 @@ class Room {
   }
 
   returnToLobby() {
+    // Clear any in-progress countdown
+    if (this.countdownTimer) {
+      clearInterval(this.countdownTimer);
+      this.countdownTimer = null;
+    }
+    if (this._goTimeout) {
+      clearTimeout(this._goTimeout);
+      this._goTimeout = null;
+    }
+    this._countdownCallback = null;
+    this._countdownRemaining = 0;
+
     if (this.game) {
       this.game.stop();
       this.game = null;
