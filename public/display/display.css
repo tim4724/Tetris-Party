@@ -39,7 +39,7 @@ html, body {
 
 #welcome-screen {
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(68, 68, 255, 0.06) 0%, transparent 50%);
+    radial-gradient(ellipse at 50% 30%, var(--glow-blue) 0%, transparent 50%);
   gap: clamp(2rem, 5vh, 4rem);
 }
 
@@ -96,26 +96,11 @@ html, body {
    ============================================ */
 #lobby-screen {
   background:
-    radial-gradient(ellipse at 50% 20%, rgba(68, 68, 255, 0.06) 0%, transparent 50%);
+    radial-gradient(ellipse at 50% 20%, var(--glow-blue) 0%, transparent 50%);
   gap: 0;
   padding: 4vh 2rem 4vh;
 }
 
-/* Entrance animations */
-@keyframes fadeDown {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
 
 #lobby-screen h1 {
   font-size: clamp(2rem, 5vh, 5rem);
@@ -273,37 +258,13 @@ html, body {
   display: none;
 }
 
-#game-toolbar button {
+#game-toolbar .icon-btn {
   width: clamp(36px, 4vh, 52px);
   height: clamp(36px, 4vh, 52px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.5);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s ease;
 }
 
-#game-toolbar button.hidden {
+#game-toolbar .hidden {
   display: none;
-}
-
-#game-toolbar button:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.8);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-#fullscreen-btn svg {
-  stroke: rgba(255, 255, 255, 0.5);
-  transition: stroke 0.2s ease;
-}
-
-#fullscreen-btn:hover svg {
-  stroke: rgba(255, 255, 255, 0.8);
 }
 
 #pause-btn .pause-icon::before,
@@ -326,7 +287,7 @@ html, body {
   background: var(--overlay-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  animation: overlayFadeIn 0.3s ease both;
+  animation: fadeIn 0.3s ease both;
 }
 
 #pause-overlay h1 {
@@ -343,12 +304,7 @@ html, body {
   gap: clamp(0.8rem, 1.5vw, 1.5rem);
 }
 
-#pause-continue-btn {
-  padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(2rem, 4vw, 4rem);
-  font-size: clamp(0.85rem, 1.6vh, 1.2rem);
-  letter-spacing: 0.06em;
-}
-
+#pause-continue-btn,
 #pause-newgame-btn {
   padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(2rem, 4vw, 4rem);
   font-size: clamp(0.85rem, 1.6vh, 1.2rem);
@@ -375,12 +331,7 @@ html, body {
               var(--overlay-bg);
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
-  animation: overlayFadeIn 0.5s ease both;
-}
-
-@keyframes overlayFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  animation: fadeIn 0.5s ease both;
 }
 
 #results-screen h1 {
@@ -449,17 +400,18 @@ html, body {
   margin-top: clamp(1.5rem, 3vh, 3rem);
 }
 
-#play-again-btn {
-  padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(2rem, 4vw, 4rem);
-  font-size: clamp(0.85rem, 1.6vh, 1.2rem);
-  letter-spacing: 0.06em;
-  animation: resultsBtnIn 0.5s 0.6s ease-out both, btnPulse 2.5s 1.5s infinite;
-}
-
+#play-again-btn,
 #new-game-results-btn {
   padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(2rem, 4vw, 4rem);
   font-size: clamp(0.85rem, 1.6vh, 1.2rem);
   letter-spacing: 0.06em;
+}
+
+#play-again-btn {
+  animation: resultsBtnIn 0.5s 0.6s ease-out both, btnPulse 2.5s 1.5s infinite;
+}
+
+#new-game-results-btn {
   animation: resultsBtnIn 0.5s 0.7s ease-out both;
 }
 
@@ -474,7 +426,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   background:
-    radial-gradient(ellipse at 50% 30%, rgba(68, 68, 255, 0.06) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 30%, var(--glow-blue) 0%, transparent 50%),
     var(--bg-primary);
   text-align: center;
   padding: 64px 2rem 2rem;
@@ -482,7 +434,7 @@ html, body {
 
 #mobile-hint h1 {
   font-size: clamp(1.4rem, 7vw, 2.2rem);
-  filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.15));
+  filter: drop-shadow(0 0 8px var(--glow-cyan));
 }
 
 #mobile-hint-body {
@@ -499,12 +451,12 @@ html, body {
   font-size: clamp(1.2rem, 5.8vw, 1.85rem);
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(0, 200, 255, 0.9);
+  color: var(--text-cyan);
 }
 
 #mobile-hint-detail {
   font-size: clamp(1rem, 4.5vw, 1.2rem);
-  color: rgba(160, 180, 210, 0.56);
+  color: var(--text-muted);
   letter-spacing: 0.04em;
   line-height: 1.5;
   max-width: 28ch;

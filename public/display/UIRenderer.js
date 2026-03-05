@@ -270,18 +270,8 @@ class UIRenderer {
   drawKOOverlay() {
     const ctx = this.ctx;
 
-    // Darken the board with vignette
-    const grad = ctx.createRadialGradient(
-      this.boardX + this.boardWidth / 2,
-      this.boardY + this.boardHeight / 2,
-      0,
-      this.boardX + this.boardWidth / 2,
-      this.boardY + this.boardHeight / 2,
-      this.boardWidth * 0.7
-    );
-    grad.addColorStop(0, `rgba(0, 0, 0, ${THEME.opacity.label})`);
-    grad.addColorStop(1, `rgba(0, 0, 0, ${THEME.opacity.overlay})`);
-    ctx.fillStyle = grad;
+    // Darken the board
+    ctx.fillStyle = `rgba(0, 0, 0, ${THEME.opacity.overlay})`;
     ctx.fillRect(this.boardX, this.boardY, this.boardWidth, this.boardHeight);
 
     // KO text — subtle white, matching controller style
@@ -297,12 +287,6 @@ class UIRenderer {
       this.boardY + this.boardHeight / 2
     );
     ctx.letterSpacing = '0px';
-
-    // Scanlines over the darkened board
-    ctx.fillStyle = `rgba(0, 0, 0, ${THEME.opacity.subtle})`;
-    for (let y = this.boardY; y < this.boardY + this.boardHeight; y += 3) {
-      ctx.fillRect(this.boardX, y, this.boardWidth, 1);
-    }
   }
 
   drawMiniPiece(centerX, centerY, pieceType, size) {

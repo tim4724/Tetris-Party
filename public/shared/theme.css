@@ -8,10 +8,13 @@
   --bg-secondary: #0c0c1a;
   --bg-card: #12122a;
   --bg-board: #080810;
+  --bg-glass: rgba(255, 255, 255, 0.06);
 
   /* Text */
   --text-primary: #e0e0ff;
   --text-secondary: #6a6a88;
+  --text-cyan: rgba(0, 200, 255, 0.9);
+  --text-muted: rgba(160, 180, 210, 0.56);
 
   /* Accents */
   --accent-blue: #4444ff;
@@ -23,6 +26,7 @@
   --danger: #ff4444;
   --garbage: #3a3a4e;
   --border: #1e1e44;
+  --border-glass: rgba(255, 255, 255, 0.15);
 
   /* Medals */
   --medal-gold: #ffd700;
@@ -32,12 +36,16 @@
   /* Button text */
   --btn-green-text: #003d1f;
 
+  /* Icons */
+  --icon-color: rgba(255, 255, 255, 0.5);
+
   /* Overlay */
   --overlay-bg: rgba(6, 6, 15, 0.88);
 
   /* Glows */
   --glow-cyan: rgba(0, 200, 255, 0.15);
   --glow-green: rgba(0, 255, 136, 0.3);
+  --glow-blue: rgba(68, 68, 255, 0.06);
 
   /* Opacities */
   --opacity-faint: 0.04;
@@ -96,8 +104,8 @@
 }
 
 .btn-secondary:hover {
-  border-color: rgba(0, 200, 255, 0.5);
-  color: rgba(0, 200, 255, 0.9);
+  border-color: var(--text-cyan);
+  color: var(--text-cyan);
 }
 
 .btn-secondary:active {
@@ -107,6 +115,30 @@
 /* ==========================================================
    Shared Component Classes
    ========================================================== */
+
+.icon-btn {
+  border: 1.5px solid var(--border-glass);
+  border-radius: var(--radius-md);
+  background: var(--bg-glass);
+  color: var(--icon-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.icon-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(0.92);
+}
 
 .player-card {
   display: flex;
@@ -141,6 +173,25 @@
   content: '';
   width: 4px;
   height: 18px;
-  background: rgba(255, 255, 255, 0.5);
+  background: var(--icon-color);
   border-radius: 1.5px;
+}
+
+/* ==========================================================
+   Shared Keyframes
+   ========================================================== */
+
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

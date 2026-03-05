@@ -54,7 +54,7 @@ html, body {
     12px
     calc(env(safe-area-inset-bottom) + 16px);
   background:
-    radial-gradient(ellipse at 50% 22%, rgba(0, 100, 255, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 22%, var(--glow-blue) 0%, transparent 60%),
     radial-gradient(ellipse at 50% 82%, rgba(0, 255, 136, 0.04) 0%, transparent 48%);
 }
 
@@ -77,8 +77,8 @@ html, body {
 
 .controller-shell__title {
   font-size: clamp(1.4rem, 7vw, 2.2rem);
-  filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.15));
-  animation: lobbyFadeDown 0.5s ease-out both;
+  filter: drop-shadow(0 0 8px var(--glow-cyan));
+  animation: fadeDown 0.5s ease-out both;
 }
 
 .controller-shell__body {
@@ -142,21 +142,6 @@ html, body {
 .icon-btn {
   width: 56px;
   height: 56px;
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.5);
-  transition: all 0.2s ease;
-}
-
-.icon-btn:active {
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(0.92);
 }
 
 body.keyboard-open .controller-shell__frame--name {
@@ -187,7 +172,7 @@ body.keyboard-open #name-form {
   align-items: center;
   width: 100%;
   max-width: 280px;
-  animation: lobbyFadeUp 0.5s 0.15s ease-out both;
+  animation: fadeUp 0.5s 0.15s ease-out both;
 }
 
 #name-input {
@@ -234,36 +219,21 @@ body.keyboard-open #name-form {
 }
 
 #name-join-btn {
-  animation: lobbyFadeUp 0.5s 0.4s ease-out both;
+  animation: fadeUp 0.5s 0.4s ease-out both;
 }
 
 #name-join-btn:not(:disabled),
 #start-btn:not(:disabled) {
-  animation: lobbyFadeUp 0.5s 0.4s ease-out both, btnPulse 2.5s 1s ease-in-out infinite;
+  animation: fadeUp 0.5s 0.4s ease-out both, btnPulse 2.5s 1s ease-in-out infinite;
 }
 
-/* Lobby entrance animations */
-@keyframes lobbyFadeDown {
-  from { opacity: 0; transform: translateY(-16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes lobbyFadeUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes lobbyFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 
 #player-identity {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  animation: lobbyFadeUp 0.5s 0.3s ease-out both;
+  animation: fadeUp 0.5s 0.3s ease-out both;
 }
 
 #player-identity-card {
@@ -282,10 +252,10 @@ body.keyboard-open #name-form {
   font-size: clamp(1rem, 4.5vw, 1.2rem);
   font-weight: 600;
   letter-spacing: 0.04em;
-  color: rgba(160, 180, 210, 0.56);
+  color: var(--text-muted);
   text-align: center;
   line-height: 1.35;
-  animation: lobbyFadeUp 0.5s 0.35s ease-out both;
+  animation: fadeUp 0.5s 0.35s ease-out both;
 }
 
 #status-text,
@@ -294,17 +264,17 @@ body.keyboard-open #name-form {
   font-size: clamp(1.2rem, 5.8vw, 1.85rem);
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(0, 200, 255, 0.9);
-  animation: lobbyFadeUp 0.5s 0.15s ease-out both;
+  color: var(--text-cyan);
+  animation: fadeUp 0.5s 0.15s ease-out both;
   text-align: center;
 }
 
 #status-detail,
 #name-status-detail {
   font-size: clamp(1rem, 4.5vw, 1.2rem);
-  color: rgba(160, 180, 210, 0.56);
+  color: var(--text-muted);
   letter-spacing: 0.04em;
-  animation: lobbyFadeUp 0.5s 0.25s ease-out both;
+  animation: fadeUp 0.5s 0.25s ease-out both;
   text-align: center;
   max-width: 30ch;
   line-height: 1.45;
@@ -325,13 +295,13 @@ body.keyboard-open #name-form {
   font-size: clamp(1.2rem, 5.8vw, 1.85rem);
   font-weight: 700;
   letter-spacing: 0.08em;
-  color: rgba(0, 200, 255, 0.9);
+  color: var(--text-cyan);
   text-align: center;
 }
 
 #room-gone-detail {
   font-size: clamp(1rem, 4.5vw, 1.2rem);
-  color: rgba(160, 180, 210, 0.56);
+  color: var(--text-muted);
   letter-spacing: 0.04em;
   text-align: center;
 }
@@ -563,12 +533,7 @@ body.keyboard-open #name-form {
     radial-gradient(ellipse at 50% 20%, var(--winner-glow, rgba(255, 215, 0, 0.06)) 0%, transparent 60%),
     radial-gradient(ellipse at 50% 90%, rgba(68, 68, 255, 0.03) 0%, transparent 40%),
     var(--bg-primary);
-  animation: resultsScreenIn 0.4s ease-out both;
-}
-
-@keyframes resultsScreenIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  animation: fadeIn 0.4s ease-out both;
 }
 
 #results-list {
@@ -627,7 +592,7 @@ body.keyboard-open #name-form {
   flex-wrap: wrap;
   font-size: clamp(0.85rem, 4vw, 1.2rem);
   font-variant-numeric: tabular-nums;
-  color: rgba(160, 180, 210, 0.56);
+  color: var(--text-muted);
   letter-spacing: 0.02em;
   width: 100%;
 }
@@ -661,7 +626,7 @@ body.keyboard-open #name-form {
 
 #new-game-btn:active {
   border-color: rgba(0, 200, 255, 0.5);
-  color: rgba(0, 200, 255, 0.9);
+  color: var(--text-cyan);
 }
 
 #gameover-status {
@@ -672,7 +637,7 @@ body.keyboard-open #name-form {
   padding: 0.8rem 1rem;
   font-size: clamp(1rem, 4.5vw, 1.2rem);
   font-weight: 600;
-  color: rgba(160, 180, 210, 0.56);
+  color: var(--text-muted);
   letter-spacing: 0.04em;
   text-align: center;
   line-height: 1.35;
@@ -718,10 +683,10 @@ body.keyboard-open #name-form {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  background: rgba(6, 6, 15, 0.92);
+  background: var(--overlay-bg);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
-  animation: resultsScreenIn 0.3s ease both;
+  animation: fadeIn 0.3s ease both;
 }
 
 .game-overlay.hidden {
@@ -758,7 +723,7 @@ body.keyboard-open #name-form {
 
 #pause-newgame-btn:active {
   border-color: rgba(0, 200, 255, 0.5);
-  color: rgba(0, 200, 255, 0.9);
+  color: var(--text-cyan);
 }
 
 /* Countdown state — neutral touch area, no player color */
