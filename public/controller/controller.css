@@ -50,8 +50,8 @@ html, body {
 
 .controller-shell {
   padding:
-    max(env(safe-area-inset-top), 24px)
-    20px
+    calc(max(env(safe-area-inset-top), 8px) + 64px)
+    12px
     calc(env(safe-area-inset-bottom) + 16px);
   background:
     radial-gradient(ellipse at 50% 22%, rgba(0, 100, 255, 0.06) 0%, transparent 60%),
@@ -72,10 +72,6 @@ html, body {
   width: 100%;
   display: flex;
   justify-content: center;
-  padding-top: clamp(4px, 1vh, 12px);
-}
-
-.controller-shell__brand--results {
   padding-top: 0;
 }
 
@@ -132,9 +128,9 @@ html, body {
   align-self: stretch;
   display: flex;
   align-items: center;
-  margin: 0 -20px;
-  padding: 8px 12px;
-  padding-top: max(env(safe-area-inset-top), 8px);
+  margin: 0 -12px;
+  padding: 12px;
+  padding-top: max(env(safe-area-inset-top), 12px);
   flex-shrink: 0;
 }
 
@@ -143,7 +139,7 @@ html, body {
   height: auto;
 }
 
-.nav-back-btn {
+.icon-btn {
   width: 56px;
   height: 56px;
   border: 1.5px solid rgba(255, 255, 255, 0.18);
@@ -158,17 +154,13 @@ html, body {
   transition: all 0.2s ease;
 }
 
-.nav-back-btn:active {
+.icon-btn:active {
   background: rgba(255, 255, 255, 0.15);
   transform: scale(0.92);
 }
 
 body.keyboard-open .controller-shell__frame--name {
   gap: 16px;
-}
-
-body.keyboard-open .controller-shell__brand {
-  padding-top: 0;
 }
 
 body.keyboard-open .controller-shell__body {
@@ -229,8 +221,8 @@ body.keyboard-open #name-form {
 #name-join-btn,
 #start-btn {
   width: 100%;
-  padding: 1rem 1.5rem;
-  font-size: 0.95rem;
+  padding: 14px 24px;
+  font-size: 0.9rem;
   letter-spacing: 0.1em;
 }
 
@@ -287,9 +279,9 @@ body.keyboard-open #name-form {
   justify-content: center;
   padding: 0.8rem 1rem;
   font-family: 'Orbitron', sans-serif;
-  font-size: clamp(0.72rem, 3.2vw, 0.85rem);
+  font-size: clamp(1rem, 4.5vw, 1.2rem);
   font-weight: 600;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   color: rgba(160, 180, 210, 0.56);
   text-align: center;
   line-height: 1.35;
@@ -309,9 +301,9 @@ body.keyboard-open #name-form {
 
 #status-detail,
 #name-status-detail {
-  font-size: clamp(0.85rem, 3.5vw, 1rem);
-  color: rgba(160, 160, 200, 0.7);
-  letter-spacing: 0.02em;
+  font-size: clamp(1rem, 4.5vw, 1.2rem);
+  color: rgba(160, 180, 210, 0.56);
+  letter-spacing: 0.04em;
   animation: lobbyFadeUp 0.5s 0.25s ease-out both;
   text-align: center;
   max-width: 30ch;
@@ -322,22 +314,26 @@ body.keyboard-open #name-form {
 #status-detail:empty,
 #name-status-text:empty,
 #name-status-detail:empty,
+#room-gone-heading:empty,
+#room-gone-detail:empty,
 #gameover-status:empty {
   display: none;
 }
 
-#rejoin-btn {
-  width: 100%;
-  padding: 14px 24px;
-  border: 1.5px solid rgba(0, 200, 255, 0.5);
-  font-size: clamp(0.95rem, 4.5vw, 1.15rem);
+#room-gone-heading {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(1.2rem, 5.8vw, 1.85rem);
+  font-weight: 700;
   letter-spacing: 0.08em;
   color: rgba(0, 200, 255, 0.9);
-  animation: lobbyFadeUp 0.5s 0.35s ease-out both;
+  text-align: center;
 }
 
-#rejoin-btn:active {
-  background: rgba(0, 200, 255, 0.1);
+#room-gone-detail {
+  font-size: clamp(1rem, 4.5vw, 1.2rem);
+  color: rgba(160, 180, 210, 0.56);
+  letter-spacing: 0.04em;
+  text-align: center;
 }
 
 /* Game screen */
@@ -352,9 +348,8 @@ body.keyboard-open #name-form {
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 8px 12px;
-  padding-top: max(env(safe-area-inset-top), 8px);
-  padding-bottom: 12px;
+  padding: 12px;
+  padding-top: max(env(safe-area-inset-top), 12px);
   flex-shrink: 0;
   background: var(--bg-board);
 }
@@ -381,7 +376,7 @@ body.keyboard-open #name-form {
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
-  padding: 12px 16px calc(env(safe-area-inset-bottom) + 16px);
+  padding: 12px 12px calc(env(safe-area-inset-bottom) + 12px);
   gap: 12px;
   overflow: hidden;
 }
@@ -632,7 +627,7 @@ body.keyboard-open #name-form {
   flex-wrap: wrap;
   font-size: clamp(0.85rem, 4vw, 1.2rem);
   font-variant-numeric: tabular-nums;
-  color: rgba(160, 160, 200, 0.5);
+  color: rgba(160, 180, 210, 0.56);
   letter-spacing: 0.02em;
   width: 100%;
 }
@@ -659,8 +654,8 @@ body.keyboard-open #name-form {
 #new-game-btn {
   width: 100%;
   padding: 14px 24px;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  letter-spacing: 0.1em;
   animation: resultsBtnIn 0.5s 0.7s ease-out both;
 }
 
@@ -675,10 +670,10 @@ body.keyboard-open #name-form {
   align-items: center;
   justify-content: center;
   padding: 0.8rem 1rem;
-  font-size: clamp(0.78rem, 3.4vw, 0.92rem);
+  font-size: clamp(1rem, 4.5vw, 1.2rem);
   font-weight: 600;
   color: rgba(160, 180, 210, 0.56);
-  letter-spacing: 0.05em;
+  letter-spacing: 0.04em;
   text-align: center;
   line-height: 1.35;
   animation: resultsBtnIn 0.5s 0.6s ease-out both;
@@ -686,25 +681,6 @@ body.keyboard-open #name-form {
 
 
 /* Pause button */
-#pause-btn {
-  width: 56px;
-  height: 56px;
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-#pause-btn:active {
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(0.92);
-}
-
 #pause-btn:active .pause-icon::before,
 #pause-btn:active .pause-icon::after {
   background: rgba(255, 255, 255, 0.8);
@@ -725,32 +701,12 @@ body.keyboard-open #name-form {
 }
 
 /* Mute button */
-#mute-btn {
-  width: 56px;
-  height: 56px;
-  border: 1.5px solid rgba(255, 255, 255, 0.18);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-#mute-btn:active {
-  background: rgba(255, 255, 255, 0.15);
-  transform: scale(0.92);
-}
-
 #mute-btn.muted {
   color: rgba(255, 255, 255, 0.25);
 }
 
-/* Pause overlay */
-#pause-overlay {
+/* Game overlays (pause, reconnect) */
+.game-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -768,11 +724,11 @@ body.keyboard-open #name-form {
   animation: resultsScreenIn 0.3s ease both;
 }
 
-#pause-overlay.hidden {
+.game-overlay.hidden {
   display: none !important;
 }
 
-#pause-overlay h1 {
+.game-overlay h1 {
   font-family: 'Orbitron', sans-serif;
   font-size: clamp(1.3rem, 6vw, 1.8rem);
   font-weight: 900;
@@ -780,33 +736,29 @@ body.keyboard-open #name-form {
   color: rgba(224, 224, 255, 0.9);
 }
 
+.game-overlay__status {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(106, 106, 136, 0.7);
+  letter-spacing: 0.04em;
+}
+
 #pause-buttons {
   display: flex;
   gap: 12px;
 }
 
-#pause-continue-btn {
-  padding: 14px 28px;
+#pause-continue-btn,
+#pause-newgame-btn,
+#reconnect-rejoin-btn {
+  padding: 14px 24px;
   font-size: 0.9rem;
   letter-spacing: 0.1em;
-}
-
-#pause-newgame-btn {
-  padding: 14px 28px;
-  font-size: 0.8rem;
-  letter-spacing: 0.08em;
 }
 
 #pause-newgame-btn:active {
   border-color: rgba(0, 200, 255, 0.5);
   color: rgba(0, 200, 255, 0.9);
-}
-
-#pause-status {
-  font-size: 14px;
-  font-weight: 600;
-  color: rgba(106, 106, 136, 0.7);
-  letter-spacing: 0.04em;
 }
 
 /* Countdown state — neutral touch area, no player color */

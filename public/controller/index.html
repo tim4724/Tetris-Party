@@ -27,14 +27,17 @@
         <div id="name-form">
           <input id="name-input" type="text" maxlength="16" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" placeholder="Enter name...">
         </div>
+        <div id="room-gone-message" class="controller-shell__copy hidden">
+          <p id="room-gone-heading"></p>
+          <p id="room-gone-detail"></p>
+        </div>
+      </div>
+      <div class="controller-shell__actions controller-shell__actions--name">
         <div class="controller-shell__copy">
           <p id="name-status-text"></p>
           <p id="name-status-detail"></p>
         </div>
-      </div>
-      <div class="controller-shell__actions controller-shell__actions--name">
         <button id="name-join-btn" class="btn btn-primary">JOIN</button>
-        <button id="rejoin-btn" class="btn btn-secondary hidden">Rejoin</button>
       </div>
     </div>
   </div>
@@ -42,7 +45,7 @@
   <!-- Lobby screen -->
   <div id="lobby-screen" class="screen controller-shell hidden">
     <div id="lobby-top-bar">
-      <button id="lobby-back-btn" class="nav-back-btn" aria-label="Back"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4L6 10L14 16"/></svg></button>
+      <button id="lobby-back-btn" class="icon-btn" aria-label="Back"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4L6 10L14 16"/></svg></button>
     </div>
     <div class="controller-shell__frame controller-shell__frame--lobby">
       <div class="controller-shell__brand">
@@ -70,16 +73,21 @@
   <div id="game-screen" class="screen hidden">
     <div id="game-top-bar">
       <div id="game-name-card" class="player-card"><span id="player-name">Player</span></div>
-      <button id="mute-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path class="sound-waves" d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
-      <button id="pause-btn" class="hidden"><span class="pause-icon"></span></button>
+      <button id="mute-btn" class="icon-btn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path class="sound-waves" d="M15.54 8.46a5 5 0 0 1 0 7.07M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+      <button id="pause-btn" class="icon-btn hidden"><span class="pause-icon"></span></button>
     </div>
-    <div id="pause-overlay" class="hidden">
+    <div id="pause-overlay" class="game-overlay hidden">
       <h1>PAUSED</h1>
       <div id="pause-buttons">
         <button id="pause-continue-btn" class="btn btn-primary">CONTINUE</button>
         <button id="pause-newgame-btn" class="btn btn-secondary">NEW GAME</button>
       </div>
-      <p id="pause-status"></p>
+      <p id="pause-status" class="game-overlay__status"></p>
+    </div>
+    <div id="reconnect-overlay" class="game-overlay hidden">
+      <h1 id="reconnect-heading">RECONNECTING</h1>
+      <p id="reconnect-status" class="game-overlay__status">Attempt 1 of 5</p>
+      <button id="reconnect-rejoin-btn" class="btn btn-primary hidden">REJOIN</button>
     </div>
     <div id="touch-area">
       <div class="touch-instructions">
@@ -98,7 +106,7 @@
   <!-- Game over screen -->
   <div id="gameover-screen" class="screen controller-shell hidden">
     <div class="controller-shell__frame controller-shell__frame--results">
-      <div class="controller-shell__brand controller-shell__brand--results">
+      <div class="controller-shell__brand">
         <h1 class="controller-shell__title gradient-title">TETRIS PARTY</h1>
       </div>
       <div class="controller-shell__body controller-shell__body--results">

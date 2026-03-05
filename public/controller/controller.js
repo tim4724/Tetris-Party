@@ -73,6 +73,9 @@
   const nameJoinBtn = document.getElementById('name-join-btn');
   const nameStatusText = document.getElementById('name-status-text');
   const nameStatusDetail = document.getElementById('name-status-detail');
+  const roomGoneMessage = document.getElementById('room-gone-message');
+  const roomGoneHeading = document.getElementById('room-gone-heading');
+  const roomGoneDetail = document.getElementById('room-gone-detail');
   const nameScreen = document.getElementById('name-screen');
   const lobbyScreen = document.getElementById('lobby-screen');
   const lobbyBackBtn = document.getElementById('lobby-back-btn');
@@ -84,7 +87,6 @@
   const startBtn = document.getElementById('start-btn');
   const statusText = document.getElementById('status-text');
   const statusDetail = document.getElementById('status-detail');
-  const rejoinBtn = document.getElementById('rejoin-btn');
   const playerNameEl = document.getElementById('player-name');
   const playerIdentityName = document.getElementById('player-identity-name');
   const touchArea = document.getElementById('touch-area');
@@ -100,6 +102,10 @@
   const pauseNewGameBtn = document.getElementById('pause-newgame-btn');
   const pauseStatus = document.getElementById('pause-status');
   const pauseButtons = document.getElementById('pause-buttons');
+  const reconnectOverlay = document.getElementById('reconnect-overlay');
+  const reconnectHeading = document.getElementById('reconnect-heading');
+  const reconnectStatus = document.getElementById('reconnect-status');
+  const reconnectRejoinBtn = document.getElementById('reconnect-rejoin-btn');
   const muteBtn = document.getElementById('mute-btn');
   let muted = localStorage.getItem('tetris_muted') === '1';
 
@@ -152,7 +158,7 @@
   let rejoinId = new URLSearchParams(location.search).get('rejoin')
     || new URLSearchParams(location.search).get('player');
   if (!roomCode) {
-    showErrorState('No Room Code', 'Scan a QR code or use a join link');
+    showRoomGone();
     return;
   }
 
@@ -165,9 +171,10 @@
 
     playerName = name;
     localStorage.setItem('tetris_player_name', name);
-    nameForm.classList.add('hidden');
-    nameJoinBtn.classList.add('hidden');
-    nameStatusText.textContent = 'Connecting...';
+    nameJoinBtn.disabled = true;
+    nameJoinBtn.textContent = 'CONNECTING...';
+    nameInput.disabled = true;
+    nameStatusText.textContent = '';
     nameStatusDetail.textContent = '';
     connect();
   }
@@ -312,7 +319,6 @@
     ws = new WebSocket(protocol + '//' + location.host);
 
     ws.onopen = function () {
-      reconnectAttempts = 0;
       startHeartbeat();
       // Best-effort "connected" haptic feedback.
       vibrate(10);
@@ -375,16 +381,28 @@
   }
 
   function attemptReconnect() {
-    if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
-      showErrorState('Disconnected', 'Could not reconnect.', { showRejoin: true });
-      return;
+    if (currentScreen === 'game') {
+      // Show reconnect overlay on game screen
+      reconnectOverlay.classList.remove('hidden');
+
+      if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        reconnectHeading.textContent = 'DISCONNECTED';
+        reconnectStatus.textContent = 'Could not reconnect.';
+        reconnectRejoinBtn.classList.remove('hidden');
+        return;
+      }
+
+      reconnectAttempts++;
+      reconnectHeading.textContent = 'RECONNECTING';
+      reconnectStatus.textContent = 'Attempt ' + reconnectAttempts + ' of ' + MAX_RECONNECT_ATTEMPTS;
+      reconnectRejoinBtn.classList.add('hidden');
+
+      clearTimeout(reconnectTimer);
+      reconnectTimer = setTimeout(connect, RECONNECT_INTERVAL);
+    } else {
+      // Pre-game screens: go straight to name screen with error
+      showErrorState('Disconnected', 'Connection lost.');
     }
-
-    reconnectAttempts++;
-    showErrorState('Reconnecting...', 'Attempt ' + reconnectAttempts + ' of ' + MAX_RECONNECT_ATTEMPTS);
-
-    clearTimeout(reconnectTimer);
-    reconnectTimer = setTimeout(connect, RECONNECT_INTERVAL);
   }
 
   // Message handling
@@ -435,8 +453,7 @@
         showLobbyUI();
         break;
       case MSG.ROOM_RESET:
-        gameCancelled = true;
-        showErrorState('Game Over', '');
+        showRoomGone();
         break;
       case MSG.INPUT_ACK:
         // Could track unacked inputs here for prediction rollback
@@ -453,6 +470,8 @@
     isHost = !!data.isHost;
     playerCount = data.playerCount || 1;
     gameCancelled = false;
+    reconnectAttempts = 0;
+    clearTimeout(reconnectTimer);
 
     if (data.reconnectToken) {
       sessionStorage.setItem('reconnectToken_' + roomCode, data.reconnectToken);
@@ -474,6 +493,7 @@
 
     // Reconnected into an active game — jump straight to game screen
     if (data.reconnected && (data.roomState === 'playing' || data.roomState === 'countdown')) {
+      reconnectOverlay.classList.add('hidden');
       gameScreen.classList.remove('dead');
       gameScreen.classList.remove('paused');
       gameScreen.style.setProperty('--player-color', playerColor);
@@ -549,24 +569,51 @@
     reconnectAttempts = 0;
     clearTimeout(reconnectTimer);
     nameInput.value = playerName || '';
-    nameForm.classList.remove('hidden');
-    nameJoinBtn.classList.remove('hidden');
+    nameJoinBtn.disabled = false;
+    nameJoinBtn.textContent = 'JOIN';
+    nameInput.disabled = false;
     nameStatusText.textContent = '';
     nameStatusDetail.textContent = '';
+    roomGoneMessage.classList.add('hidden');
+    reconnectOverlay.classList.add('hidden');
     showScreen('name');
     nameInput.focus();
   }
 
-  function showErrorState(heading, detail, options) {
+  function showRoomGone() {
+    sessionStorage.removeItem('reconnectToken_' + roomCode);
+    sessionStorage.removeItem('playerId_' + roomCode);
+    gameCancelled = true;
+    reconnectAttempts = 0;
+    clearTimeout(reconnectTimer);
     nameForm.classList.add('hidden');
     nameJoinBtn.classList.add('hidden');
+    nameStatusText.textContent = '';
+    nameStatusDetail.textContent = '';
+    roomGoneHeading.textContent = 'Room Not Found';
+    roomGoneDetail.textContent = 'Scan Game QR code to join';
+    roomGoneMessage.classList.remove('hidden');
+    showScreen('name');
+  }
+
+  function showErrorState(heading, detail) {
+    // Clear session tokens — every pre-game error means session is done
+    sessionStorage.removeItem('reconnectToken_' + roomCode);
+    sessionStorage.removeItem('playerId_' + roomCode);
+
+    // Reset reconnect state
+    gameCancelled = true;
+    reconnectAttempts = 0;
+    clearTimeout(reconnectTimer);
+
+    // Re-enable form with player name preserved
+    nameJoinBtn.disabled = false;
+    nameJoinBtn.textContent = 'JOIN';
+    nameInput.disabled = false;
+    roomGoneMessage.classList.add('hidden');
+
     nameStatusText.textContent = heading;
     nameStatusDetail.textContent = detail || '';
-    if (options && options.showRejoin) {
-      rejoinBtn.classList.remove('hidden');
-    } else {
-      rejoinBtn.classList.add('hidden');
-    }
     showScreen('name');
   }
 
@@ -600,6 +647,7 @@
     gameScreen.classList.remove('countdown');
     gameScreen.style.setProperty('--player-color', playerColor);
     removeKoOverlay();
+    reconnectOverlay.classList.add('hidden');
     pauseOverlay.classList.add('hidden');
     pauseBtn.disabled = false;
     pauseBtn.classList.toggle('hidden', !isHost);
@@ -695,18 +743,14 @@
 
   function onError(data) {
     if (data.code === 'HOST_DISCONNECTED') {
-      gameCancelled = true;
-      showErrorState('Game Cancelled', 'Host disconnected.', { showRejoin: true });
+      showErrorState('', 'Host disconnected');
       return;
     }
     if (data.message === 'Room not found') {
-      gameCancelled = true;
-      showErrorState('Game Over', 'Room not found.');
+      showRoomGone();
       return;
     }
-    showErrorState('Error', data.message || 'Unknown error', {
-      showRejoin: data.message === 'Reconnection failed'
-    });
+    showErrorState('', data.message || 'Unknown error');
   }
 
   // Pause
@@ -755,7 +799,7 @@
     const ko = document.createElement('div');
     ko.id = 'ko-overlay';
     ko.textContent = 'KO';
-    gameScreen.appendChild(ko);
+    touchArea.appendChild(ko);
   }
 
   function removeKoOverlay() {
@@ -896,18 +940,11 @@
     }, onDragProgress);
   }
 
-  // Rejoin button
-  rejoinBtn.addEventListener('click', function () {
+  // Reconnect overlay rejoin button — give up and go to name screen
+  reconnectRejoinBtn.addEventListener('click', function () {
     vibrate(10);
-    sessionStorage.removeItem('reconnectToken_' + roomCode);
-    sessionStorage.removeItem('playerId_' + roomCode);
-    gameCancelled = false;
-    reconnectAttempts = 0;
-    clearTimeout(reconnectTimer);
-    rejoinBtn.classList.add('hidden');
-    nameStatusText.textContent = 'Connecting...';
-    nameStatusDetail.textContent = '';
-    connect();
+    reconnectOverlay.classList.add('hidden');
+    performDisconnect();
   });
 
   // Lobby back button — disconnect and return to name input
@@ -972,18 +1009,19 @@
   // Always start on the name screen
   var hasToken = sessionStorage.getItem('reconnectToken_' + roomCode);
   if (hasToken || rejoinId) {
-    // Reconnect — hide name form, show connecting status
+    // Reconnect — disable form, show connecting status
     playerName = savedName || null;
-    nameForm.classList.add('hidden');
-    nameJoinBtn.classList.add('hidden');
-    nameStatusText.textContent = 'Connecting...';
+    nameInput.value = savedName;
+    nameJoinBtn.disabled = true;
+    nameJoinBtn.textContent = 'CONNECTING...';
+    nameInput.disabled = true;
+    nameStatusText.textContent = '';
     nameStatusDetail.textContent = '';
     showScreen('name');
     connect();
   } else {
     // Fresh join — show name form
     nameInput.value = savedName;
-    nameJoinBtn.classList.remove('hidden');
     nameStatusText.textContent = '';
     nameStatusDetail.textContent = '';
     showScreen('name');
