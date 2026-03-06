@@ -72,6 +72,9 @@ var pauseBtn = document.getElementById('pause-btn');
 var pauseOverlay = document.getElementById('pause-overlay');
 var pauseContinueBtn = document.getElementById('pause-continue-btn');
 var pauseNewGameBtn = document.getElementById('pause-newgame-btn');
+var reconnectOverlay = document.getElementById('reconnect-overlay');
+var reconnectHeading = document.getElementById('reconnect-heading');
+var reconnectStatus = document.getElementById('reconnect-status');
 var muteBtn = document.getElementById('mute-btn');
 var muted = false;
 
@@ -86,6 +89,7 @@ function showScreen(name) {
   pauseBtn.classList.toggle('hidden', name !== 'game');
   if (name !== 'game') {
     pauseOverlay.classList.add('hidden');
+    reconnectOverlay.classList.add('hidden');
   }
   if (name === 'game' || name === 'results') {
     initCanvas();
@@ -190,6 +194,15 @@ function connectAndCreateRoom() {
     }
   };
 
+  party.onClose = function() {
+    if (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN) {
+      // Pause the game while disconnected
+      if (!paused) pauseGame();
+      reconnectOverlay.classList.remove('hidden');
+      pauseOverlay.classList.add('hidden');
+    }
+  };
+
   party.onProtocol = function(type, msg) {
     switch (type) {
       case 'created':
@@ -280,6 +293,12 @@ function onDisplayRejoined(partyRoomCode, clients) {
   joinUrlEl.textContent = joinUrl;
 
   startLivenessCheck();
+
+  // Clear reconnect overlay — connection restored
+  reconnectOverlay.classList.add('hidden');
+  if (paused && (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN)) {
+    resumeGame();
+  }
 
   // Players will re-send hello to re-register
   // Show lobby while waiting for players to reconnect
