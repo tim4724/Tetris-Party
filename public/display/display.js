@@ -174,26 +174,19 @@ function calculateLayout() {
 // Party-Server Connection
 // =====================================================================
 
-// Pending action to execute once the WebSocket is open
-var pendingPartyAction = null;
+// Pre-created room state (ready before user clicks "New Game")
+var preCreatedRoom = null;  // { roomCode, joinUrl, qrMatrix }
 
-function ensurePartyConnected(callback) {
-  if (party && party.connected) {
-    callback();
-    return;
-  }
-
-  pendingPartyAction = callback;
-
+function connectAndCreateRoom() {
   if (party) party.close();
 
   party = new PartyConnection(RELAY_URL, { clientId: 'display' });
 
   party.onOpen = function() {
-    if (pendingPartyAction) {
-      var action = pendingPartyAction;
-      pendingPartyAction = null;
-      action();
+    if (lastRoomCode) {
+      party.join(lastRoomCode);
+    } else {
+      party.create(5);
     }
   };
 
@@ -224,33 +217,33 @@ function ensurePartyConnected(callback) {
   party.connect();
 }
 
-function preconnectParty() {
-  ensurePartyConnected(function() {
-    // Connection warm — nothing to do until user clicks New Game
-  });
-}
-
-function createRoom() {
-  ensurePartyConnected(function() {
-    if (lastRoomCode) {
-      party.join(lastRoomCode);
-    } else {
-      party.create(5);
-    }
-  });
-}
-
 // =====================================================================
 // Party-Server Protocol Handlers
 // =====================================================================
 
 function onRoomCreated(partyRoomCode) {
+  var newJoinUrl = getBaseUrl() + '/' + partyRoomCode;
+
+  // If still on welcome screen, cache the room for instant use later
+  if (currentScreen === 'welcome') {
+    preCreatedRoom = { roomCode: partyRoomCode, joinUrl: newJoinUrl, qrMatrix: null };
+    fetchQR(newJoinUrl, function(qrMatrix) {
+      if (preCreatedRoom && preCreatedRoom.roomCode === partyRoomCode) {
+        preCreatedRoom.qrMatrix = qrMatrix;
+      }
+    });
+    return;
+  }
+
+  applyRoomCreated(partyRoomCode, newJoinUrl);
+}
+
+function applyRoomCreated(partyRoomCode, newJoinUrl) {
   roomCode = partyRoomCode;
   lastRoomCode = partyRoomCode;
   roomState = ROOM_STATE.LOBBY;
 
-  // Generate join URL from current browser location
-  joinUrl = getBaseUrl() + '/' + roomCode;
+  joinUrl = newJoinUrl;
   joinUrlEl.textContent = joinUrl;
 
   // Reset local state
@@ -1186,7 +1179,10 @@ function resetToWelcome() {
   garbageIndicatorEffects.clear();
   lastAliveState = {};
   lastResults = null;
+  preCreatedRoom = null;
   showScreen('welcome');
+  // Pre-create a fresh room for next "New Game" click
+  connectAndCreateRoom();
 }
 
 newGameBtn.addEventListener('click', function() {
@@ -1194,9 +1190,22 @@ newGameBtn.addEventListener('click', function() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(function() {});
   }
-  createRoom();
+
+  if (preCreatedRoom) {
+    // Room is already created — use it instantly
+    var pre = preCreatedRoom;
+    preCreatedRoom = null;
+    applyRoomCreated(pre.roomCode, pre.joinUrl);
+    // If QR was already fetched, render it immediately
+    if (pre.qrMatrix) {
+      requestAnimationFrame(function() { renderTetrisQR(qrCode, pre.qrMatrix); });
+    }
+  } else {
+    // Fallback: create room now (e.g. if preconnect failed)
+    connectAndCreateRoom();
+  }
+
   history.pushState({ screen: 'lobby' }, '');
-  showScreen('lobby');
 });
 
 window.addEventListener('popstate', function(e) {
@@ -1206,7 +1215,7 @@ window.addEventListener('popstate', function(e) {
   }
   var target = e.state && e.state.screen;
   if (currentScreen === 'welcome' && target === 'lobby') {
-    createRoom();
+    connectAndCreateRoom();
     showScreen('lobby');
   } else if (currentScreen === 'lobby') {
     if (target === 'game') {
@@ -1549,5 +1558,5 @@ if (bgCanvas) {
 }
 
 fetchBaseUrl();
-preconnectParty();
+connectAndCreateRoom();
 requestAnimationFrame(renderLoop);
