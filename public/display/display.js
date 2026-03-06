@@ -24,6 +24,7 @@ var disconnectedQRs = new Map();
 var garbageIndicatorEffects = new Map();
 var welcomeBg = null;
 var displayGame = null;
+var baseUrlOverride = null;    // LAN base URL from server (fetched on init)
 
 // Countdown state (display manages countdown since server no longer does)
 var countdownTimer = null;
@@ -223,8 +224,7 @@ function onRoomCreated(partyRoomCode) {
   roomState = ROOM_STATE.LOBBY;
 
   // Generate join URL from current browser location
-  var baseUrl = window.location.origin;
-  joinUrl = baseUrl + '/' + roomCode;
+  joinUrl = getBaseUrl() + '/' + roomCode;
   joinUrlEl.textContent = joinUrl;
 
   // Reset local state
@@ -257,8 +257,7 @@ function onDisplayRejoined(partyRoomCode, clients) {
   roomCode = partyRoomCode;
   lastRoomCode = partyRoomCode;
 
-  var baseUrl = window.location.origin;
-  joinUrl = baseUrl + '/' + roomCode;
+  joinUrl = getBaseUrl() + '/' + roomCode;
   joinUrlEl.textContent = joinUrl;
 
   startLivenessCheck();
@@ -528,6 +527,19 @@ function stopLivenessCheck() {
 // =====================================================================
 // QR Code Helpers
 // =====================================================================
+
+function getBaseUrl() {
+  return baseUrlOverride || window.location.origin;
+}
+
+function fetchBaseUrl() {
+  fetch('/api/baseurl')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.baseUrl) baseUrlOverride = data.baseUrl;
+    })
+    .catch(function() { /* fall back to window.location.origin */ });
+}
 
 function fetchQR(text, callback) {
   fetch('/api/qr?text=' + encodeURIComponent(text))
@@ -1505,4 +1517,5 @@ if (bgCanvas) {
   welcomeBg.start();
 }
 
+fetchBaseUrl();
 requestAnimationFrame(renderLoop);

@@ -97,6 +97,13 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // Base URL endpoint — returns the LAN-accessible origin for join URLs/QR codes
+  if (urlPath === '/api/baseurl') {
+    const baseUrl = process.env.BASE_URL || `http://${getLocalIP()}:${PORT}`;
+    sendJson(res, 200, { baseUrl });
+    return;
+  }
+
   // Map directory paths to index.html
   if (urlPath === '/') {
     urlPath = '/display/index.html';
