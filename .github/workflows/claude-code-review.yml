@@ -37,5 +37,6 @@ jobs:
 
             Use the repository's CLAUDE.md for guidance on style and conventions. Be constructive and helpful in your feedback.
 
-          use_sticky_comment: "true"
-          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
+            After your review, post it as a single PR comment. To update an existing review comment instead of creating duplicates, first try `gh pr comment $PR_NUMBER --edit-last --body "your review"`. If that fails (no previous comment exists), fall back to `gh pr comment $PR_NUMBER --body "your review"`.
+
+          claude_args: '--allowed-tools "Bash(gh issue view:*),Bash(gh search:*),Bash(gh issue list:*),Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr list:*)"'
