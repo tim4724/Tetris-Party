@@ -48,3 +48,13 @@ function darkenColor(hex, percent) {
   const b = Math.round(rgb.b * factor);
   return `rgb(${r}, ${g}, ${b})`;
 }
+
+// Shared font detection — returns the preferred display font family string.
+// Checks whether Orbitron has loaded; falls back to monospace.
+var _fontLoaded = false;
+function getDisplayFont() {
+  if (!_fontLoaded) {
+    _fontLoaded = document.fonts?.check?.('12px Orbitron') ?? false;
+  }
+  return _fontLoaded ? 'Orbitron' : '"Courier New", monospace';
+}

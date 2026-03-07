@@ -82,8 +82,7 @@ class Scoring {
   }
 
   getLevel() {
-    this.level = Math.floor(this.lines / 10) + 1;
-    return this.level;
+    return Math.floor(this.lines / 10) + 1;
   }
 
   getState() {
