@@ -130,6 +130,12 @@ function onDisplayRejoined(partyRoomCode, clients) {
   joinUrl = getBaseUrl() + '/' + roomCode;
   joinUrlEl.textContent = joinUrl;
 
+  // Reset liveness timestamps — controllers were connected, display was not
+  var now = Date.now();
+  for (var pEntry of players) {
+    pEntry[1].lastPingTime = now;
+  }
+
   startLivenessCheck();
 
   // Clear reconnect overlay — connection restored
