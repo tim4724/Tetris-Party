@@ -35,6 +35,22 @@ const MIME_TYPES = {
   '.woff2': 'font/woff2'
 };
 
+// Simple per-IP rate limiter for the QR endpoint
+var qrRateLimit = new Map();
+var QR_RATE_WINDOW_MS = 10000;
+var QR_RATE_MAX = 30;
+
+function checkQRRateLimit(ip) {
+  var now = Date.now();
+  var entry = qrRateLimit.get(ip);
+  if (!entry || now - entry.start > QR_RATE_WINDOW_MS) {
+    qrRateLimit.set(ip, { start: now, count: 1 });
+    return true;
+  }
+  entry.count++;
+  return entry.count <= QR_RATE_MAX;
+}
+
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(payload));
@@ -61,6 +77,11 @@ const server = http.createServer((req, res) => {
 
   // QR code endpoint
   if (urlPath === '/api/qr' && req.method === 'GET') {
+    const clientIP = req.socket.remoteAddress || 'unknown';
+    if (!checkQRRateLimit(clientIP)) {
+      sendJson(res, 429, { error: 'Too many requests' });
+      return;
+    }
     const url = new URL(req.url, `http://${req.headers.host}`);
     const text = url.searchParams.get('text');
     if (!text || text.length > 2048) {

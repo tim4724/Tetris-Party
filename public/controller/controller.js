@@ -247,4 +247,4 @@ if (hadStoredId || rejoinId) {
 
 syncViewportLayout();
 
-})(); // end Controller IIFE (opened in ControllerState.js)
+})(); // end Controller IIFE — opened in ControllerState.js (see load order comment there)

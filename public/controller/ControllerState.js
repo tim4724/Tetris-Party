@@ -4,6 +4,10 @@
 // Controller IIFE — opened here in ControllerState.js (loaded first),
 // closed in controller.js (loaded last). All vars stay private to the
 // closure and are shared across the four controller script files.
+//
+// LOAD ORDER (required): ControllerState → ControllerConnection →
+//   ControllerGame → controller.js
+// See controller/index.html <script> tags for the canonical order.
 // =====================================================================
 (function () {
 
@@ -106,7 +110,6 @@ var roomGoneDetail = document.getElementById('room-gone-detail');
 var nameScreen = document.getElementById('name-screen');
 var lobbyScreen = document.getElementById('lobby-screen');
 var lobbyBackBtn = document.getElementById('lobby-back-btn');
-var lobbyTitle = document.getElementById('lobby-title');
 var waitingActionText = document.getElementById('waiting-action-text');
 var gameScreen = document.getElementById('game-screen');
 var gameoverScreen = document.getElementById('gameover-screen');
