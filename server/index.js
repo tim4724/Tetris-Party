@@ -40,6 +40,13 @@ var qrRateLimit = new Map();
 var QR_RATE_WINDOW_MS = 10000;
 var QR_RATE_MAX = 30;
 
+function getClientIP(req) {
+  // Behind Traefik/reverse proxy: trust X-Forwarded-For first hop
+  var xff = req.headers['x-forwarded-for'];
+  if (xff) return xff.split(',')[0].trim();
+  return req.socket.remoteAddress || 'unknown';
+}
+
 function checkQRRateLimit(ip) {
   var now = Date.now();
   var entry = qrRateLimit.get(ip);
@@ -77,7 +84,7 @@ const server = http.createServer((req, res) => {
 
   // QR code endpoint
   if (urlPath === '/api/qr' && req.method === 'GET') {
-    const clientIP = req.socket.remoteAddress || 'unknown';
+    const clientIP = getClientIP(req);
     if (!checkQRRateLimit(clientIP)) {
       sendJson(res, 429, { error: 'Too many requests' });
       return;
