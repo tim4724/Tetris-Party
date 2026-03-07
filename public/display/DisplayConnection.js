@@ -106,7 +106,6 @@ function applyRoomCreated(partyRoomCode, newJoinUrl) {
   if (music) music.stop();
   players.clear();
   playerOrder = [];
-  playerIndexCounter = 0;
   hostId = null;
   paused = false;
   gameState = null;
@@ -192,7 +191,8 @@ function onPeerJoined(clientId) {
   if (roomState !== ROOM_STATE.LOBBY) return;
   if (players.size >= GameConstants.MAX_PLAYERS) return;
 
-  var index = playerIndexCounter++;
+  var index = nextAvailableSlot();
+  if (index < 0) return;
   var color = PLAYER_COLORS[index % PLAYER_COLORS.length];
   var isHost = hostId === null;
   if (isHost) hostId = clientId;
@@ -253,7 +253,6 @@ function removeLobbyPlayer(clientId) {
     party.broadcast({ type: MSG.ERROR, code: 'HOST_DISCONNECTED', message: 'Host disconnected' });
     players.clear();
     playerOrder = [];
-    playerIndexCounter = 0;
     garbageIndicatorEffects.clear();
     updatePlayerList();
     updateStartButton();

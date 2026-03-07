@@ -42,7 +42,23 @@ var music = null;
 var canvas = null;
 var ctx = null;
 var lastFrameTime = null;
-var playerIndexCounter = 0;
+// Find the first available player slot (0–3) not used by any current player
+function nextAvailableSlot() {
+  var used = [];
+  for (var entry of players) {
+    used.push(entry[1].playerIndex);
+  }
+  for (var i = 0; i < GameConstants.MAX_PLAYERS; i++) {
+    if (used.indexOf(i) < 0) return i;
+  }
+  return -1;
+}
+
+// Sanitize player name: replace "P1"–"P4" with the correct slot label
+function sanitizePlayerName(name, slotIndex) {
+  if (!name || /^P[1-4]$/i.test(name)) return 'P' + (slotIndex + 1);
+  return name;
+}
 var disconnectedQRs = new Map();
 var garbageIndicatorEffects = new Map();
 var welcomeBg = null;
@@ -227,8 +243,16 @@ function updatePlayerList() {
   for (var i = 0; i < MAX_SLOTS; i++) {
     var card = playerListEl.children[i];
     var nameEl = card.querySelector('span');
-    var playerId = playerOrder[i];
-    var info = playerId ? players.get(playerId) : null;
+    // Find player assigned to this slot by playerIndex
+    var playerId = null;
+    var info = null;
+    for (var entry of players) {
+      if (entry[1].playerIndex === i) {
+        playerId = entry[0];
+        info = entry[1];
+        break;
+      }
+    }
     var wasEmpty = card.classList.contains('empty');
 
     if (info) {
