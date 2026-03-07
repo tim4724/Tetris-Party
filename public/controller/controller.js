@@ -14,6 +14,9 @@
   var gameCancelled = false;
   var lastLines = 0;
   var lastGameResults = null;
+  var hintsFadeTimer = null;
+  var hintsSawLeft = false;
+  var hintsSawRight = false;
 
   // Ping/pong
   var PING_INTERVAL_MS = 1000;
@@ -405,6 +408,13 @@
       gameScreen.classList.remove('paused');
       gameScreen.style.setProperty('--player-color', playerColor);
       removeKoOverlay();
+      if (compassHints) {
+        clearTimeout(hintsFadeTimer);
+        hintsFadeTimer = null;
+        hintsSawLeft = false;
+        hintsSawRight = false;
+        compassHints.classList.remove('faded');
+      }
 
       if (data.paused) {
         onGamePaused();
@@ -533,10 +543,10 @@
     ControllerAudio.tick();
     lastLines = 0;
     if (compassHints) {
-      clearTimeout(compassHints._fadeTimer);
-      compassHints._fadeTimer = null;
-      compassHints._sawLeft = false;
-      compassHints._sawRight = false;
+      clearTimeout(hintsFadeTimer);
+      hintsFadeTimer = null;
+      hintsSawLeft = false;
+      hintsSawRight = false;
       compassHints.classList.remove('faded');
     }
     gameScreen.classList.remove('dead');
@@ -780,10 +790,10 @@
     touchInput = new TouchInput(touchArea, function (action, data) {
       // Fade compass hints after player has used both left and right
       if (compassHints && !compassHints.classList.contains('faded')) {
-        if (action === 'left') compassHints._sawLeft = true;
-        if (action === 'right') compassHints._sawRight = true;
-        if (compassHints._sawLeft && compassHints._sawRight && !compassHints._fadeTimer) {
-          compassHints._fadeTimer = setTimeout(function () {
+        if (action === 'left') hintsSawLeft = true;
+        if (action === 'right') hintsSawRight = true;
+        if (hintsSawLeft && hintsSawRight && !hintsFadeTimer) {
+          hintsFadeTimer = setTimeout(function () {
             compassHints.classList.add('faded');
           }, 5000);
         }

@@ -389,7 +389,7 @@ body.keyboard-open #name-form {
 }
 
 #compass-hints.faded {
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .compass-arrow {
@@ -399,7 +399,7 @@ body.keyboard-open #name-form {
   align-items: center;
   gap: 6px;
   color: color-mix(in srgb, var(--player-color, #888) 40%, white);
-  opacity: 0.18;
+  opacity: 0.25;
 }
 
 .compass-arrow span {
