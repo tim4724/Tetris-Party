@@ -194,7 +194,7 @@ class UIRenderer {
     const smallSize = Math.max(9, this.cellSize * THEME.font.cellScale.label);
     ctx.font = `500 ${smallSize}px ${getDisplayFont()}`;
     ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-    const statsY = panelY + scoreSize + Math.max(10, this.cellSize * 0.4);
+    const statsY = panelY + scoreSize + Math.max(4, this.cellSize * 0.15);
     ctx.fillText(
       `${playerState.lines || 0} LINES`,
       this.boardX + this.boardWidth / 2,
