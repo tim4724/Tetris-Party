@@ -389,7 +389,7 @@ body.keyboard-open #name-form {
 }
 
 #compass-hints.faded {
-  opacity: 0;
+  opacity: 0.4;
 }
 
 .compass-arrow {
