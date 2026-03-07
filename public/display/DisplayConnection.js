@@ -130,10 +130,15 @@ function onDisplayRejoined(partyRoomCode, clients) {
   joinUrl = getBaseUrl() + '/' + roomCode;
   joinUrlEl.textContent = joinUrl;
 
-  // Reset liveness timestamps — controllers were connected, display was not
+  // Reset liveness for clients still in the room; handle missing ones
   var now = Date.now();
+  var connectedSet = new Set(clients || []);
   for (var pEntry of players) {
-    pEntry[1].lastPingTime = now;
+    if (connectedSet.has(pEntry[0])) {
+      pEntry[1].lastPingTime = now;
+    } else {
+      onPeerLeft(pEntry[0]);
+    }
   }
 
   startLivenessCheck();
