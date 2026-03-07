@@ -18,7 +18,6 @@
     "qrcode": "^1.5.4"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.2",
-    "fix-webm-duration": "^1.0.6"
+    "@playwright/test": "^1.58.2"
   }
 }

@@ -1,5 +1,7 @@
 # Tetris Party
 
+![Tetris Party gameplay banner](banner/readme-header.png)
+
 Browser-based multiplayer Tetris where phones become controllers and a shared screen shows the action.
 
 **Play now at [tetris.party](https://tetris.party)**
@@ -82,17 +84,17 @@ RELAY_URL=wss://your-relay.example.com node server/index.js
 ## Testing
 
 ```bash
-# Unit tests (148 tests across 7 files)
+# Unit tests
 npm test
 
-# Visual snapshot tests (25 Playwright tests)
+# Visual snapshot tests
 npm run test:visual
 
 # Update visual snapshots after intentional UI changes
 npm run test:visual:update
 ```
 
-Unit tests use Node.js's built-in `node:test` runner with `node:assert/strict` -- no test framework dependency. Visual tests use Playwright against a live server on port 4100.
+Unit tests use Node.js's built-in `node:test` runner with `node:assert/strict` — no test framework dependency. Visual tests use Playwright against a live server on port 4100.
 
 ## Docker
 
