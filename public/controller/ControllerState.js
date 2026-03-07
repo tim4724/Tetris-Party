@@ -1,18 +1,13 @@
 'use strict';
 
 // =====================================================================
-// Controller IIFE — opened here in ControllerState.js (loaded first),
-// closed in controller.js (loaded last). All vars stay private to the
-// closure and are shared across the four controller script files.
+// Controller State — shared globals across all controller script files.
+// All four files execute in global scope (no IIFE), matching the display
+// pattern. Variables declared here are accessible to the other files.
 //
 // LOAD ORDER (required): ControllerState → ControllerConnection →
 //   ControllerGame → controller.js
 // See controller/index.html <script> tags for the canonical order.
-// =====================================================================
-(function () {
-
-// =====================================================================
-// Controller State
 // =====================================================================
 
 // --- State ---
