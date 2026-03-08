@@ -1,20 +1,12 @@
 'use strict';
 
 // =====================================================================
-// Display Input — controller message handling, input validation, rate limiting
+// Display Input — controller message handling and input validation
 // Depends on: DisplayState.js, DisplayUI.js, DisplayConnection.js, DisplayGame.js
 // =====================================================================
 
 // Input validation: only accept known game actions
 var VALID_ACTIONS = { left: 1, right: 1, rotate_cw: 1, hold: 1, hard_drop: 1 };
-
-// Soft drop rate limiting: max ~25Hz per controller
-var SOFT_DROP_MIN_INTERVAL_MS = 40;
-var lastSoftDropTime = new Map();
-
-// Discrete input rate limiting: per-action cooldowns (ms)
-var INPUT_COOLDOWNS = { rotate_cw: 50, hard_drop: 150, hold: 200 };
-var lastInputTime = new Map(); // key: "playerId:action" -> timestamp
 
 function handleControllerMessage(fromId, msg) {
   try {
@@ -141,27 +133,12 @@ function onInput(fromId, msg) {
   if (roomState !== ROOM_STATE.PLAYING || paused) return;
   if (!displayGame) return;
   if (!VALID_ACTIONS[msg.action]) return;
-
-  // Per-action rate limiting for costly actions
-  var cooldown = INPUT_COOLDOWNS[msg.action];
-  if (cooldown) {
-    var key = fromId + ':' + msg.action;
-    var now = Date.now();
-    if (now - (lastInputTime.get(key) || 0) < cooldown) return;
-    lastInputTime.set(key, now);
-  }
-
   displayGame.processInput(fromId, msg.action);
 }
 
 function onSoftDrop(fromId, speed) {
   if (roomState !== ROOM_STATE.PLAYING || paused) return;
   if (!displayGame) return;
-
-  // Rate-limit soft drop messages per controller
-  var now = Date.now();
-  if (now - (lastSoftDropTime.get(fromId) || 0) < SOFT_DROP_MIN_INTERVAL_MS) return;
-  lastSoftDropTime.set(fromId, now);
 
   displayGame.handleSoftDropStart(fromId, speed);
 
@@ -175,15 +152,7 @@ function onSoftDrop(fromId, speed) {
   }, GameConstants.SOFT_DROP_TIMEOUT_MS));
 }
 
-function cleanupPlayerRateLimits(clientId) {
-  lastSoftDropTime.delete(clientId);
-  for (var key of lastInputTime.keys()) {
-    if (key.indexOf(clientId + ':') === 0) lastInputTime.delete(key);
-  }
-}
-
 function removePlayer(clientId, immediate) {
-  cleanupPlayerRateLimits(clientId);
   if (!players.has(clientId)) return;
 
   if (roomState === ROOM_STATE.LOBBY) {
