@@ -116,8 +116,6 @@ if (new URLSearchParams(window.location.search).get('test') === '1') {
 // Initialize
 // =====================================================================
 
-initDOM();
-
 // --- Window Resize ---
 window.addEventListener('resize', function() {
   resizeCanvas();

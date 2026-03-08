@@ -2,7 +2,6 @@
 
 // =====================================================================
 // Shared Display State — loaded first, all vars are globals
-// DOM queries are deferred to initDOM() for testability.
 // =====================================================================
 
 // --- State ---
@@ -108,58 +107,31 @@ function sanitizePlayerName(name, slotIndex) {
   return name;
 }
 
-// --- DOM References (deferred to initDOM for testability) ---
-var welcomeScreen = null;
-var newGameBtn = null;
-var lobbyScreen = null;
-var gameScreen = null;
-var resultsScreen = null;
-var qrCode = null;
-var joinUrlEl = null;
-var playerListEl = null;
-var startBtn = null;
-var countdownOverlay = null;
-var resultsList = null;
-var playAgainBtn = null;
-var newGameResultsBtn = null;
-var gameToolbar = null;
-var fullscreenBtn = null;
-var pauseBtn = null;
-var pauseOverlay = null;
-var pauseContinueBtn = null;
-var pauseNewGameBtn = null;
-var reconnectOverlay = null;
-var reconnectHeading = null;
-var reconnectStatus = null;
-var reconnectBtn = null;
-var muteBtn = null;
-
-function initDOM() {
-  welcomeScreen = document.getElementById('welcome-screen');
-  newGameBtn = document.getElementById('new-game-btn');
-  lobbyScreen = document.getElementById('lobby-screen');
-  gameScreen = document.getElementById('game-screen');
-  resultsScreen = document.getElementById('results-screen');
-  qrCode = document.getElementById('qr-code');
-  joinUrlEl = document.getElementById('join-url');
-  playerListEl = document.getElementById('player-list');
-  startBtn = document.getElementById('start-btn');
-  countdownOverlay = document.getElementById('countdown-overlay');
-  resultsList = document.getElementById('results-list');
-  playAgainBtn = document.getElementById('play-again-btn');
-  newGameResultsBtn = document.getElementById('new-game-results-btn');
-  gameToolbar = document.getElementById('game-toolbar');
-  fullscreenBtn = document.getElementById('fullscreen-btn');
-  pauseBtn = document.getElementById('pause-btn');
-  pauseOverlay = document.getElementById('pause-overlay');
-  pauseContinueBtn = document.getElementById('pause-continue-btn');
-  pauseNewGameBtn = document.getElementById('pause-newgame-btn');
-  reconnectOverlay = document.getElementById('reconnect-overlay');
-  reconnectHeading = document.getElementById('reconnect-heading');
-  reconnectStatus = document.getElementById('reconnect-status');
-  reconnectBtn = document.getElementById('reconnect-btn');
-  muteBtn = document.getElementById('mute-btn');
-}
+// --- DOM References ---
+var welcomeScreen = document.getElementById('welcome-screen');
+var newGameBtn = document.getElementById('new-game-btn');
+var lobbyScreen = document.getElementById('lobby-screen');
+var gameScreen = document.getElementById('game-screen');
+var resultsScreen = document.getElementById('results-screen');
+var qrCode = document.getElementById('qr-code');
+var joinUrlEl = document.getElementById('join-url');
+var playerListEl = document.getElementById('player-list');
+var startBtn = document.getElementById('start-btn');
+var countdownOverlay = document.getElementById('countdown-overlay');
+var resultsList = document.getElementById('results-list');
+var playAgainBtn = document.getElementById('play-again-btn');
+var newGameResultsBtn = document.getElementById('new-game-results-btn');
+var gameToolbar = document.getElementById('game-toolbar');
+var fullscreenBtn = document.getElementById('fullscreen-btn');
+var pauseBtn = document.getElementById('pause-btn');
+var pauseOverlay = document.getElementById('pause-overlay');
+var pauseContinueBtn = document.getElementById('pause-continue-btn');
+var pauseNewGameBtn = document.getElementById('pause-newgame-btn');
+var reconnectOverlay = document.getElementById('reconnect-overlay');
+var reconnectHeading = document.getElementById('reconnect-heading');
+var reconnectStatus = document.getElementById('reconnect-status');
+var reconnectBtn = document.getElementById('reconnect-btn');
+var muteBtn = document.getElementById('mute-btn');
 
 // --- Screen Management ---
 function showScreen(name) {
@@ -189,19 +161,6 @@ function showScreen(name) {
     else welcomeBg.stop();
   }
 }
-
-// --- State Namespace (read-only accessor for testing and debugging) ---
-var DS = {
-  get roomState() { return roomState; },
-  get currentScreen() { return currentScreen; },
-  get players() { return players; },
-  get playerOrder() { return playerOrder; },
-  get hostId() { return hostId; },
-  get paused() { return paused; },
-  get gameState() { return gameState; },
-  get muted() { return muted; },
-  get roomCode() { return roomCode; }
-};
 
 // --- Canvas Setup ---
 function initCanvas() {

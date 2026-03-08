@@ -22,19 +22,7 @@ var Scoring = ((typeof require !== 'undefined') ? require('./Scoring') : window.
 
 const NEXT_QUEUE_SIZE = 6;
 
-/**
- * Detect T-spin or T-spin mini using the 4-corner rule.
- * Pure function — no side effects. Checks whether >= 3 of the 4 diagonal
- * corners around the T piece center are filled (wall/block), then classifies
- * as full T-spin (both front corners filled) or T-spin mini.
- *
- * @param {number[][]} grid - Board grid (BOARD_HEIGHT x BOARD_WIDTH, 0=empty)
- * @param {string} pieceType - Single-letter piece type ('T', 'I', etc.)
- * @param {number} pieceX - Piece X position on the grid
- * @param {number} pieceY - Piece Y position on the grid
- * @param {number} rotation - Piece rotation state (0–3)
- * @returns {{ isTSpin: boolean, isTSpinMini: boolean }}
- */
+// Detect T-spin or T-spin mini using the 4-corner rule.
 function detectTSpin(grid, pieceType, pieceX, pieceY, rotation) {
   if (pieceType !== 'T') return { isTSpin: false, isTSpinMini: false };
 
@@ -84,11 +72,6 @@ function detectTSpin(grid, pieceType, pieceX, pieceY, rotation) {
   };
 }
 
-/**
- * Single player's board state, piece movement, collision, scoring, and garbage.
- * Manages a 10x24 grid (4 buffer + 20 visible rows), SRS rotation with wall kicks,
- * lock delay, hold piece, next queue, and line clear animation timing.
- */
 class PlayerBoard {
   constructor(playerId, seed) {
     this.playerId = playerId;
@@ -125,10 +108,6 @@ class PlayerBoard {
     }
   }
 
-  /**
-   * Pull the next piece from the queue and place it on the board.
-   * @returns {boolean} false if the spawn position is blocked (game over)
-   */
   spawnPiece() {
     this._fillNextQueue();
     const type = this.nextPieces.shift();
@@ -263,10 +242,6 @@ class PlayerBoard {
     this.softDropSpeed = SOFT_DROP_MULTIPLIER;
   }
 
-  /**
-   * Instantly drop the current piece to the lowest valid position and lock it.
-   * @returns {null|{ linesCleared: number, fullRows: number[], isTSpin: boolean, isTSpinMini: boolean, scoreResult: object|null, alive: boolean }}
-   */
   hardDrop() {
     if (!this.currentPiece || !this.alive) return null;
     let cellsDropped = 0;
@@ -311,12 +286,6 @@ class PlayerBoard {
     return true;
   }
 
-  /**
-   * Advance the board by one logic frame. Applies gravity, checks lock timer,
-   * and handles line clear animation delay.
-   * @param {number} deltaMs - Milliseconds since last tick (typically LOGIC_TICK_MS)
-   * @returns {null|{ linesCleared: number, fullRows: number[], isTSpin: boolean, isTSpinMini: boolean, scoreResult: object|null, alive: boolean }}
-   */
   tick(deltaMs) {
     if (!this.alive) return null;
 
@@ -517,11 +486,6 @@ class PlayerBoard {
     return 0;
   }
 
-  /**
-   * Return the current board state for broadcast to controllers.
-   * Only includes visible rows (bottom 20 of the 24-row grid).
-   * @returns {{ grid: number[][], currentPiece: object|null, ghostY: number|null, holdPiece: string|null, nextPieces: string[], score: number, level: number, lines: number, alive: boolean, pendingGarbage: number, clearingRows: number[]|null }}
-   */
   getState() {
     // Return only visible rows (bottom 20 of the 24-row grid)
     const visibleGrid = this.grid.slice(BUFFER_ROWS);

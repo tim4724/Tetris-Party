@@ -62,7 +62,6 @@ var SLOT_LABELS = ['P1', 'P2', 'P3', 'P4'];
 var MAX_SLOTS = 4;
 
 function updatePlayerList() {
-  if (!playerListEl) return;
   if (playerListEl.children.length === 0) {
     for (var i = 0; i < MAX_SLOTS; i++) {
       var card = document.createElement('div');
@@ -111,7 +110,6 @@ function updatePlayerList() {
 }
 
 function updateStartButton() {
-  if (!startBtn) return;
   var hasPlayers = players.size > 0;
   startBtn.disabled = !hasPlayers;
   startBtn.textContent = hasPlayers

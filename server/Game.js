@@ -8,19 +8,7 @@ var GarbageManager = ((typeof require !== 'undefined') ? require('./GarbageManag
 var LOGIC_TICK_MS = ((typeof require !== 'undefined') ? require('./constants.js') : window.GameConstants).LOGIC_TICK_MS;
 var mulberry32 = ((typeof require !== 'undefined') ? require('./Randomizer.js') : window.GameRandomizer).mulberry32;
 
-/**
- * Master game orchestrator. Manages all PlayerBoards, the GarbageManager,
- * the 60Hz game loop, input routing, and win condition detection.
- */
 class Game {
-  /**
-   * @param {Map<string, object>} players - Map of playerId → player info
-   * @param {{ onGameState: function, onEvent: function, onGameEnd: function }} callbacks
-   *   onGameState({ players: object[], elapsed: number }) — called each dirty tick
-   *   onEvent({ type: string, ... }) — line_clear, player_ko, garbage_sent, garbage_cancelled
-   *   onGameEnd({ elapsed: number, results: object[] }) — called when game ends
-   * @param {number} [seed] - Optional shared PRNG seed for deterministic piece sequences
-   */
   constructor(players, callbacks, seed) {
     this.callbacks = callbacks; // { onGameState, onEvent, onGameEnd }
     this.boards = new Map();
@@ -97,11 +85,6 @@ class Game {
     }
   }
 
-  /**
-   * Route a player action to their board.
-   * @param {string} playerId
-   * @param {'left'|'right'|'rotate_cw'|'hard_drop'|'hold'} action
-   */
   processInput(playerId, action) {
     const board = this.boards.get(playerId);
     if (!board || !board.alive || this.ended) return;
@@ -280,10 +263,6 @@ class Game {
     }
   }
 
-  /**
-   * Return ranked results for all players, sorted by alive status then score.
-   * @returns {{ elapsed: number, results: Array<{ playerId: string, alive: boolean, score: number, lines: number, level: number, rank: number }> }}
-   */
   getResults() {
     const results = [];
 
