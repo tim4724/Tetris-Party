@@ -216,11 +216,11 @@ describe('PartyConnection - reconnect with exponential backoff', () => {
   test('_scheduleReconnect uses exponential backoff', () => {
     // Verify the backoff formula by inspecting the method behavior
     const pc = new PartyConnection('wss://test.example.com');
-    // After 1st failure: delay = min(1000 * 2^0, 30000) = 1000
-    // After 2nd failure: delay = min(1000 * 2^1, 30000) = 2000
-    // After 3rd failure: delay = min(1000 * 2^2, 30000) = 4000
-    // After 5th failure: delay = min(1000 * 2^4, 30000) = 16000
-    // After 6th failure: delay = min(1000 * 2^5, 30000) = 30000 (capped)
+    // After 1st failure: delay = min(1000 * 1.5^0, 5000) = 1000
+    // After 2nd failure: delay = min(1000 * 1.5^1, 5000) = 1500
+    // After 3rd failure: delay = min(1000 * 1.5^2, 5000) = 2250
+    // After 4th failure: delay = min(1000 * 1.5^3, 5000) = 3375
+    // After 5th failure: delay = min(1000 * 1.5^4, 5000) = 5000 (capped)
     pc.reconnectAttempt = 1;
     // We can't easily test the timeout delay without mocking setTimeout,
     // but we verify the method exists and doesn't throw

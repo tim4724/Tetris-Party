@@ -82,8 +82,8 @@ class PartyConnection {
 
   _scheduleReconnect() {
     clearTimeout(this._reconnectTimer);
-    // Exponential backoff: 1s, 2s, 4s, 8s... capped at 30s
-    var delay = Math.min(1000 * Math.pow(2, this.reconnectAttempt - 1), 30000);
+    // Gentle backoff: 1s, 1.5s, 2.25s, 3.4s, 5s
+    var delay = Math.min(1000 * Math.pow(1.5, this.reconnectAttempt - 1), 5000);
     this._reconnectTimer = setTimeout(() => {
       this.connect();
     }, delay);
