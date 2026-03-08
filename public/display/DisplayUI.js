@@ -74,14 +74,14 @@ function updatePlayerList() {
     }
   }
 
-  for (var i = 0; i < MAX_SLOTS; i++) {
-    var card = playerListEl.children[i];
+  for (var j = 0; j < MAX_SLOTS; j++) {
+    var card = playerListEl.children[j];
     var nameEl = card.querySelector('span');
     // Find player assigned to this slot by playerIndex
     var playerId = null;
     var info = null;
     for (const entry of players) {
-      if (entry[1].playerIndex === i) {
+      if (entry[1].playerIndex === j) {
         playerId = entry[0];
         info = entry[1];
         break;
@@ -102,7 +102,7 @@ function updatePlayerList() {
       }
     } else {
       card.style.removeProperty('--player-color');
-      nameEl.textContent = SLOT_LABELS[i];
+      nameEl.textContent = SLOT_LABELS[j];
       card.classList.add('empty');
       card.classList.remove('join-pop');
       delete card.dataset.playerId;
