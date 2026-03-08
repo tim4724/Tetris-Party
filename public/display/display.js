@@ -643,7 +643,7 @@ if (new URLSearchParams(window.location.search).get('test') === '1') {
 // =====================================================================
 
 fetch('/api/version').then(function(r) { return r.json(); }).then(function(data) {
-  var label = 'v' + data.version;
+  var label = data.version;
   if (!data.isProduction && data.commit) {
     label += ' (#' + data.commit + ')';
   }
