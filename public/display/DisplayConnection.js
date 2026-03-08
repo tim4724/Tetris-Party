@@ -33,7 +33,7 @@ function connectAndCreateRoom() {
     if (attempt === 1) reconnectHeading.textContent = 'RECONNECTING';
     reconnectStatus.textContent = 'Attempt ' + Math.min(attempt, maxAttempts) + ' of ' + maxAttempts;
     reconnectBtn.classList.add('hidden');
-    if (attempt >= maxAttempts) {
+    if (attempt > maxAttempts) {
       disconnectedTimer = setTimeout(function () {
         reconnectHeading.textContent = 'DISCONNECTED';
         reconnectStatus.textContent = '';

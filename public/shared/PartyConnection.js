@@ -60,7 +60,7 @@ class PartyConnection {
       if (this.ws !== ws) return; // stale — already replaced by reconnectNow
       this.reconnectAttempt++;
       if (this.onClose) this.onClose(this.reconnectAttempt, this.maxReconnectAttempts);
-      if (this._shouldReconnect && this.reconnectAttempt < this.maxReconnectAttempts) {
+      if (this._shouldReconnect && this.reconnectAttempt <= this.maxReconnectAttempts) {
         this._scheduleReconnect();
       }
     };

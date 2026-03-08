@@ -53,7 +53,7 @@ function connect() {
     if (attempt === 1) reconnectHeading.textContent = 'RECONNECTING';
     reconnectStatus.textContent = 'Attempt ' + Math.min(attempt, maxAttempts) + ' of ' + maxAttempts;
     reconnectRejoinBtn.classList.add('hidden');
-    if (attempt >= maxAttempts) {
+    if (attempt > maxAttempts) {
       disconnectedTimer = setTimeout(function () {
         reconnectHeading.textContent = 'DISCONNECTED';
         reconnectStatus.textContent = '';
@@ -78,7 +78,7 @@ function startPing() {
   pongCheckTimer = setInterval(function () {
     if (Date.now() - lastPongTime > PONG_TIMEOUT_MS) {
       stopPing();
-      if (party.reconnectAttempt >= party.maxReconnectAttempts) return;
+      if (party.reconnectAttempt > party.maxReconnectAttempts) return;
       if (currentScreen === 'game') {
         reconnectOverlay.classList.remove('hidden');
         reconnectHeading.textContent = 'RECONNECTING';
