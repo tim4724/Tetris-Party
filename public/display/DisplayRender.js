@@ -27,7 +27,6 @@ function renderLoop(timestamp) {
   if ((currentScreen !== 'game' && currentScreen !== 'results') || !ctx) return;
 
   if (lastFrameTime === null) lastFrameTime = timestamp;
-  var deltaMs = timestamp - lastFrameTime;
   lastFrameTime = timestamp;
 
   // Throttle to ~4fps when paused/results with no active animations
@@ -83,12 +82,12 @@ function renderFrame(timestamp) {
   }
 
   if (gameState.players) {
-    for (var i = 0; i < gameState.players.length; i++) {
-      var playerData = gameState.players[i];
-      if (!boardRenderers[i] || !uiRenderers[i]) continue;
+    for (var j = 0; j < gameState.players.length; j++) {
+      var playerData = gameState.players[j];
+      if (!boardRenderers[j] || !uiRenderers[j]) continue;
 
       var shake = animations
-        ? animations.getShakeOffsetForBoard(boardRenderers[i].x, boardRenderers[i].y)
+        ? animations.getShakeOffsetForBoard(boardRenderers[j].x, boardRenderers[j].y)
         : { x: 0, y: 0 };
 
       if (shake.x !== 0 || shake.y !== 0) {
@@ -106,16 +105,16 @@ function renderFrame(timestamp) {
       }
       var enriched = Object.assign({}, playerData, {
         garbageIndicatorEffects: activeGarbageIndicatorEffects,
-        playerName: pInfo?.playerName || PLAYER_NAMES[i],
-        playerColor: pInfo?.playerColor || PLAYER_COLORS[i]
+        playerName: pInfo?.playerName || PLAYER_NAMES[j],
+        playerColor: pInfo?.playerColor || PLAYER_COLORS[j]
       });
 
-      boardRenderers[i].render(enriched);
-      uiRenderers[i].render(enriched);
+      boardRenderers[j].render(enriched);
+      uiRenderers[j].render(enriched);
 
       // Draw QR overlay for disconnected players
       if (disconnectedQRs.has(playerData.id)) {
-        var br = boardRenderers[i];
+        var br = boardRenderers[j];
         var bx = br.x;
         var by = br.y;
         var bw = 10 * br.cellSize;
