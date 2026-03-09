@@ -60,7 +60,7 @@ class PartyConnection {
       if (this.ws !== ws) return; // stale — already replaced by reconnectNow
       this.reconnectAttempt++;
       if (this.onClose) this.onClose(this.reconnectAttempt, this.maxReconnectAttempts);
-      if (this._shouldReconnect && this.reconnectAttempt < this.maxReconnectAttempts) {
+      if (this._shouldReconnect && this.reconnectAttempt <= this.maxReconnectAttempts) {
         this._scheduleReconnect();
       }
     };
@@ -82,9 +82,11 @@ class PartyConnection {
 
   _scheduleReconnect() {
     clearTimeout(this._reconnectTimer);
+    // Gentle backoff: 1s, 1.5s, 2.25s, 3.375s, capped at 5s
+    var delay = Math.min(1000 * Math.pow(1.5, this.reconnectAttempt - 1), 5000);
     this._reconnectTimer = setTimeout(() => {
       this.connect();
-    }, 1000);
+    }, delay);
   }
 
   _send(msg) {

@@ -68,13 +68,18 @@ function startCountdown(onComplete, startFrom) {
   }, 1000);
 }
 
+function clearCountdownTimers() {
+  if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
+  if (goTimeout) { clearTimeout(goTimeout); goTimeout = null; }
+  if (goOverlayTimer) { clearTimeout(goOverlayTimer); goOverlayTimer = null; }
+}
+
 function pauseGame() {
   if (paused) return;
   if (roomState !== ROOM_STATE.PLAYING && roomState !== ROOM_STATE.COUNTDOWN) return;
   paused = true;
   if (roomState === ROOM_STATE.COUNTDOWN) {
-    if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
-    if (goTimeout) { clearTimeout(goTimeout); goTimeout = null; }
+    clearCountdownTimers();
   }
   party.broadcast({ type: MSG.GAME_PAUSED });
   onGamePaused();
@@ -104,9 +109,7 @@ function resumeGame() {
 }
 
 function returnToLobby() {
-  // Clear countdown state
-  if (countdownTimer) { clearInterval(countdownTimer); countdownTimer = null; }
-  if (goTimeout) { clearTimeout(goTimeout); goTimeout = null; }
+  clearCountdownTimers();
   graceTimers.forEach(clearTimeout);
   graceTimers.clear();
   countdownCallback = null;
@@ -153,11 +156,11 @@ function returnToLobby() {
 }
 
 function returnToLobbyUI() {
-  var wasInGame = currentScreen === 'game' || currentScreen === 'results';
+  var wasInGame = currentScreen === SCREEN.GAME || currentScreen === SCREEN.RESULTS;
   gameState = null;
   disconnectedQRs.clear();
   garbageIndicatorEffects.clear();
-  showScreen('lobby');
+  showScreen(SCREEN.LOBBY);
   updateStartButton();
   if (wasInGame && !popstateNavigating) {
     suppressPopstate = true;
@@ -179,6 +182,7 @@ function stopDisplayGame() {
     clearTimeout(entry[1]);
   }
   softDropTimers.clear();
+  clearCountdownTimers();
 }
 
 function runGameLocally() {
@@ -247,10 +251,10 @@ function runGameLocally() {
 
 function onCountdownDisplay(value) {
   gameState = null;
-  if (currentScreen !== 'game') {
+  if (currentScreen !== SCREEN.GAME) {
     history.pushState({ screen: 'game' }, '');
   }
-  showScreen('game');
+  showScreen(SCREEN.GAME);
   countdownOverlay.classList.remove('hidden');
   countdownOverlay.textContent = value;
   playCountdownBeep(value === 'GO');
@@ -259,7 +263,8 @@ function onCountdownDisplay(value) {
       music.start();
       if (muted) music.masterGain.gain.setValueAtTime(0, music.ctx.currentTime);
     }
-    setTimeout(function() {
+    goOverlayTimer = setTimeout(function() {
+      goOverlayTimer = null;
       countdownOverlay.classList.add('hidden');
       countdownOverlay.textContent = '';
     }, 400);
@@ -346,7 +351,7 @@ function onGameEnd(msg) {
   stopDisplayGame();
   disconnectedQRs.clear();
   garbageIndicatorEffects.clear();
-  showScreen('results');
+  showScreen(SCREEN.RESULTS);
   resultsScreen.style.animation = 'none';
   resultsScreen.offsetHeight;
   resultsScreen.style.animation = '';
@@ -363,7 +368,7 @@ function onGamePaused() {
 function onGameResumed() {
   if (displayGame) displayGame.resume();
   pauseOverlay.classList.add('hidden');
-  if (currentScreen === 'game') {
+  if (currentScreen === SCREEN.GAME) {
     gameToolbar.classList.remove('hidden');
   }
   if (countdownOverlay.textContent) {
@@ -374,43 +379,4 @@ function onGameResumed() {
   }
 }
 
-// =====================================================================
-// Music & Audio
-// =====================================================================
-
-function initMusic() {
-  if (!music) {
-    music = new Music();
-  }
-  music.init();
-  music.muted = muted;
-}
-
-function playCountdownBeep(isGo) {
-  if (muted) return;
-  if (!music || !music.ctx) return;
-  var actx = music.ctx;
-  if (actx.state === 'suspended') actx.resume();
-
-  var osc = actx.createOscillator();
-  var gain = actx.createGain();
-  osc.connect(gain);
-  gain.connect(actx.destination);
-
-  if (isGo) {
-    osc.type = 'square';
-    osc.frequency.setValueAtTime(600, actx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(1200, actx.currentTime + 0.15);
-    gain.gain.setValueAtTime(0.18, actx.currentTime);
-    gain.gain.linearRampToValueAtTime(0, actx.currentTime + 0.3);
-    osc.start(actx.currentTime);
-    osc.stop(actx.currentTime + 0.3);
-  } else {
-    osc.type = 'square';
-    osc.frequency.value = 440;
-    gain.gain.setValueAtTime(0.15, actx.currentTime);
-    gain.gain.linearRampToValueAtTime(0, actx.currentTime + 0.12);
-    osc.start(actx.currentTime);
-    osc.stop(actx.currentTime + 0.12);
-  }
-}
+// Music & Audio — see DisplayAudio.js

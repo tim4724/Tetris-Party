@@ -158,13 +158,8 @@ const server = http.createServer((req, res) => {
       headers['Expires'] = '0';
     }
 
-    // Inject relay URL override into HTML pages when env var is set
-    if (ext === '.html' && process.env.RELAY_URL) {
-      const inject = `<script>window.__RELAY_URL__=${JSON.stringify(process.env.RELAY_URL).replace(/</g, '\\u003c')}</script>`;
-      const html = data.toString().replace('<head>', '<head>' + inject);
-      res.writeHead(200, headers);
-      res.end(html);
-      return;
+    if (ext === '.html') {
+      headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' wss://ws.tetris.party; img-src 'self' data:";
     }
 
     res.writeHead(200, headers);

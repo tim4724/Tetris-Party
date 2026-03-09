@@ -137,17 +137,23 @@ class Game {
     for (const [id, board] of this.boards) {
       if (!board.alive) continue;
 
-      const prevY = board.currentPiece ? board.currentPiece.y : null;
-      const wasClearing = board.clearingRows;
-      const result = board.tick(LOGIC_TICK_MS);
-      const curY = board.currentPiece ? board.currentPiece.y : null;
+      try {
+        const prevY = board.currentPiece ? board.currentPiece.y : null;
+        const wasClearing = board.clearingRows;
+        const result = board.tick(LOGIC_TICK_MS);
+        const curY = board.currentPiece ? board.currentPiece.y : null;
 
-      if (result) {
-        this.dirty = true;
-        if (result.linesCleared > 0) {
-          this.handleLineClear(id, result);
+        if (result) {
+          this.dirty = true;
+          if (result.linesCleared > 0) {
+            this.handleLineClear(id, result);
+          }
+        } else if (prevY !== curY || (wasClearing && !board.clearingRows)) {
+          this.dirty = true;
         }
-      } else if (prevY !== curY || (wasClearing && !board.clearingRows)) {
+      } catch (err) {
+        console.error('[game] Board tick error for', id, ':', err);
+        board.alive = false;
         this.dirty = true;
       }
 

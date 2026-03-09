@@ -132,7 +132,7 @@ var reconnectHeading = document.getElementById('reconnect-heading');
 var reconnectStatus = document.getElementById('reconnect-status');
 var reconnectRejoinBtn = document.getElementById('reconnect-rejoin-btn');
 var pingDisplay = document.getElementById('ping-display');
-var compassHints = document.getElementById('compass-hints'); // always present in index.html
+var compassHints = document.getElementById('compass-hints');
 var muteBtn = document.getElementById('mute-btn');
 
 // --- Screen Management ---

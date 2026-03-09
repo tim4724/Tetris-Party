@@ -20,7 +20,8 @@ function connectAndCreateRoom() {
   };
 
   party.onClose = function(attempt, maxAttempts) {
-    if (currentScreen === 'welcome') return;
+    preCreatedRoom = null;
+    if (currentScreen === SCREEN.WELCOME) return;
     clearTimeout(disconnectedTimer);
 
     if (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN) {
@@ -32,7 +33,7 @@ function connectAndCreateRoom() {
     if (attempt === 1) reconnectHeading.textContent = 'RECONNECTING';
     reconnectStatus.textContent = 'Attempt ' + Math.min(attempt, maxAttempts) + ' of ' + maxAttempts;
     reconnectBtn.classList.add('hidden');
-    if (attempt >= maxAttempts) {
+    if (attempt > maxAttempts) {
       disconnectedTimer = setTimeout(function () {
         reconnectHeading.textContent = 'DISCONNECTED';
         reconnectStatus.textContent = '';
@@ -83,7 +84,7 @@ function onRoomCreated(partyRoomCode) {
   var newJoinUrl = getBaseUrl() + '/' + partyRoomCode;
 
   // If still on welcome screen, cache the room for instant use later
-  if (currentScreen === 'welcome') {
+  if (currentScreen === SCREEN.WELCOME) {
     preCreatedRoom = { roomCode: partyRoomCode, joinUrl: newJoinUrl, qrMatrix: null };
     fetchQR(newJoinUrl, function(qrMatrix) {
       if (preCreatedRoom && preCreatedRoom.roomCode === partyRoomCode) {
@@ -119,7 +120,7 @@ function applyRoomCreated(partyRoomCode, newJoinUrl) {
   lastAliveState = {};
   lastResults = null;
 
-  showScreen('lobby');
+  showScreen(SCREEN.LOBBY);
   updateStartButton();
   startLivenessCheck();
 
@@ -187,7 +188,7 @@ function onDisplayRejoined(partyRoomCode, clients) {
   }
 
   if (roomState === ROOM_STATE.LOBBY) {
-    showScreen('lobby');
+    showScreen(SCREEN.LOBBY);
     updateStartButton();
     fetchQR(joinUrl, function(qrMatrix) {
       requestAnimationFrame(function() { renderTetrisQR(qrCode, qrMatrix); });
@@ -392,4 +393,4 @@ function showDisconnectQR(clientId) {
   });
 }
 
-// renderTetrisQR() lives in DisplayState.js (rendering helper, not connection logic)
+// renderTetrisQR() lives in DisplayUI.js (rendering helper)

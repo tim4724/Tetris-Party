@@ -22,6 +22,57 @@ var Scoring = ((typeof require !== 'undefined') ? require('./Scoring') : window.
 
 const NEXT_QUEUE_SIZE = 6;
 
+// Detect T-spin or T-spin mini using the 4-corner rule.
+function detectTSpin(grid, pieceType, pieceX, pieceY, rotation) {
+  if (pieceType !== 'T') return { isTSpin: false, isTSpinMini: false };
+
+  // Center of T piece in its local grid is at (1,1)
+  var cx = pieceX + 1;
+  var cy = pieceY + 1;
+
+  var corners = [
+    [cx - 1, cy - 1],
+    [cx + 1, cy - 1],
+    [cx - 1, cy + 1],
+    [cx + 1, cy + 1]
+  ];
+
+  var filledCorners = 0;
+  for (var i = 0; i < corners.length; i++) {
+    var col = corners[i][0];
+    var row = corners[i][1];
+    if (col < 0 || col >= BOARD_WIDTH || row < 0 || row >= BOARD_HEIGHT || grid[row][col] !== 0) {
+      filledCorners++;
+    }
+  }
+
+  if (filledCorners < 3) return { isTSpin: false, isTSpinMini: false };
+
+  // Front corners depend on rotation state
+  var frontCorners;
+  switch (rotation) {
+    case 0: frontCorners = [[cx - 1, cy - 1], [cx + 1, cy - 1]]; break;
+    case 1: frontCorners = [[cx + 1, cy - 1], [cx + 1, cy + 1]]; break;
+    case 2: frontCorners = [[cx + 1, cy + 1], [cx - 1, cy + 1]]; break;
+    case 3: frontCorners = [[cx - 1, cy + 1], [cx - 1, cy - 1]]; break;
+    default: return { isTSpin: false, isTSpinMini: false };
+  }
+
+  var frontFilled = 0;
+  for (var j = 0; j < frontCorners.length; j++) {
+    var fc = frontCorners[j][0];
+    var fr = frontCorners[j][1];
+    if (fc < 0 || fc >= BOARD_WIDTH || fr < 0 || fr >= BOARD_HEIGHT || grid[fr][fc] !== 0) {
+      frontFilled++;
+    }
+  }
+
+  return {
+    isTSpin: frontFilled === 2,
+    isTSpinMini: frontFilled < 2
+  };
+}
+
 class PlayerBoard {
   constructor(playerId, seed) {
     this.playerId = playerId;
@@ -147,55 +198,13 @@ class PlayerBoard {
   }
 
   _checkTSpin() {
-    this.lastWasTSpin = false;
-    this.lastWasTSpinMini = false;
-
-    if (this.currentPiece.type !== 'T') return;
-
-    // T-spin: check 4 corners around center of T piece
-    // Center of T piece in its local grid is at (1,1)
-    const cx = this.currentPiece.x + 1;
-    const cy = this.currentPiece.y + 1;
-
-    const corners = [
-      [cx - 1, cy - 1],
-      [cx + 1, cy - 1],
-      [cx - 1, cy + 1],
-      [cx + 1, cy + 1]
-    ];
-
-    let filledCorners = 0;
-    for (const [col, row] of corners) {
-      if (col < 0 || col >= BOARD_WIDTH || row < 0 || row >= BOARD_HEIGHT || this.grid[row][col] !== 0) {
-        filledCorners++;
-      }
-    }
-
-    if (filledCorners >= 3) {
-      // Check front corners to determine mini vs full
-      // Front corners depend on rotation state
-      const rotation = this.currentPiece.rotation;
-      let frontCorners;
-      switch (rotation) {
-        case 0: frontCorners = [[cx - 1, cy - 1], [cx + 1, cy - 1]]; break;
-        case 1: frontCorners = [[cx + 1, cy - 1], [cx + 1, cy + 1]]; break;
-        case 2: frontCorners = [[cx + 1, cy + 1], [cx - 1, cy + 1]]; break;
-        case 3: frontCorners = [[cx - 1, cy + 1], [cx - 1, cy - 1]]; break;
-      }
-
-      let frontFilled = 0;
-      for (const [col, row] of frontCorners) {
-        if (col < 0 || col >= BOARD_WIDTH || row < 0 || row >= BOARD_HEIGHT || this.grid[row][col] !== 0) {
-          frontFilled++;
-        }
-      }
-
-      if (frontFilled === 2) {
-        this.lastWasTSpin = true;
-      } else {
-        this.lastWasTSpinMini = true;
-      }
-    }
+    var result = detectTSpin(
+      this.grid, this.currentPiece.type,
+      this.currentPiece.x, this.currentPiece.y,
+      this.currentPiece.rotation
+    );
+    this.lastWasTSpin = result.isTSpin;
+    this.lastWasTSpinMini = result.isTSpinMini;
   }
 
   _resetLockTimerIfOnSurface() {
@@ -506,5 +515,6 @@ class PlayerBoard {
 }
 
 exports.PlayerBoard = PlayerBoard;
+exports.detectTSpin = detectTSpin;
 
 })(typeof module !== 'undefined' ? module.exports : (window.GamePlayerBoard = {}));
