@@ -241,25 +241,4 @@ describe('Game - garbage delivery during line clear animation', () => {
     assert.strictEqual(board.pendingGarbage[0].lines, 2);
   });
 
-  test('requeue cap prevents infinite loop if clearingRows gets stuck', () => {
-    const { game } = createGame(['p1', 'p2']);
-    const board = game.boards.get('p1');
-    board.spawnPiece();
-
-    // Stuck clearing state
-    board.clearingRows = [20, 21];
-    board.clearingStartTime = Date.now() + 60000;
-
-    // Queue garbage already at max requeue count
-    game.garbageManager.queues.get('p1').push(
-      { lines: 2, gapColumn: 0, senderId: 'p2', ticksLeft: 1, requeueCount: 30 }
-    );
-
-    game.logicTick();
-
-    // Should be force-delivered despite clearingRows
-    assert.strictEqual(board.pendingGarbage.length, 1, 'garbage force-delivered after max requeues');
-    assert.strictEqual(board.pendingGarbage[0].lines, 2);
-    assert.strictEqual(game.garbageManager.queues.get('p1').length, 0, 'not re-queued again');
-  });
 });

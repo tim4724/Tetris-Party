@@ -174,11 +174,10 @@ class Game {
       if (board && board.alive) {
         // Don't deliver during line clear animation — the player just
         // defended with this clear so new garbage should wait for next piece.
-        // Cap re-queues to prevent infinite loops if clearingRows gets stuck.
-        if (board.clearingRows && (g.requeueCount || 0) < 30) {
+        if (board.clearingRows) {
           const queue = this.garbageManager.queues.get(g.playerId);
           if (queue) {
-            queue.push({ lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId, ticksLeft: 1, requeueCount: (g.requeueCount || 0) + 1 });
+            queue.push({ lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId, ticksLeft: 1 });
           }
         } else {
           this.dirty = true;
