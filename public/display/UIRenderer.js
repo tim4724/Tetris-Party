@@ -299,7 +299,7 @@ class UIRenderer {
 
         ctx.save();
         ctx.globalAlpha = alpha;
-        ctx.fillStyle = '#00ff88';
+        ctx.fillStyle = THEME.color.text.white;
         roundRect(ctx, bx, by, bw, bh, r);
         ctx.fill();
         ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';

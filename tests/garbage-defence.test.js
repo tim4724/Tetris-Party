@@ -202,30 +202,16 @@ describe('Game - garbage delivery during line clear animation', () => {
     const board = game.boards.get('p1');
     board.spawnPiece();
 
-    // Put board into clearing state
+    // Put board into clearing state (far-future timestamp so it won't finish)
     board.clearingRows = [20, 21];
-    board.clearingStartTime = Date.now();
+    board.clearingStartTime = Date.now() + 60000;
 
     // Queue garbage that expires this tick
     game.garbageManager.queues.get('p1').push(
       { lines: 3, gapColumn: 2, senderId: 'p2', ticksLeft: 1 }
     );
 
-    // Run garbage delivery (extracted from logicTick)
-    const readyGarbage = game.garbageManager.tick();
-    for (const g of readyGarbage) {
-      const b = game.boards.get(g.playerId);
-      if (b && b.alive) {
-        if (b.clearingRows) {
-          const queue = game.garbageManager.queues.get(g.playerId);
-          if (queue) {
-            queue.push({ lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId, ticksLeft: 1 });
-          }
-        } else {
-          b.addPendingGarbage(g.lines, g.gapColumn);
-        }
-      }
-    }
+    game.logicTick();
 
     // Board should NOT have received the garbage
     assert.strictEqual(board.pendingGarbage.length, 0, 'no garbage delivered during clear');
@@ -243,29 +229,37 @@ describe('Game - garbage delivery during line clear animation', () => {
     const board = game.boards.get('p1');
     board.spawnPiece();
 
-    // Board is NOT clearing
     assert.strictEqual(board.clearingRows, null);
 
     game.garbageManager.queues.get('p1').push(
       { lines: 2, gapColumn: 4, senderId: 'p2', ticksLeft: 1 }
     );
 
-    const readyGarbage = game.garbageManager.tick();
-    for (const g of readyGarbage) {
-      const b = game.boards.get(g.playerId);
-      if (b && b.alive) {
-        if (b.clearingRows) {
-          const queue = game.garbageManager.queues.get(g.playerId);
-          if (queue) {
-            queue.push({ lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId, ticksLeft: 1 });
-          }
-        } else {
-          b.addPendingGarbage(g.lines, g.gapColumn);
-        }
-      }
-    }
+    game.logicTick();
 
     assert.strictEqual(board.pendingGarbage.length, 1, 'garbage delivered');
     assert.strictEqual(board.pendingGarbage[0].lines, 2);
+  });
+
+  test('requeue cap prevents infinite loop if clearingRows gets stuck', () => {
+    const { game } = createGame(['p1', 'p2']);
+    const board = game.boards.get('p1');
+    board.spawnPiece();
+
+    // Stuck clearing state
+    board.clearingRows = [20, 21];
+    board.clearingStartTime = Date.now() + 60000;
+
+    // Queue garbage already at max requeue count
+    game.garbageManager.queues.get('p1').push(
+      { lines: 2, gapColumn: 0, senderId: 'p2', ticksLeft: 1, requeueCount: 30 }
+    );
+
+    game.logicTick();
+
+    // Should be force-delivered despite clearingRows
+    assert.strictEqual(board.pendingGarbage.length, 1, 'garbage force-delivered after max requeues');
+    assert.strictEqual(board.pendingGarbage[0].lines, 2);
+    assert.strictEqual(game.garbageManager.queues.get('p1').length, 0, 'not re-queued again');
   });
 });

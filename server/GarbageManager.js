@@ -34,7 +34,7 @@ class GarbageManager {
         queue[i].ticksLeft--;
         if (queue[i].ticksLeft <= 0) {
           const g = queue.splice(i, 1)[0];
-          ready.push({ playerId, lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId });
+          ready.push({ playerId, lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId, requeueCount: g.requeueCount || 0 });
         }
       }
     }
