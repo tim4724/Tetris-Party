@@ -19,18 +19,6 @@ function stopRenderLoop() {
   }
 }
 
-function relayStateToControllers(state) {
-  if (!state || !state.players || !party) return;
-  for (var k = 0; k < state.players.length; k++) {
-    var p = state.players[k];
-    party.sendTo(p.id, {
-      type: MSG.PLAYER_STATE,
-      score: p.score, level: p.level, lines: p.lines,
-      alive: p.alive, garbageIncoming: p.pendingGarbage || 0
-    });
-  }
-}
-
 function renderLoop(timestamp) {
   if (rafId == null) return;
   rafId = requestAnimationFrame(renderLoop);
@@ -55,11 +43,6 @@ function renderLoop(timestamp) {
       music.setSpeed(maxLevel);
     }
 
-    // Throttle controller relay to ~15Hz
-    if (timestamp - lastRelayTime >= 66) {
-      relayStateToControllers(gameState);
-      lastRelayTime = timestamp;
-    }
     prevFrameTime = timestamp;
   } else {
     prevFrameTime = 0;

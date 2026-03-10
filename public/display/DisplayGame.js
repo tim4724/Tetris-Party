@@ -159,7 +159,6 @@ function returnToLobbyUI() {
   var wasInGame = currentScreen === SCREEN.GAME || currentScreen === SCREEN.RESULTS;
   gameState = null;
   prevFrameTime = 0;
-  lastRelayTime = 0;
   disconnectedQRs.clear();
   garbageIndicatorEffects.clear();
   garbageDefenceEffects.clear();
@@ -205,9 +204,19 @@ function runGameLocally() {
     onEvent: function(event) {
       if (event.type === 'line_clear') {
         onLineClear(event);
+        var snap = displayGame.getSnapshot();
+        var p = snap.players.find(function(pl) { return pl.id === event.playerId; });
+        if (p) {
+          party.sendTo(event.playerId, {
+            type: MSG.PLAYER_STATE,
+            score: p.score, level: p.level, lines: p.lines,
+            alive: p.alive, garbageIncoming: p.pendingGarbage || 0
+          });
+        }
       } else if (event.type === 'player_ko') {
         onPlayerKO(event);
         lastAliveState[event.playerId] = false;
+        party.sendTo(event.playerId, { type: MSG.PLAYER_STATE, alive: false });
         party.sendTo(event.playerId, { type: MSG.GAME_OVER });
       } else if (event.type === 'garbage_cancelled') {
         onGarbageCancelled(event);
@@ -356,7 +365,6 @@ function onGameEnd(msg) {
   if (music) music.stop();
   stopDisplayGame();
   prevFrameTime = 0;
-  lastRelayTime = 0;
   disconnectedQRs.clear();
   garbageIndicatorEffects.clear();
   garbageDefenceEffects.clear();
