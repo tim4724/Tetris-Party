@@ -165,7 +165,7 @@ class Game {
         if (board.clearingRows) {
           const queue = this.garbageManager.queues.get(g.playerId);
           if (queue) {
-            queue.push({ lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId, msLeft: LOGIC_TICK_MS });
+            queue.push({ lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId, msLeft: deltaMs });
           }
         } else {
           board.addPendingGarbage(g.lines, g.gapColumn);

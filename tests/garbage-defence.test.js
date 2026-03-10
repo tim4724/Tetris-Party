@@ -217,11 +217,11 @@ describe('Game - garbage delivery during line clear animation', () => {
     // Board should NOT have received the garbage
     assert.strictEqual(board.pendingGarbage.length, 0, 'no garbage delivered during clear');
 
-    // Garbage should be re-queued in manager with LOGIC_TICK_MS delay
+    // Garbage should be re-queued in manager with one-frame delay
     const requeued = game.garbageManager.queues.get('p1');
     assert.strictEqual(requeued.length, 1, 'garbage re-queued');
     assert.strictEqual(requeued[0].lines, 3);
-    assert.strictEqual(requeued[0].msLeft, LOGIC_TICK_MS);
+    assert.ok(requeued[0].msLeft > 0, 'msLeft is positive (one frame delay)');
     assert.strictEqual(requeued[0].senderId, 'p2');
   });
 

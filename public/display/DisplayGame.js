@@ -283,10 +283,10 @@ function onLineClear(msg) {
 
 function onGarbageCancelled(msg) {
   // The pending garbage count is already reduced in the engine;
-  // broadcastTick will update the meter on the next frame.
+  // the next getSnapshot() in renderLoop will update the meter.
 
   // Compute where the cancelled rows were on the meter.
-  // gameState still has the pre-tick pending count (broadcastTick hasn't fired yet).
+  // gameState still has the previous frame's snapshot.
   var oldPending = 0;
   if (gameState && gameState.players) {
     for (var i = 0; i < gameState.players.length; i++) {
