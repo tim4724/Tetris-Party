@@ -222,7 +222,7 @@ window.addEventListener('popstate', function () {
   if (currentScreen === 'lobby') {
     performDisconnect();
   } else if (currentScreen === 'game' || currentScreen === 'gameover') {
-    history.pushState({ screen: currentScreen }, '');
+    performDisconnect();
   }
 });
 
