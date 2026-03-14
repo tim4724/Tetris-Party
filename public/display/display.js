@@ -46,9 +46,13 @@ function resetToWelcome() {
 var cursorTimer = null;
 function showCursor() {
   document.body.classList.remove('cursor-hidden');
+  gameToolbar.classList.remove('toolbar-autohide');
   clearTimeout(cursorTimer);
   cursorTimer = setTimeout(function() {
     document.body.classList.add('cursor-hidden');
+    if (currentScreen === SCREEN.GAME) {
+      gameToolbar.classList.add('toolbar-autohide');
+    }
   }, 3000);
 }
 document.addEventListener('mousemove', showCursor);

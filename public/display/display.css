@@ -151,6 +151,7 @@ html, body {
 
 #player-list {
   display: flex;
+  flex-wrap: wrap;
   gap: clamp(0.6rem, 1.2vw, 1.2rem);
   justify-content: center;
   margin-top: auto;
@@ -254,6 +255,12 @@ html, body {
   z-index: 50;
   display: flex;
   gap: clamp(6px, 0.8vh, 10px);
+  transition: opacity 0.3s ease;
+}
+
+#game-toolbar.toolbar-autohide {
+  opacity: 0;
+  pointer-events: none;
 }
 
 #game-toolbar.hidden {

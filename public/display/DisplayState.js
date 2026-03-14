@@ -113,7 +113,7 @@ function nextAvailableSlot() {
 
 // Sanitize player name: replace "P1"–"P4" with the correct slot label
 function sanitizePlayerName(name, slotIndex) {
-  if (!name || /^P[1-4]$/i.test(name)) return 'P' + (slotIndex + 1);
+  if (!name || /^P[1-8]$/i.test(name)) return 'P' + (slotIndex + 1);
   return name;
 }
 
@@ -155,6 +155,7 @@ function showScreen(name) {
   if (name !== SCREEN.GAME) {
     pauseOverlay.classList.add('hidden');
     reconnectOverlay.classList.add('hidden');
+    gameToolbar.classList.remove('toolbar-autohide');
   }
   if (name === SCREEN.GAME || name === SCREEN.RESULTS) {
     initCanvas();
