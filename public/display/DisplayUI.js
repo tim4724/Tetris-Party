@@ -125,8 +125,8 @@ function renderTetrisQR(canvas, qrMatrix) {
 
   var dpr = window.devicePixelRatio || 1;
   var cssSize = canvas.parentElement
-    ? Math.min(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight, 280)
-    : 280;
+    ? Math.min(canvas.parentElement.clientWidth, canvas.parentElement.clientHeight, 380)
+    : 380;
   var cellPx = Math.floor((cssSize * dpr) / size);
   var totalPx = cellPx * size;
 
