@@ -131,7 +131,7 @@ var gestureHints = document.getElementById('gesture-hints');
 var muteBtn = document.getElementById('mute-btn');
 
 // --- Screen Management ---
-var SCREEN_ORDER = { name: 0, lobby: 1, game: 2, gameover: 3 };
+var SCREEN_ORDER = { name: 0, lobby: 1, game: 1, gameover: 1 };
 
 function showScreen(name) {
   var prev = currentScreen;
