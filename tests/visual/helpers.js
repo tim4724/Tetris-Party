@@ -2,7 +2,6 @@
 
 const { buildPlayers, buildPlayerIds, buildGameState, buildResults } = require('./fixtures');
 
-const TEST_BASE_URL = 'http://localhost:4100';
 
 async function waitForFont(page) {
   await page.evaluate(() => document.fonts.ready);
@@ -127,8 +126,39 @@ async function waitForDisplayResults(page) {
   await page.waitForTimeout(1100);
 }
 
+async function stabilizeControllerUI(page) {
+  await page.evaluate((url) => {
+    // Freeze ping display to default text
+    var ping = document.getElementById('ping-display');
+    if (ping) {
+      ping.textContent = '- ms';
+      ping.className = 'ping-display';
+    }
+    // Null out the module-level reference so future pings are no-ops
+    if (typeof pingDisplay !== 'undefined') pingDisplay = null;
+    // Standardize join URL hints
+    var nameUrl = document.getElementById('name-join-url');
+    var lobbyUrl = document.getElementById('lobby-join-url');
+    if (nameUrl) nameUrl.textContent = url;
+    if (lobbyUrl) lobbyUrl.textContent = url;
+  }, STABLE_URL);
+}
+
+const STABLE_URL = 'https://tetris.party/ABCD';
+
+async function stabilizeDisplayLobby(page) {
+  var response = await page.request.get('/api/qr?text=' + encodeURIComponent(STABLE_URL));
+  var qrMatrix = await response.json();
+  await page.evaluate(({ url, matrix }) => {
+    document.getElementById('join-url').textContent = url;
+    renderTetrisQR(document.getElementById('qr-code'), matrix);
+  }, { url: STABLE_URL, matrix: qrMatrix });
+  await page.waitForTimeout(50);
+}
+
 async function waitForControllerGame(page) {
   await page.waitForSelector('#game-screen:not(.hidden)');
+  await stabilizeControllerUI(page);
   await page.waitForTimeout(150);
 }
 
@@ -147,6 +177,8 @@ module.exports = {
   injectPlayers,
   injectResults,
   joinController,
+  stabilizeControllerUI,
+  stabilizeDisplayLobby,
   stopDisplayBackground,
   waitForControllerGame,
   waitForControllerResults,

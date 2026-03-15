@@ -8,6 +8,7 @@ const {
   injectPause,
   injectPlayers,
   injectResults,
+  stabilizeDisplayLobby,
   stopDisplayBackground,
   waitForFont,
 } = require('./helpers');
@@ -31,33 +32,30 @@ test.describe('Display', () => {
 
   test('lobby screen - empty', async ({ page }) => {
     await gotoDisplayTest(page);
-    // Simulate room created by showing lobby
     await page.evaluate(() => {
-      document.getElementById('join-url').textContent = 'http://localhost:4100/TEST';
       document.getElementById('lobby-screen').classList.remove('hidden');
       document.getElementById('welcome-screen').classList.add('hidden');
+      updatePlayerList();
+      updateStartButton();
     });
-    await page.waitForTimeout(200);
+    await stabilizeDisplayLobby(page);
     await stopDisplayBackground(page);
     await expect(page).toHaveScreenshot('03-lobby-empty.png', {
-      mask: [page.locator('#qr-container')],
-      maxDiffPixelRatio: 0.02,
+      maxDiffPixelRatio: 0.005,
     });
   });
 
   test('lobby screen - with players', async ({ page }) => {
     await gotoDisplayTest(page);
     await page.evaluate(() => {
-      document.getElementById('join-url').textContent = 'http://localhost:4100/TEST';
       document.getElementById('lobby-screen').classList.remove('hidden');
       document.getElementById('welcome-screen').classList.add('hidden');
     });
     await injectPlayers(page, 2);
-    await page.waitForTimeout(200);
+    await stabilizeDisplayLobby(page);
     await stopDisplayBackground(page);
     await expect(page).toHaveScreenshot('04-lobby-players.png', {
-      mask: [page.locator('#qr-container')],
-      maxDiffPixelRatio: 0.02,
+      maxDiffPixelRatio: 0.005,
     });
   });
 
@@ -65,16 +63,14 @@ test.describe('Display', () => {
     await page.setViewportSize({ width: 2560, height: 1440 });
     await gotoDisplayTest(page);
     await page.evaluate(() => {
-      document.getElementById('join-url').textContent = 'http://localhost:4100/TEST';
       document.getElementById('lobby-screen').classList.remove('hidden');
       document.getElementById('welcome-screen').classList.add('hidden');
     });
     await injectPlayers(page, 3);
-    await page.waitForTimeout(200);
+    await stabilizeDisplayLobby(page);
     await stopDisplayBackground(page);
     await expect(page).toHaveScreenshot('04b-lobby-wide.png', {
-      mask: [page.locator('#qr-container')],
-      maxDiffPixelRatio: 0.02,
+      maxDiffPixelRatio: 0.005,
     });
   });
 

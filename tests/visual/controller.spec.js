@@ -3,6 +3,7 @@ const { test, expect } = require('@playwright/test');
 const {
   createRoom,
   joinController,
+  stabilizeControllerUI,
   waitForControllerGame,
   waitForControllerResults,
   waitForDisplayPlayers,
@@ -26,6 +27,7 @@ test.describe('Controller', () => {
     const controller = await context.newPage();
     await controller.goto(`/${roomCode}`);
     await waitForFont(controller);
+    await stabilizeControllerUI(controller);
     await expect(controller).toHaveScreenshot('01a-name-entry.png');
   });
 
@@ -40,6 +42,7 @@ test.describe('Controller', () => {
     await controller.evaluate(() => {
       document.documentElement.style.setProperty('--app-height', '544px');
     });
+    await stabilizeControllerUI(controller);
     await expect(controller).toHaveScreenshot('01b-name-keyboard.png');
   });
 
@@ -47,6 +50,7 @@ test.describe('Controller', () => {
     const { controllers } = await setupJoinedRoom(page, context, ['Player 1', 'Player 2']);
     const host = controllers[0];
     await host.waitForFunction(() => document.getElementById('start-btn').textContent.includes('2 players'));
+    await stabilizeControllerUI(host);
     await expect(host).toHaveScreenshot('03-lobby-host.png');
   });
 
@@ -54,6 +58,7 @@ test.describe('Controller', () => {
     const { controllers } = await setupJoinedRoom(page, context, ['Player 1', 'Player 2']);
     const nonHost = controllers[1];
     await nonHost.waitForFunction(() => document.getElementById('waiting-action-text').textContent.includes('Waiting for host'));
+    await stabilizeControllerUI(nonHost);
     await expect(nonHost).toHaveScreenshot('04-lobby-nonhost.png');
   });
 
@@ -63,9 +68,7 @@ test.describe('Controller', () => {
     // Start game via host
     await host.click('#start-btn');
     await waitForControllerGame(host);
-    await expect(host).toHaveScreenshot('05-game-host.png', {
-      mask: [host.locator('#ping-display')],
-    });
+    await expect(host).toHaveScreenshot('05-game-host.png');
   });
 
   test('game screen - non-host', async ({ page, context }) => {
@@ -74,9 +77,7 @@ test.describe('Controller', () => {
     const host = controllers[0];
     await host.click('#start-btn');
     await waitForControllerGame(nonHost);
-    await expect(nonHost).toHaveScreenshot('06-game-nonhost.png', {
-      mask: [nonHost.locator('#ping-display')],
-    });
+    await expect(nonHost).toHaveScreenshot('06-game-nonhost.png');
   });
 
   test('game screen - paused (host)', async ({ page, context }) => {
@@ -87,9 +88,7 @@ test.describe('Controller', () => {
     await host.click('#pause-btn');
     await host.waitForSelector('#pause-overlay:not(.hidden)');
     await host.waitForTimeout(150);
-    await expect(host).toHaveScreenshot('07-pause-host.png', {
-      mask: [host.locator('#ping-display')],
-    });
+    await expect(host).toHaveScreenshot('07-pause-host.png');
   });
 
   test('game screen - paused (non-host)', async ({ page, context }) => {
@@ -101,9 +100,7 @@ test.describe('Controller', () => {
     await host.click('#pause-btn');
     await nonHost.waitForSelector('#pause-overlay:not(.hidden)');
     await nonHost.waitForTimeout(150);
-    await expect(nonHost).toHaveScreenshot('08-pause-nonhost.png', {
-      mask: [nonHost.locator('#ping-display')],
-    });
+    await expect(nonHost).toHaveScreenshot('08-pause-nonhost.png');
   });
 
   test('results - 1 player', async ({ page, context }) => {
@@ -124,8 +121,11 @@ test.describe('Controller', () => {
         });
       } catch (_) {}
     }, 100);
-    await waitForControllerResults(host);
-    clearInterval(dropInterval);
+    try {
+      await waitForControllerResults(host);
+    } finally {
+      clearInterval(dropInterval);
+    }
     await expect(host).toHaveScreenshot('10a-results-1p.png', {
       maxDiffPixelRatio: 0.02,
     });
@@ -147,8 +147,11 @@ test.describe('Controller', () => {
         });
       } catch (_) {}
     }, 100);
-    await waitForControllerResults(host);
-    clearInterval(dropInterval);
+    try {
+      await waitForControllerResults(host);
+    } finally {
+      clearInterval(dropInterval);
+    }
     await expect(host).toHaveScreenshot('10b-results-winner.png', {
       maxDiffPixelRatio: 0.02,
     });
@@ -171,8 +174,11 @@ test.describe('Controller', () => {
         });
       } catch (_) {}
     }, 100);
-    await waitForControllerResults(loser);
-    clearInterval(dropInterval);
+    try {
+      await waitForControllerResults(loser);
+    } finally {
+      clearInterval(dropInterval);
+    }
     await expect(loser).toHaveScreenshot('10c-results-loser.png', {
       maxDiffPixelRatio: 0.02,
     });
@@ -190,9 +196,7 @@ test.describe('Controller', () => {
       document.getElementById('reconnect-rejoin-btn').classList.add('hidden');
     });
     await host.waitForTimeout(150);
-    await expect(host).toHaveScreenshot('09a-reconnect-attempt.png', {
-      mask: [host.locator('#ping-display')],
-    });
+    await expect(host).toHaveScreenshot('09a-reconnect-attempt.png');
   });
 
   test('reconnect overlay - display disconnected', async ({ page, context }) => {
@@ -207,9 +211,7 @@ test.describe('Controller', () => {
       document.getElementById('reconnect-rejoin-btn').classList.add('hidden');
     });
     await host.waitForTimeout(150);
-    await expect(host).toHaveScreenshot('09b-reconnect-display.png', {
-      mask: [host.locator('#ping-display')],
-    });
+    await expect(host).toHaveScreenshot('09b-reconnect-display.png');
   });
 
   test('reconnect overlay - failed with rejoin', async ({ page, context }) => {
@@ -224,9 +226,7 @@ test.describe('Controller', () => {
       document.getElementById('reconnect-rejoin-btn').classList.remove('hidden');
     });
     await host.waitForTimeout(150);
-    await expect(host).toHaveScreenshot('09c-reconnect-rejoin.png', {
-      mask: [host.locator('#ping-display')],
-    });
+    await expect(host).toHaveScreenshot('09c-reconnect-rejoin.png');
   });
 
   test('error - room not found', async ({ page }) => {
@@ -239,6 +239,7 @@ test.describe('Controller', () => {
       return document.getElementById('room-gone-heading').textContent === 'Room Not Found'
         && !document.getElementById('room-gone-message').classList.contains('hidden');
     });
+    await stabilizeControllerUI(page);
     await expect(page).toHaveScreenshot('12-error-room-notfound.png');
   });
 
@@ -252,6 +253,7 @@ test.describe('Controller', () => {
       return document.getElementById('name-status-detail').textContent === 'Host disconnected'
         && !btn.disabled;
     });
+    await stabilizeControllerUI(nonHost);
     await expect(nonHost).toHaveScreenshot('13-error-host-disconnected.png');
   });
 });
