@@ -172,7 +172,7 @@ function onError(data) {
 function onGamePaused() {
   gameScreen.classList.add('paused');
   pauseOverlay.classList.remove('hidden');
-  pauseBtn.classList.add('hidden');
+  pauseBtn.disabled = true;
   pauseStatus.textContent = '';
   pauseButtons.classList.toggle('hidden', !isHost);
 }
@@ -180,9 +180,7 @@ function onGamePaused() {
 function onGameResumed() {
   gameScreen.classList.remove('paused');
   pauseOverlay.classList.add('hidden');
-  if (isHost) {
-    pauseBtn.classList.remove('hidden');
-  }
+  pauseBtn.disabled = false;
 }
 
 // =====================================================================
