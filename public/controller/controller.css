@@ -330,23 +330,18 @@ html, body {
   gap: 2px;
   padding: 12px 12px 8px;
   background: var(--bg-board);
-  transition: opacity 0.6s ease-out;
-}
-
-#gesture-hints.faded {
-  opacity: 0;
 }
 
 .gesture-hint-primary {
   font-size: clamp(1rem, 4.5vw, 1.2rem);
   font-weight: 700;
-  color: var(--text-hint-strong);
+  color: var(--text-secondary);
   letter-spacing: 0.04em;
 }
 
 .gesture-hint-row {
   font-size: clamp(0.85rem, 3.8vw, 1rem);
-  color: var(--text-hint);
+  color: var(--text-secondary);
   letter-spacing: 0.02em;
 }
 
@@ -404,11 +399,6 @@ html, body {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  transition: opacity 0.6s ease-out;
-}
-
-#compass-hints.faded {
-  opacity: 0.5;
 }
 
 .compass-arrow {

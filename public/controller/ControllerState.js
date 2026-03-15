@@ -23,9 +23,6 @@ var playerCount = 0;
 var gameCancelled = false;
 var lastLines = 0;
 var lastGameResults = null;
-var hintsFadeTimer = null;
-var hintsSawLeft = false;
-var hintsSawRight = false;
 
 // Ping/pong
 var PING_INTERVAL_MS = 1000;
@@ -126,8 +123,6 @@ var reconnectHeading = document.getElementById('reconnect-heading');
 var reconnectStatus = document.getElementById('reconnect-status');
 var reconnectRejoinBtn = document.getElementById('reconnect-rejoin-btn');
 var pingDisplay = document.getElementById('ping-display');
-var compassHints = document.getElementById('compass-hints');
-var gestureHints = document.getElementById('gesture-hints');
 var muteBtn = document.getElementById('mute-btn');
 
 // --- Screen Management ---

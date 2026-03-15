@@ -62,13 +62,6 @@ function onWelcome(data) {
     gameScreen.classList.remove('paused');
     gameScreen.style.setProperty('--player-color', playerColor);
     removeKoOverlay();
-    clearTimeout(hintsFadeTimer);
-    hintsFadeTimer = null;
-    hintsSawLeft = false;
-    hintsSawRight = false;
-    compassHints.classList.remove('faded');
-    gestureHints.classList.remove('faded');
-
     if (data.paused) {
       onGamePaused();
     } else {
@@ -111,12 +104,6 @@ function onLobbyUpdate(data) {
 function onGameStart() {
   ControllerAudio.tick();
   lastLines = 0;
-  clearTimeout(hintsFadeTimer);
-  hintsFadeTimer = null;
-  hintsSawLeft = false;
-  hintsSawRight = false;
-  compassHints.classList.remove('faded');
-  gestureHints.classList.remove('faded');
   gameScreen.classList.remove('dead');
   gameScreen.classList.remove('paused');
   gameScreen.classList.remove('countdown');
@@ -341,15 +328,6 @@ function initTouchInput() {
   touchArea.addEventListener('pointerdown', coordTracker, { passive: true });
 
   touchInput = new TouchInput(touchArea, function (action, data) {
-    // Fade compass hints after player has used both left and right
-    if (!compassHints.classList.contains('faded')) {
-      if (action === 'left') hintsSawLeft = true;
-      if (action === 'right') hintsSawRight = true;
-      if (hintsSawLeft && hintsSawRight && !hintsFadeTimer) {
-        // Hints stay visible permanently
-      }
-    }
-
     // Gesture feedback
     if (action === 'rotate_cw') {
       ControllerAudio.tick();

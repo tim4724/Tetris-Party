@@ -12,7 +12,7 @@
 
   /* Text */
   --text-primary: #e0e0ff;
-  --text-secondary: #8888aa;
+  --text-secondary: rgba(240, 244, 255, 0.6);
   --text-cyan: rgba(0, 200, 255, 0.9);
 
   /* Accents */
@@ -47,10 +47,6 @@
   --glow-cyan: rgba(0, 200, 255, 0.15);
   --glow-green: rgba(0, 255, 136, 0.3);
   --glow-blue: rgba(68, 68, 255, 0.06);
-
-  /* Hints */
-  --text-hint: rgba(255, 255, 255, 0.35);
-  --text-hint-strong: rgba(255, 255, 255, 0.45);
 
   /* Opacities */
   --opacity-faint: 0.04;
