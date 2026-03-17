@@ -198,10 +198,11 @@ class Music {
       this.nextMelodyTime = this.ctx.currentTime + 0.1;
       this.nextBassTime = this.ctx.currentTime + 0.1;
 
-      // Fade in over 0.3s
+      // Fade in over 0.3s (stay silent if muted)
+      const targetVolume = this.muted ? 0 : MASTER_VOLUME;
       this.masterGain.gain.cancelScheduledValues(this.ctx.currentTime);
       this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
-      this.masterGain.gain.linearRampToValueAtTime(MASTER_VOLUME, this.ctx.currentTime + 0.3);
+      this.masterGain.gain.linearRampToValueAtTime(targetVolume, this.ctx.currentTime + 0.3);
 
       this.schedule();
     }).catch(e => console.warn('AudioContext resume failed:', e));

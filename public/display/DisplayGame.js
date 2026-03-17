@@ -416,7 +416,6 @@ function onGameResumed() {
     countdownOverlay.classList.remove('hidden');
   } else if (music) {
     music.resume();
-    if (muted) music.masterGain.gain.setValueAtTime(0, music.ctx.currentTime);
   }
 }
 
