@@ -62,7 +62,8 @@ showCursor();
 // Test Mode API (window.__TEST__)
 // =====================================================================
 
-if (new URLSearchParams(window.location.search).get('test') === '1') {
+var _params = new URLSearchParams(window.location.search);
+if (_params.get('test') === '1' || _params.get('debug')) {
   window.__TEST__ = {
     addPlayers: function(playerList) {
       for (var i = 0; i < playerList.length; i++) {
@@ -269,5 +270,42 @@ if (bgCanvas) {
   welcomeBg.start();
 }
 
-fetchBaseUrl();
-connectAndCreateRoom();
+// --- Debug mode: ?debug=N auto-injects N players with game boards ---
+var debugCount = parseInt(_params.get('debug'), 10);
+if (debugCount > 0 && window.__TEST__) {
+  var debugNames = ['Emma', 'Jake', 'Sofia', 'Liam', 'Mia', 'Noah', 'Ava', 'Leo'];
+  var debugPlayers = [];
+  for (var di = 0; di < Math.min(debugCount, 8); di++) {
+    debugPlayers.push({ id: 'debug' + di, name: debugNames[di] || ('P' + (di + 1)) });
+  }
+  window.__TEST__.addPlayers(debugPlayers);
+
+  // Build minimal game state with empty boards
+  var debugState = { players: [], elapsed: 75000 };
+  for (var dj = 0; dj < debugPlayers.length; dj++) {
+    var grid = [];
+    for (var dr = 0; dr < GameConstants.TOTAL_HEIGHT; dr++) {
+      var row = [];
+      for (var dc = 0; dc < GameConstants.BOARD_WIDTH; dc++) row.push(0);
+      grid.push(row);
+    }
+    debugState.players.push({
+      id: debugPlayers[dj].id,
+      playerName: debugPlayers[dj].name,
+      grid: grid,
+      score: 12500,
+      lines: 8,
+      level: 3,
+      alive: true,
+      currentPiece: { typeId: 1, x: 4, y: 1, blocks: [[0,0],[1,0],[2,0],[3,0]] },
+      nextPieces: ['T', 'S', 'Z', 'L', 'J'],
+      holdPiece: 'O',
+      pendingGarbage: 0
+    });
+  }
+  window.__TEST__.injectGameState(debugState);
+  startRenderLoop();
+} else {
+  fetchBaseUrl();
+  connectAndCreateRoom();
+}
