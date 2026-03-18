@@ -232,7 +232,7 @@ class UIRenderer {
       const bh = meter.cellSize - inset * 2;
       ctx.strokeStyle = `rgba(255, 255, 255, ${THEME.opacity.label})`;
       ctx.lineWidth = meter.cellSize * THEME.stroke.ghost;
-      const dash = meter.cellSize * 0.1;
+      const dash = meter.cellSize * 0.07;
       ctx.setLineDash([dash, dash]);
       ctx.strokeRect(bx, by, bw, bh);
       ctx.setLineDash([]);

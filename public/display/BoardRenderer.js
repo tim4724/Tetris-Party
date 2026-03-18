@@ -194,7 +194,7 @@ class BoardRenderer {
     // Dotted outline ghost
     ctx.strokeStyle = color;
     ctx.lineWidth = size * THEME.stroke.ghost;
-    const dash = size * 0.1;
+    const dash = size * 0.07;
     ctx.setLineDash([dash, dash]);
     ctx.strokeRect(x + inset, y + inset, size - inset * 2, size - inset * 2);
     ctx.setLineDash([]);
