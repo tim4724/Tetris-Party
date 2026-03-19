@@ -164,7 +164,7 @@ const server = http.createServer((req, res) => {
     }
 
     if (ext === '.html') {
-      headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' wss://ws.tetris.party; img-src 'self' data:";
+      headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' wss://ws.tetris.party; img-src 'self' data:";
     }
 
     res.writeHead(200, headers);
