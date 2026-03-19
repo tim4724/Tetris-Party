@@ -35,10 +35,10 @@ const PLAYER_COLORS = [
   '#4ECDC4', // Player 2 - teal
   '#FFE66D', // Player 3 - yellow
   '#A78BFA', // Player 4 - purple
-  '#FF9F43', // Player 5 - orange
-  '#54A0FF', // Player 6 - blue
-  '#FF6FB5', // Player 7 - pink
-  '#1DD1A1'  // Player 8 - mint
+  '#7BED6F', // Player 5 - green
+  '#FF44CC', // Player 6 - hot magenta
+  '#5B7FFF', // Player 7 - indigo
+  '#FF7F50'  // Player 8 - coral
 ];
 
 const PLAYER_NAMES = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5', 'Player 6', 'Player 7', 'Player 8'];

@@ -62,22 +62,40 @@ test.describe('Controller', () => {
     await expect(nonHost).toHaveScreenshot('04-lobby-nonhost.png');
   });
 
-  test('game screen - host', async ({ page, context }) => {
-    const { controllers } = await setupJoinedRoom(page, context, ['Player 1', 'Player 2']);
+  test('game screen - all player colors', async ({ page, context }) => {
+    const names = ['Red', 'Teal', 'Yellow', 'Purple', 'Green', 'Magenta', 'Indigo', 'Coral'];
+    const { controllers } = await setupJoinedRoom(page, context, names);
     const host = controllers[0];
-    // Start game via host
     await host.click('#start-btn');
-    await waitForControllerGame(host);
-    await expect(host).toHaveScreenshot('05-game-host.png');
+    for (let i = 0; i < controllers.length; i++) {
+      await waitForControllerGame(controllers[i]);
+      // Hide ping display for consistent screenshots
+      await controllers[i].evaluate(() => {
+        var ping = document.getElementById('ping-display');
+        if (ping) ping.style.display = 'none';
+      });
+    }
+    for (let i = 0; i < controllers.length; i++) {
+      await expect(controllers[i]).toHaveScreenshot('06b-game-color-' + (i + 1) + '-' + names[i].toLowerCase() + '.png');
+    }
   });
 
-  test('game screen - non-host', async ({ page, context }) => {
+  test('game screen - KO state', async ({ page, context }) => {
     const { controllers } = await setupJoinedRoom(page, context, ['Player 1', 'Player 2']);
-    const nonHost = controllers[1];
     const host = controllers[0];
     await host.click('#start-btn');
-    await waitForControllerGame(nonHost);
-    await expect(nonHost).toHaveScreenshot('06-game-nonhost.png');
+    await waitForControllerGame(host);
+    await host.evaluate(() => {
+      var ping = document.getElementById('ping-display');
+      if (ping) ping.style.display = 'none';
+      document.getElementById('game-screen').classList.add('dead');
+      var ko = document.createElement('div');
+      ko.id = 'ko-overlay';
+      ko.textContent = 'KO';
+      document.getElementById('touch-area').appendChild(ko);
+    });
+    await host.waitForTimeout(150);
+    await expect(host).toHaveScreenshot('06c-game-ko.png');
   });
 
   test('game screen - paused (host)', async ({ page, context }) => {
@@ -190,7 +208,12 @@ test.describe('Controller', () => {
     await host.click('#start-btn');
     await waitForControllerGame(host);
     await host.evaluate(() => {
-      document.getElementById('reconnect-overlay').classList.remove('hidden');
+      var overlay = document.getElementById('reconnect-overlay');
+      overlay.classList.remove('hidden');
+      // Prevent pong messages from re-hiding the overlay
+      overlay.classList.add = function() {};
+      overlay.style.animation = 'none';
+      overlay.style.opacity = '1';
       document.getElementById('reconnect-heading').textContent = 'RECONNECTING';
       document.getElementById('reconnect-status').textContent = 'Attempt 2 of 5';
       document.getElementById('reconnect-rejoin-btn').classList.add('hidden');
@@ -205,7 +228,12 @@ test.describe('Controller', () => {
     await host.click('#start-btn');
     await waitForControllerGame(host);
     await host.evaluate(() => {
-      document.getElementById('reconnect-overlay').classList.remove('hidden');
+      var overlay = document.getElementById('reconnect-overlay');
+      overlay.classList.remove('hidden');
+      // Prevent pong messages from re-hiding the overlay
+      overlay.classList.add = function() {};
+      overlay.style.animation = 'none';
+      overlay.style.opacity = '1';
       document.getElementById('reconnect-heading').textContent = 'RECONNECTING';
       document.getElementById('reconnect-status').textContent = 'Display reconnecting...';
       document.getElementById('reconnect-rejoin-btn').classList.add('hidden');
@@ -220,7 +248,12 @@ test.describe('Controller', () => {
     await host.click('#start-btn');
     await waitForControllerGame(host);
     await host.evaluate(() => {
-      document.getElementById('reconnect-overlay').classList.remove('hidden');
+      var overlay = document.getElementById('reconnect-overlay');
+      overlay.classList.remove('hidden');
+      // Prevent pong messages from re-hiding the overlay
+      overlay.classList.add = function() {};
+      overlay.style.animation = 'none';
+      overlay.style.opacity = '1';
       document.getElementById('reconnect-heading').textContent = 'RECONNECTING';
       document.getElementById('reconnect-status').textContent = 'Attempt 5 of 5';
       document.getElementById('reconnect-rejoin-btn').classList.remove('hidden');

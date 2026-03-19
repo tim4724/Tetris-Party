@@ -157,7 +157,7 @@ async function stabilizeDisplayLobby(page) {
 }
 
 async function waitForControllerGame(page) {
-  await page.waitForSelector('#game-screen:not(.hidden)');
+  await page.waitForSelector('#game-screen:not(.hidden):not(.countdown)');
   await stabilizeControllerUI(page);
   await page.waitForTimeout(150);
 }
