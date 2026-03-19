@@ -194,9 +194,12 @@ class Music {
     this.playing = true;
 
     this.ctx.resume().then(() => {
-      // Re-anchor scheduling times to now, preserving melody/bass indices
+      // Re-anchor scheduling times to now, preserving the offset between
+      // melody and bass so they stay in sync (their indices advance at
+      // different rates because melody notes have varying durations)
+      const offset = this.nextBassTime - this.nextMelodyTime;
       this.nextMelodyTime = this.ctx.currentTime + 0.1;
-      this.nextBassTime = this.ctx.currentTime + 0.1;
+      this.nextBassTime = this.nextMelodyTime + offset;
 
       // Fade in over 0.3s (stay silent if muted)
       const targetVolume = this.muted ? 0 : MASTER_VOLUME;
