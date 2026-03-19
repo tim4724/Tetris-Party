@@ -98,6 +98,50 @@ test.describe('Controller', () => {
     await expect(host).toHaveScreenshot('06c-game-ko.png');
   });
 
+  test('game screen - KO state after reconnect', async ({ page, context }) => {
+    test.setTimeout(60000);
+    const { roomCode, controllers } = await setupJoinedRoom(page, context, ['Player 1', 'Player 2', 'Player 3']);
+    const host = controllers[0];
+    const player2 = controllers[1];
+    await host.click('#start-btn');
+    await waitForControllerGame(player2);
+    // Wait for display countdown to finish so hard drops are accepted
+    await page.waitForFunction(() => {
+      return typeof displayGame !== 'undefined' && displayGame !== null
+        && document.getElementById('countdown-overlay').classList.contains('hidden');
+    }, null, { timeout: 15000 });
+    // Hard drop only player 2 until KO (game continues with 3 players)
+    const dropInterval = setInterval(async () => {
+      try {
+        await page.evaluate(() => {
+          if (displayGame && typeof displayGame.processInput === 'function') {
+            var ids = Array.from(playerOrder || []);
+            if (ids.length >= 2) {
+              displayGame.processInput(ids[1], 'hard_drop');
+              // Ensure game physics tick runs (RAF may be throttled in background tab)
+              displayGame.update(16);
+            }
+          }
+        });
+      } catch (_) {}
+    }, 100);
+    try {
+      await player2.waitForFunction(() => document.getElementById('game-screen').classList.contains('dead'), null, { timeout: 30000 });
+    } finally {
+      clearInterval(dropInterval);
+    }
+    // Reload the KO'd player's controller (auto-reconnects via sessionStorage)
+    await player2.goto(`/${roomCode}`);
+    // Should restore KO state after reconnect
+    await player2.waitForFunction(() => document.getElementById('game-screen').classList.contains('dead'), null, { timeout: 10000 });
+    await player2.evaluate(() => {
+      var ping = document.getElementById('ping-display');
+      if (ping) ping.style.display = 'none';
+    });
+    await player2.waitForTimeout(150);
+    await expect(player2).toHaveScreenshot('06d-game-ko-reconnect.png');
+  });
+
   test('game screen - paused (host)', async ({ page, context }) => {
     const { controllers } = await setupJoinedRoom(page, context, ['Player 1', 'Player 2']);
     const host = controllers[0];

@@ -136,7 +136,14 @@ class Game {
     if (this.ended || this.paused) return;
 
     for (const [id, board] of this.boards) {
-      if (!board.alive) continue;
+      if (!board.alive) {
+        // Emit KO for players that died outside tick (e.g. processInput hard_drop)
+        if (!board._koEmitted) {
+          board._koEmitted = true;
+          this.callbacks.onEvent({ type: 'player_ko', playerId: id });
+        }
+        continue;
+      }
 
       try {
         const result = board.tick(deltaMs);
@@ -149,12 +156,10 @@ class Game {
         board.alive = false;
       }
 
-      // Check if player just died
+      // Check if player just died during tick
       if (!board.alive) {
-        this.callbacks.onEvent({
-          type: 'player_ko',
-          playerId: id
-        });
+        board._koEmitted = true;
+        this.callbacks.onEvent({ type: 'player_ko', playerId: id });
       }
     }
 

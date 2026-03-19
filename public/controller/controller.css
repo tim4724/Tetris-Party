@@ -714,6 +714,7 @@ html, body {
 #game-screen.dead #touch-area {
   opacity: 0.4;
   filter: grayscale(0.7);
+  pointer-events: none;
 }
 
 #game-screen.dead #game-top-bar {
