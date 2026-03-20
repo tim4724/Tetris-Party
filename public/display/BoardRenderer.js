@@ -136,7 +136,7 @@ class BoardRenderer {
     const x = this.x + col * this.cellSize;
     const y = this.y + row * this.cellSize;
     const size = this.cellSize;
-    const inset = size * THEME.size.boardInset;
+    const inset = size * THEME.size.blockGap;
     const r = THEME.radius.block(size);
 
     if (isGarbage) {
@@ -189,7 +189,7 @@ class BoardRenderer {
     const x = this.x + col * this.cellSize;
     const y = this.y + row * this.cellSize;
     const size = this.cellSize;
-    const inset = size * THEME.size.boardInset;
+    const inset = size * THEME.size.blockGap;
 
     // Dotted outline ghost
     ctx.strokeStyle = color;

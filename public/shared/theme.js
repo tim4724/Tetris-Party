@@ -144,7 +144,7 @@ const THEME = Object.freeze({
     panelWidth:  4.5,   // cellSize multiplier for panel width
     panelGap:    0.25,  // panel-to-board gap (× cellSize)
     canvasPad:   5,     // canvas edge padding px
-    boardInset:  0.035, // block inset from cell edge (× cellSize)
+    blockGap:    0.02,  // half-gap between blocks (× cellSize)
   }),
 });
 

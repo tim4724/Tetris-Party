@@ -221,7 +221,7 @@ class UIRenderer {
     const ctx = this.ctx;
     const meter = this.getGarbageMeterLayout();
     const rows = Math.min(pendingGarbage, meter.rows);
-    const inset = meter.cellSize * THEME.size.boardInset;
+    const inset = meter.cellSize * THEME.size.blockGap;
 
     // Ghost-style blocks: outline + translucent fill (incoming but not yet applied)
     for (let i = 0; i < rows; i++) {
@@ -247,7 +247,7 @@ class UIRenderer {
     const ctx = this.ctx;
     const meter = this.getGarbageMeterLayout();
     const now = timestamp || performance.now();
-    const inset = meter.cellSize * THEME.size.boardInset;
+    const inset = meter.cellSize * THEME.size.blockGap;
     const r = THEME.radius.block(meter.cellSize);
 
     for (const effect of effects) {
@@ -282,7 +282,7 @@ class UIRenderer {
     const ctx = this.ctx;
     const meter = this.getGarbageMeterLayout();
     const now = timestamp || performance.now();
-    const inset = meter.cellSize * THEME.size.boardInset;
+    const inset = meter.cellSize * THEME.size.blockGap;
     const r = THEME.radius.block(meter.cellSize);
 
     for (const effect of effects) {
@@ -356,7 +356,7 @@ class UIRenderer {
     for (const [bx, by] of blocks) {
       const dx = offsetX + (bx - bounds.minX) * size;
       const dy = offsetY + (by - bounds.minY) * size;
-      const inset = size * THEME.size.boardInset;
+      const inset = size * THEME.size.blockGap;
       const r = THEME.radius.mini(size);
 
       // Mini block with gradient (cached)
