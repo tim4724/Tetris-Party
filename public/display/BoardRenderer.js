@@ -15,7 +15,7 @@ class BoardRenderer {
     this.boardWidth = COLS * cellSize;
     this.boardHeight = VISIBLE_ROWS * cellSize;
     this._bgGradient = null;
-    this._blockGradients = new Map(); // cached per color_y string
+    this._blockGradients = new Map(); // cached per color hex string
     this._styleTier = STYLE_TIERS.NORMAL;
   }
 
@@ -82,7 +82,7 @@ class BoardRenderer {
           const drawRow = ghostDisplayY + by;
           const drawCol = piece.x + bx;
           if (drawRow >= 0 && drawRow < VISIBLE_ROWS && drawCol >= 0 && drawCol < COLS) {
-            this.drawGhostBlock(drawCol, drawRow, ghostColor, piece.typeId);
+            this.drawGhostBlock(drawCol, drawRow, ghostColor);
           }
         }
       }
@@ -171,7 +171,7 @@ class BoardRenderer {
 
   _drawBlockNormal(x, y, size, inset, s, r, color) {
     const ctx = this.ctx;
-    // Gradient cached per color (7 entries), drawn with save/translate/restore
+    // Gradient in (0,0)→(0,size) coords — requires ctx.translate(x,y) before drawing
     let grad = this._blockGradients.get(color);
     if (!grad) {
       grad = ctx.createLinearGradient(0, 0, 0, size);
@@ -198,35 +198,40 @@ class BoardRenderer {
 
   _drawBlockSquare(x, y, size, inset, s, color) {
     const ctx = this.ctx;
+    const bw = Math.max(1, size * 0.06);
+    const half = bw / 2;
     ctx.strokeStyle = lightenColor(color, 20);
-    ctx.lineWidth = 1.5;
-    ctx.strokeRect(x + inset + 0.75, y + inset + 0.75, s - 1.5, s - 1.5);
+    ctx.lineWidth = bw;
+    ctx.strokeRect(x + inset + half, y + inset + half, s - bw, s - bw);
     ctx.fillStyle = color;
-    ctx.fillRect(x + inset + 1.5, y + inset + 1.5, s - 3, s - 3);
+    ctx.fillRect(x + inset + bw, y + inset + bw, s - bw * 2, s - bw * 2);
   }
 
   _drawBlockNeonFlat(x, y, size, inset, s, r, color) {
     const ctx = this.ctx;
     const cRgb = hexToRgb(color);
+    if (!cRgb) return;
+    const bw = Math.max(1, size * 0.08);
+    const half = bw / 2;
     // Dark tinted fill (~20% of piece color)
     ctx.fillStyle = `rgba(${cRgb.r * 0.2 | 0}, ${cRgb.g * 0.2 | 0}, ${cRgb.b * 0.2 | 0}, 0.92)`;
     roundRect(ctx, x + inset, y + inset, s, s, r);
     ctx.fill();
     // Bright border
     ctx.strokeStyle = color;
-    ctx.lineWidth = 2.5;
-    roundRect(ctx, x + inset + 1, y + inset + 1, s - 2, s - 2, r);
+    ctx.lineWidth = bw;
+    roundRect(ctx, x + inset + half, y + inset + half, s - bw, s - bw, r);
     ctx.stroke();
     // Top edge highlight
     ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-    ctx.lineWidth = 0.7;
+    ctx.lineWidth = Math.max(0.5, size * 0.025);
     ctx.beginPath();
-    ctx.moveTo(x + inset + r + 2, y + inset + 2);
-    ctx.lineTo(x + size - inset - r - 2, y + inset + 2);
+    ctx.moveTo(x + inset + r + bw, y + inset + bw);
+    ctx.lineTo(x + size - inset - r - bw, y + inset + bw);
     ctx.stroke();
   }
 
-  drawGhostBlock(col, row, color, typeId) {
+  drawGhostBlock(col, row, color) {
     const ctx = this.ctx;
     const x = this.x + col * this.cellSize;
     const y = this.y + row * this.cellSize;

@@ -375,20 +375,23 @@ class UIRenderer {
 
       if (tier === STYLE_TIERS.SQUARE) {
         // Square mini — lighter border + flat fill
+        const bw = Math.max(1, size * 0.06);
+        const half = bw / 2;
         ctx.strokeStyle = lightenColor(color, 20);
-        ctx.lineWidth = 1;
-        ctx.strokeRect(dx + inset + 0.5, dy + inset + 0.5, s - 1, s - 1);
+        ctx.lineWidth = bw;
+        ctx.strokeRect(dx + inset + half, dy + inset + half, s - bw, s - bw);
         ctx.fillStyle = color;
-        ctx.fillRect(dx + inset + 1, dy + inset + 1, s - 2, s - 2);
+        ctx.fillRect(dx + inset + bw, dy + inset + bw, s - bw * 2, s - bw * 2);
       } else if (tier === STYLE_TIERS.NEON_FLAT) {
         // Neon flat mini — dark tinted fill + bright border
         const cRgb = hexToRgb(color);
+        if (!cRgb) continue;
         const r = THEME.radius.mini(size);
         ctx.fillStyle = `rgba(${cRgb.r * 0.2 | 0}, ${cRgb.g * 0.2 | 0}, ${cRgb.b * 0.2 | 0}, 0.92)`;
         roundRect(ctx, dx + inset, dy + inset, s, s, r);
         ctx.fill();
         ctx.strokeStyle = color;
-        ctx.lineWidth = 1.2;
+        ctx.lineWidth = Math.max(1, size * 0.08);
         roundRect(ctx, dx + inset + 0.5, dy + inset + 0.5, s - 1, s - 1, r);
         ctx.stroke();
       } else {

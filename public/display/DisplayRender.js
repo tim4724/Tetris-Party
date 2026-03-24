@@ -184,7 +184,7 @@ function renderFrame(timestamp) {
             var drawRow = ghost.ghostY + gby;
             var drawCol = ghost.x + gbx;
             if (drawRow >= 0 && drawRow < GameConstants.VISIBLE_HEIGHT && drawCol >= 0 && drawCol < GameConstants.BOARD_WIDTH) {
-              br.drawGhostBlock(drawCol, drawRow, gc, ghost.typeId);
+              br.drawGhostBlock(drawCol, drawRow, gc);
             }
           }
         }
