@@ -289,6 +289,51 @@ describe('Scoring - back-to-back edge cases', () => {
   });
 });
 
+describe('Scoring - addLineClear backToBack return value', () => {
+  test('first tetris result has backToBack false', () => {
+    const scoring = new Scoring();
+    const result = scoring.addLineClear(4, false, false);
+    assert.strictEqual(result.backToBack, false);
+    // But the scoring state is now set for next time
+    assert.strictEqual(scoring.backToBack, true);
+  });
+
+  test('second consecutive tetris result has backToBack true', () => {
+    const scoring = new Scoring();
+    scoring.addLineClear(4, false, false);
+    const result = scoring.addLineClear(4, false, false);
+    assert.strictEqual(result.backToBack, true);
+  });
+
+  test('tetris after single result has backToBack false', () => {
+    const scoring = new Scoring();
+    scoring.addLineClear(4, false, false); // sets b2b
+    scoring.addLineClear(1, false, false); // clears b2b
+    const result = scoring.addLineClear(4, false, false);
+    assert.strictEqual(result.backToBack, false);
+  });
+
+  test('T-spin after tetris result has backToBack true', () => {
+    const scoring = new Scoring();
+    scoring.addLineClear(4, false, false);
+    const result = scoring.addLineClear(2, true, false);
+    assert.strictEqual(result.backToBack, true);
+  });
+
+  test('first T-spin result has backToBack false', () => {
+    const scoring = new Scoring();
+    const result = scoring.addLineClear(1, true, false);
+    assert.strictEqual(result.backToBack, false);
+  });
+
+  test('non-difficult clear result has backToBack false even after tetris', () => {
+    const scoring = new Scoring();
+    scoring.addLineClear(4, false, false);
+    const result = scoring.addLineClear(2, false, false);
+    assert.strictEqual(result.backToBack, false);
+  });
+});
+
 describe('Scoring - start level', () => {
   test('start level is applied to getLevel()', () => {
     const scoring = new Scoring(5);
