@@ -218,26 +218,30 @@ class UIRenderer {
     const ctx = this.ctx;
     const meter = this.getGarbageMeterLayout();
     const rows = Math.min(pendingGarbage, meter.rows);
+    if (rows === 0) return;
     const inset = meter.cellSize * THEME.size.blockGap;
-    const tier = this._styleTier;
     const r = THEME.radius.block(meter.cellSize);
+    const bw = meter.cellSize - inset * 2;
+    const bh = meter.cellSize - inset * 2;
 
+    // Batched stroke: one compound path for all cells
+    ctx.beginPath();
     for (let i = 0; i < rows; i++) {
       const y = meter.y + this.boardHeight - (i + 1) * meter.cellSize;
-      const bx = meter.x + inset;
-      const by = y + inset;
-      const bw = meter.cellSize - inset * 2;
-      const bh = meter.cellSize - inset * 2;
-
-      // All tiers use rounded garbage meter cells
-      ctx.strokeStyle = `rgba(255, 255, 255, ${THEME.opacity.label})`;
-      ctx.lineWidth = 1;
-      roundRect(ctx, bx + 0.5, by + 0.5, bw - 1, bh - 1, r);
-      ctx.stroke();
-      ctx.fillStyle = `rgba(255, 255, 255, ${THEME.opacity.muted})`;
-      roundRect(ctx, bx, by, bw, bh, r);
-      ctx.fill();
+      _addRoundRectSubPath(ctx, meter.x + inset + 0.5, y + inset + 0.5, bw - 1, bh - 1, r);
     }
+    ctx.strokeStyle = `rgba(255, 255, 255, ${THEME.opacity.label})`;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Batched fill: one compound path for all cells
+    ctx.beginPath();
+    for (let i = 0; i < rows; i++) {
+      const y = meter.y + this.boardHeight - (i + 1) * meter.cellSize;
+      _addRoundRectSubPath(ctx, meter.x + inset, y + inset, bw, bh, r);
+    }
+    ctx.fillStyle = `rgba(255, 255, 255, ${THEME.opacity.muted})`;
+    ctx.fill();
   }
 
   drawGarbageIndicatorEffects(effects, timestamp) {
