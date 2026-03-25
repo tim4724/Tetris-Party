@@ -102,17 +102,19 @@ class Animations {
     }
   }
 
-  _addSparkle(x, y, color, duration, cellSize) {
+  _addSparkle(x, y, color, duration, cellSize, sizeBase, sizeRange) {
     const vx = (Math.random() - 0.5) * 120;
     const vy = -Math.random() * 80 - 20;
     const cs = cellSize ?? 30;
+    const base = sizeBase ?? 0.05;
+    const range = sizeRange ?? 0.07;
 
     this.active.push({
       type: 'sparkle',
       startTime: performance.now(),
       duration,
       x, y, vx, vy, color,
-      size: cs * (0.05 + Math.random() * 0.07),
+      size: cs * (base + Math.random() * range),
       render(ctx, progress) {
         const t = progress * this.duration / 1000;
         const px = this.x + this.vx * t;
@@ -127,6 +129,33 @@ class Animations {
         ctx.restore();
       }
     });
+  }
+
+  addLockFlash(boardX, boardY, cellSize, blocks, pieceColor) {
+    if (!blocks || blocks.length === 0) return;
+
+    // Build a set of occupied cells to skip internal edges
+    const occupied = new Set();
+    for (const [col, row] of blocks) {
+      occupied.add(col + ',' + row);
+    }
+
+    // Colored sparkles only at exposed bottom edges
+    for (const [col, row] of blocks) {
+      if (row < 0 || row >= GameConstants.VISIBLE_HEIGHT) continue;
+      // Skip if another block from this piece is directly below
+      if (occupied.has(col + ',' + (row + 1))) continue;
+      for (let j = 0; j < 5; j++) {
+        this._addSparkle(
+          boardX + (col + Math.random()) * cellSize,
+          boardY + (row + 1) * cellSize,
+          pieceColor,
+          150 + Math.random() * 250,
+          cellSize,
+          0.08, 0.1
+        );
+      }
+    }
   }
 
   addGarbageShake(boardX, boardY) {
