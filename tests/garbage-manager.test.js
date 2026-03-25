@@ -101,4 +101,14 @@ describe('GarbageManager - processLineClear delivery', () => {
     const result = gm.processLineClear('p1', 0, false, 0, false, () => 5);
     assert.deepStrictEqual(result, { sent: 0, cancelled: 0, deliveries: [] });
   });
+
+  test('tetris without back-to-back sends 4 garbage (not 5)', () => {
+    const result = gm.processLineClear('p1', 4, false, 0, false, () => 5);
+    assert.strictEqual(result.sent, 4);
+  });
+
+  test('tetris with back-to-back sends 5 garbage', () => {
+    const result = gm.processLineClear('p1', 4, false, 0, true, () => 5);
+    assert.strictEqual(result.sent, 5);
+  });
 });

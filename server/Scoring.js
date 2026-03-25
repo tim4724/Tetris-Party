@@ -41,8 +41,9 @@ class Scoring {
     points *= this.getLevel();
 
     // Back-to-back bonus
+    const wasBackToBack = this.backToBack;
     if (isDifficult) {
-      if (this.backToBack) {
+      if (wasBackToBack) {
         points = Math.floor(points * BACK_TO_BACK_MULTIPLIER);
       }
       this.backToBack = true;
@@ -62,7 +63,7 @@ class Scoring {
       score: points,
       linesAdded: linesCleared,
       combo: this.combo,
-      backToBack: this.backToBack,
+      backToBack: wasBackToBack && isDifficult,
       isTetris,
       isTSpin
     };
