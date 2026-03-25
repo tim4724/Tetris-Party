@@ -70,19 +70,39 @@ class BoardRenderer {
       }
     }
 
-    // 4. Ghost piece
+    // 4. Ghost piece (batched: one compound path for all 4 blocks)
     if (playerState.currentPiece && playerState.ghostY != null && playerState.alive !== false) {
       const piece = playerState.currentPiece;
       const ghostDisplayY = playerState.ghostY;
-      const ghostColor = ghostColors[piece.typeId] || { outline: 'rgba(255,255,255,0.12)', fill: 'rgba(255,255,255,0.06)' };
+      const gc = ghostColors[piece.typeId] || { outline: 'rgba(255,255,255,0.12)', fill: 'rgba(255,255,255,0.06)' };
       if (piece.blocks) {
+        const size = this.cellSize;
+        const inset = size * THEME.size.blockGap;
+        const s = size - inset * 2;
+        const r = THEME.radius.block(size);
+        // Stroke path (inset by 0.5 for crisp 1px lines)
+        ctx.beginPath();
         for (const [bx, by] of piece.blocks) {
           const drawRow = ghostDisplayY + by;
           const drawCol = piece.x + bx;
           if (drawRow >= 0 && drawRow < VISIBLE_ROWS && drawCol >= 0 && drawCol < COLS) {
-            this.drawGhostBlock(drawCol, drawRow, ghostColor);
+            _addRoundRectSubPath(ctx, this.x + drawCol * size + inset + 0.5, this.y + drawRow * size + inset + 0.5, s - 1, s - 1, r);
           }
         }
+        ctx.strokeStyle = gc.outline;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+        // Fill path
+        ctx.beginPath();
+        for (const [bx, by] of piece.blocks) {
+          const drawRow = ghostDisplayY + by;
+          const drawCol = piece.x + bx;
+          if (drawRow >= 0 && drawRow < VISIBLE_ROWS && drawCol >= 0 && drawCol < COLS) {
+            _addRoundRectSubPath(ctx, this.x + drawCol * size + inset, this.y + drawRow * size + inset, s, s, r);
+          }
+        }
+        ctx.fillStyle = gc.fill;
+        ctx.fill();
       }
     }
 
@@ -143,6 +163,7 @@ class BoardRenderer {
     this.ctx.drawImage(stamp, x, y);
   }
 
+  // Used by DisplayRender __TEST__._extraGhosts path; main render uses batched compound path above.
   drawGhostBlock(col, row, color) {
     const ctx = this.ctx;
     const x = this.x + col * this.cellSize;
@@ -151,9 +172,6 @@ class BoardRenderer {
     const inset = size * THEME.size.blockGap;
     const s = size - inset * 2;
     const r = THEME.radius.block(size);
-    const tier = this._styleTier;
-
-    // All tiers use rounded ghost blocks
     ctx.strokeStyle = color.outline;
     ctx.lineWidth = 1;
     roundRect(ctx, x + inset + 0.5, y + inset + 0.5, s - 1, s - 1, r);
