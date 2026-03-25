@@ -14,7 +14,6 @@ class BoardRenderer {
     this._accentRgb = hexToRgb(this.accentColor);
     this.boardWidth = COLS * cellSize;
     this.boardHeight = VISIBLE_ROWS * cellSize;
-    this._bgGradient = null;
     this._styleTier = STYLE_TIERS.NORMAL;
   }
 
