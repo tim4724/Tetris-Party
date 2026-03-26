@@ -145,7 +145,7 @@ html, body {
   height: clamp(180px, 32vh, 400px);
   border: 1px solid rgba(0, 200, 255, 0.15);
   border-radius: clamp(8px, 1vh, 16px);
-  background: var(--text-white);
+  background: var(--color-white);
   padding: clamp(6px, 1vh, 14px);
   box-shadow: 0 0 24px rgba(0, 200, 255, 0.08);
 }
@@ -212,7 +212,7 @@ html, body {
   align-items: center;
   gap: clamp(0.25rem, 0.5vw, 0.4rem);
   padding-top: clamp(4px, 0.8vh, 8px);
-  border-top: 1px solid var(--border-faint);
+  border-top: 1px solid var(--bg-glass);
   width: 100%;
   justify-content: center;
 }
@@ -239,7 +239,7 @@ html, body {
   width: clamp(24px, 3.6vh, 36px);
   height: clamp(24px, 3.6vh, 36px);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   background: color-mix(in srgb, white 8%, transparent);
   color: var(--text-primary);
   font-size: 0;
@@ -252,7 +252,7 @@ html, body {
 }
 
 .level-btn:hover:not(:disabled) {
-  background: var(--border-glass);
+  background: color-mix(in srgb, white 15%, transparent);
 }
 
 .level-btn:disabled {
@@ -305,7 +305,7 @@ html, body {
   font-size: clamp(6rem, 15vh, 14rem);
   font-weight: 900;
   letter-spacing: 0.05em;
-  color: var(--text-white);
+  color: var(--color-white);
   text-shadow:
     0 0 30px color-mix(in srgb, var(--accent-blue) 90%, transparent),
     0 0 60px color-mix(in srgb, var(--accent-blue) 50%, transparent),

@@ -13,7 +13,7 @@
   /* Text */
   --text-primary: #e0e0ff;
   --text-secondary: rgba(240, 244, 255, 0.6);
-  --text-white: #ffffff;
+  --color-white: #ffffff;
   --text-cyan: rgba(0, 200, 255, 0.9);
 
   /* Accents */
@@ -26,7 +26,6 @@
   --danger: #ff4444;
   --garbage: #3a3a4e;
   --border: #1e1e44;
-  --border-faint: rgba(255, 255, 255, 0.06);
   --border-glass: rgba(255, 255, 255, 0.15);
 
   /* Medals */
@@ -68,6 +67,7 @@
   --anim-pulse: 2.5s ease-in-out infinite;
 
   /* Radii */
+  --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
   --radius-lg: 12px;
