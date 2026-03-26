@@ -22,10 +22,15 @@ function calculateLayout() {
   function scoreGap(cs) { return cs * 0.7; }
   var font = getDisplayFont();
 
+  var _measureCache = {};
   function measureHeight(weight, size) {
+    var key = weight + '_' + size;
+    if (_measureCache[key] != null) return _measureCache[key];
     ctx.font = weight + ' ' + size + 'px ' + font;
     var m = ctx.measureText('Mg');
-    return m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+    var h = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+    _measureCache[key] = h;
+    return h;
   }
 
   function textHeight(cs) {
@@ -67,7 +72,7 @@ function calculateLayout() {
 
   boardRenderers = [];
   uiRenderers = [];
-  animations = new Animations(ctx);
+  if (!animations) animations = new Animations(ctx);
 
   var maxSlots = gridCols * gridRows;
   var cellAreaW = (w - padding * (gridCols + 1)) / gridCols;

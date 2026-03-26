@@ -74,8 +74,7 @@ function startPing() {
   lastPongTime = Date.now();
   pingTimer = setInterval(function () {
     party.sendTo('display', { type: MSG.PING, t: Date.now() });
-  }, PING_INTERVAL_MS);
-  pongCheckTimer = setInterval(function () {
+    // Pong check (combined into ping interval)
     if (Date.now() - lastPongTime > PONG_TIMEOUT_MS) {
       stopPing();
       if (party.reconnectAttempt > party.maxReconnectAttempts) return;
@@ -87,12 +86,11 @@ function startPing() {
       }
       party.reconnectNow();
     }
-  }, 1000);
+  }, PING_INTERVAL_MS);
 }
 
 function stopPing() {
   if (pingTimer) { clearInterval(pingTimer); pingTimer = null; }
-  if (pongCheckTimer) { clearInterval(pongCheckTimer); pongCheckTimer = null; }
 }
 
 function updatePingDisplay(ms) {
@@ -108,7 +106,12 @@ function updatePingDisplay(ms) {
 
 function sendToDisplay(type, payload) {
   if (!party) return;
-  party.sendTo('display', Object.assign({ type: type }, payload));
+  if (payload) {
+    payload.type = type;
+    party.sendTo('display', payload);
+  } else {
+    party.sendTo('display', { type: type });
+  }
 }
 
 // =====================================================================

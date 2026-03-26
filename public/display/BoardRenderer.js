@@ -19,7 +19,7 @@ class BoardRenderer {
 
   get styleTier() { return this._styleTier; }
 
-  render(playerState) {
+  render(playerState, timestamp) {
     const ctx = this.ctx;
 
     // Determine style tier from level
@@ -123,7 +123,7 @@ class BoardRenderer {
 
     // 6. Clearing rows pulsing glow effect
     if (playerState.clearingRows && playerState.clearingRows.length > 0) {
-      const t = performance.now() / 150;
+      const t = (timestamp || performance.now()) / 150;
       for (const row of playerState.clearingRows) {
         if (row >= 0 && row < VISIBLE_ROWS) {
           const alpha = 0.3 + 0.2 * Math.sin(t * Math.PI);
