@@ -251,6 +251,8 @@ function onPeerLeft(clientId) {
     } else {
       // Non-host left — stay on results screen, just remove them
       players.delete(clientId);
+      var idx = playerOrder.indexOf(clientId);
+      if (idx !== -1) playerOrder.splice(idx, 1);
     }
   } else {
     // In game/countdown — show disconnect QR overlay

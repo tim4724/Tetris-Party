@@ -368,7 +368,7 @@ class UIRenderer {
     }
 
     ctx.fillStyle = playerColor || 'rgba(0, 200, 255, 0.7)';
-    ctx.font = '600 ' + labelSize + 'px sans-serif';
+    ctx.font = '600 ' + labelSize + 'px ' + getDisplayFont();
     ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
     ctx.letterSpacing = '0.1em';
