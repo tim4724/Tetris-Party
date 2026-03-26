@@ -13,11 +13,9 @@ class Game {
     this.callbacks = callbacks; // { onGameState, onEvent, onGameEnd }
     this.boards = new Map();
     this.playerIds = [];
-    this.startTime = null;
     this.logicInterval = null;
     this.ended = false;
     this.paused = false;
-    this.pausedAt = null;
 
     // Shared seed so all players get the same piece sequence
     if (seed == null) seed = (Math.random() * 0xFFFFFFFF) >>> 0;
