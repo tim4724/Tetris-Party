@@ -29,7 +29,6 @@ var startLevel = 1;
 var PING_INTERVAL_MS = 1000;
 var PONG_TIMEOUT_MS = 3000;
 var pingTimer = null;
-var pongCheckTimer = null; // legacy, kept for compat
 var lastPongTime = 0;
 var disconnectedTimer = null;
 

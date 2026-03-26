@@ -104,6 +104,7 @@ function updatePingDisplay(ms) {
 // Send Helper
 // =====================================================================
 
+// Note: mutates payload by adding .type — callers must pass a fresh object.
 function sendToDisplay(type, payload) {
   if (!party) return;
   if (payload) {
