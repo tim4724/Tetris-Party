@@ -186,10 +186,12 @@ class WelcomeBackground {
   };
 
   _rgba(hex, alpha) {
-    // Convert #RRGGBB to rgba
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `rgba(${r},${g},${b},${alpha})`;
+    let rgb = this._rgbCache && this._rgbCache[hex];
+    if (!rgb) {
+      if (!this._rgbCache) this._rgbCache = {};
+      rgb = parseInt(hex.slice(1, 3), 16) + ',' + parseInt(hex.slice(3, 5), 16) + ',' + parseInt(hex.slice(5, 7), 16);
+      this._rgbCache[hex] = rgb;
+    }
+    return `rgba(${rgb},${alpha})`;
   }
 }

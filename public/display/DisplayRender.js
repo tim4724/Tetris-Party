@@ -160,15 +160,15 @@ function renderFrame(timestamp) {
         garbageDefenceEffects.delete(playerData.id);
         activeGarbageDefenceEffects = [];
       }
-      var enriched = Object.assign({}, playerData, {
-        garbageIndicatorEffects: activeGarbageIndicatorEffects,
-        garbageDefenceEffects: activeGarbageDefenceEffects,
-        playerName: pInfo?.playerName || PLAYER_NAMES[j],
-        playerColor: pInfo?.playerColor || PLAYER_COLORS[j]
-      });
+      // playerData is a fresh snapshot per frame (getState() allocates new objects);
+      // mutating it here avoids Object.assign overhead.
+      playerData.garbageIndicatorEffects = activeGarbageIndicatorEffects;
+      playerData.garbageDefenceEffects = activeGarbageDefenceEffects;
+      playerData.playerName = pInfo?.playerName || PLAYER_NAMES[j];
+      playerData.playerColor = pInfo?.playerColor || PLAYER_COLORS[j];
 
-      boardRenderers[j].render(enriched);
-      uiRenderers[j].render(enriched, timestamp);
+      boardRenderers[j].render(playerData, timestamp);
+      uiRenderers[j].render(playerData, timestamp);
 
       // Test-only: draw extra ghost pieces if set
       if (window.__TEST__ && window.__TEST__._extraGhosts && window.__TEST__._extraGhosts[j]) {
