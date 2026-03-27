@@ -6,7 +6,7 @@
 var constants = (typeof require !== 'undefined') ? require('./constants') : window.GameConstants;
 var BOARD_WIDTH = constants.BOARD_WIDTH;
 var BOARD_HEIGHT = constants.BOARD_HEIGHT;
-var VISIBLE_HEIGHT = constants.VISIBLE_HEIGHT;
+
 var BUFFER_ROWS = constants.BUFFER_ROWS;
 var SOFT_DROP_MULTIPLIER = constants.SOFT_DROP_MULTIPLIER;
 var LOCK_DELAY_MS = constants.LOCK_DELAY_MS;

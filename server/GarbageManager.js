@@ -88,6 +88,7 @@ class GarbageManager {
     for (const [playerId] of this.queues) {
       if (playerId === senderId) continue;
       const height = getStackHeight ? getStackHeight(playerId) : 0;
+      if (height < 0) continue; // dead player
       if (height < bestHeight) {
         bestHeight = height;
         bestId = playerId;
