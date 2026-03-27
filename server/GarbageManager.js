@@ -29,13 +29,16 @@ class GarbageManager {
   tick(deltaMs) {
     const ready = [];
     for (const [playerId, queue] of this.queues) {
-      for (let i = queue.length - 1; i >= 0; i--) {
+      let writeIdx = 0;
+      for (let i = 0; i < queue.length; i++) {
         queue[i].msLeft -= deltaMs;
         if (queue[i].msLeft <= 0) {
-          const g = queue.splice(i, 1)[0];
-          ready.push({ playerId, lines: g.lines, gapColumn: g.gapColumn, senderId: g.senderId });
+          ready.push({ playerId, lines: queue[i].lines, gapColumn: queue[i].gapColumn, senderId: queue[i].senderId });
+        } else {
+          queue[writeIdx++] = queue[i];
         }
       }
+      queue.length = writeIdx;
     }
     return ready;
   }
