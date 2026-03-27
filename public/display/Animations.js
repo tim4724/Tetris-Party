@@ -10,7 +10,7 @@ class Animations {
     if (!Array.isArray(rows) || rows.length === 0) return;
 
     const duration = THEME.timing.lineClear;
-    const boardWidth = 10 * cellSize;
+    const boardWidth = GameConstants.BOARD_WIDTH * cellSize;
 
     // Main line clear effect
     this.active.push({
