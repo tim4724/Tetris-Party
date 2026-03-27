@@ -294,7 +294,7 @@ class Game {
         playerId: id,
         alive: board.alive,
         lines: board.lines || 0,
-        level: board.getLevel ? board.getLevel() : 1
+        level: board.getLevel()
       });
     }
 

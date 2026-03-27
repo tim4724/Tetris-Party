@@ -118,8 +118,7 @@ class PlayerBoard {
     if (!this.currentPiece || !this.alive) return false;
     if (this.currentPiece.type === 'O') return false;
 
-    const fromRotation = this.currentPiece.rotation;
-    const toRotation = (fromRotation + 1) % 4;
+    const toRotation = (this.currentPiece.rotation + 1) % 4;
     const kicks = this.currentPiece.getWallKicks();
 
     for (const [dx, dy] of kicks) {

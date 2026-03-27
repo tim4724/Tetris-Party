@@ -47,6 +47,7 @@ class Music {
       }
     } catch (e) {
       console.warn('Failed to load music:', e);
+      this._loaded = false;
     }
   }
 
