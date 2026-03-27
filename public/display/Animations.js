@@ -36,8 +36,9 @@ class Animations {
             const sweepWidth = flashProgress * this.boardWidth;
             const sweepX = this.boardX + (this.boardWidth - sweepWidth) / 2;
 
-            ctx.fillStyle = this.isQuad
-              ? `rgba(0, 240, 240, ${flashAlpha})`
+            var _qc = this.isQuad ? hexToRgb(THEME.color.quad) : null;
+            ctx.fillStyle = _qc
+              ? `rgba(${_qc.r}, ${_qc.g}, ${_qc.b}, ${flashAlpha})`
               : `rgba(255, 255, 255, ${flashAlpha})`;
             ctx.fillRect(sweepX, ry, sweepWidth, rh);
           } else {
@@ -51,8 +52,9 @@ class Animations {
             for (let s = 0; s < stripeCount; s++) {
               const stripeAlpha = alpha * Math.max(0, 1 - (fadeProgress + s * 0.08));
               if (stripeAlpha <= 0) continue;
-              const color = this.isQuad
-                ? `rgba(0, 240, 240, ${stripeAlpha})`
+              var _sc = this.isQuad ? hexToRgb(THEME.color.quad) : null;
+              const color = _sc
+                ? `rgba(${_sc.r}, ${_sc.g}, ${_sc.b}, ${stripeAlpha})`
                 : `rgba(255, 255, 255, ${stripeAlpha})`;
               ctx.fillStyle = color;
               // Stagger horizontal dissolve per stripe
