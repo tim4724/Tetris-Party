@@ -97,10 +97,11 @@ describe('TouchInput gesture sessions', () => {
 
   test('soft drop started before horizontal movement continues during it', () => {
     touchInput._onPointerDown(pointerEvent({ clientX: 0, clientY: 0, timeStamp: 0 }));
-    // Vertical dominates first → soft drop activates
-    touchInput._onPointerMove(pointerEvent({ clientX: 60, clientY: 90, timeStamp: 120 }));
+    // Vertical dominates first → soft drop activates (dy must exceed SOFT_DROP_DEAD_ZONE=96,
+    // duration > 250ms so it's not a fresh fling candidate)
+    touchInput._onPointerMove(pointerEvent({ clientX: 10, clientY: 100, timeStamp: 260 }));
     // Then horizontal catches up → ratchet fires, soft drop continues
-    touchInput._onPointerMove(pointerEvent({ clientX: 120, clientY: 120, timeStamp: 220 }));
+    touchInput._onPointerMove(pointerEvent({ clientX: 120, clientY: 130, timeStamp: 360 }));
 
     assert.deepEqual(actions.map(entry => entry.action), [
       'soft_drop',
@@ -167,9 +168,9 @@ describe('TouchInput gesture sessions', () => {
 
   test('slower downward drag still becomes soft drop instead of hard drop', () => {
     touchInput._onPointerDown(pointerEvent({ clientX: 0, clientY: 0, timeStamp: 0 }));
-    touchInput._onPointerMove(pointerEvent({ clientX: 0, clientY: 35, timeStamp: 80 }));
-    touchInput._onPointerMove(pointerEvent({ clientX: 0, clientY: 90, timeStamp: 180 }));
-    touchInput._onPointerUp(pointerEvent({ clientX: 0, clientY: 140, timeStamp: 260 }));
+    touchInput._onPointerMove(pointerEvent({ clientX: 0, clientY: 50, timeStamp: 80 }));
+    touchInput._onPointerMove(pointerEvent({ clientX: 0, clientY: 100, timeStamp: 180 }));
+    touchInput._onPointerUp(pointerEvent({ clientX: 0, clientY: 150, timeStamp: 260 }));
 
     assert.deepEqual(actions.map(entry => entry.action), ['soft_drop', 'soft_drop_end']);
   });
