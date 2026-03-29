@@ -66,5 +66,3 @@ connect = function() {
   }
 };
 
-// Hide ping display — AirConsole manages connectivity
-if (pingDisplay) pingDisplay.style.display = 'none';
