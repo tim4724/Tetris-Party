@@ -44,9 +44,7 @@ PartyConnection = function() {
 var _originalConnectAndCreateRoom = connectAndCreateRoom;
 connectAndCreateRoom = function() {
   _originalConnectAndCreateRoom();
-  if (_acEarlyReady && party && !party._ready) {
-    // The adapter's onReady handler was set by _wireAirConsole but the SDK
-    // already fired. Replay it now.
+  if (_acEarlyReady && party && !party.connected) {
     airconsole.onReady(_acEarlyReadyCode);
   }
 };
@@ -62,15 +60,14 @@ renderQR = function(canvas, matrix) {
   _originalRenderQR(canvas, matrix);
 };
 
-// Init music early — AirConsole's iframe has allow="autoplay" so we don't
-// need a user gesture. In standalone mode, initMusic() is called on button click.
-var _origStartGame = typeof startGame === 'function' ? startGame : null;
-if (_origStartGame) {
-  startGame = function() {
-    initMusic();
-    _origStartGame();
-  };
-}
+// Init music when game starts — AirConsole's iframe has allow="autoplay" so we
+// don't need a user gesture. In standalone mode, initMusic() is called on button click.
+// startGame is defined in DisplayGame.js which loads before this script.
+var _origStartGame = startGame;
+startGame = function() {
+  initMusic();
+  _origStartGame();
+};
 
 // Skip welcome screen — go straight to lobby.
 // onRoomCreated caches as preCreatedRoom when currentScreen === WELCOME,

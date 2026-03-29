@@ -62,7 +62,7 @@ function generateQRMatrix(text) {
 }
 
 // --- HTTP Server ---
-const server = http.createServer((req, res) => {
+function handleRequest(req, res) {
   let urlPath = req.url.split('?')[0];
 
   // QR code endpoint
@@ -175,7 +175,7 @@ const server = http.createServer((req, res) => {
 
     if (ext === '.html') {
       // AirConsole entry points need access to the AirConsole SDK and iframe messaging
-      var isAirConsole = urlPath === '/display/screen.html' || urlPath === '/controller/controller.html';
+      const isAirConsole = urlPath === '/display/screen.html' || urlPath === '/controller/controller.html';
       if (isAirConsole) {
         headers['Content-Security-Policy'] = [
           "default-src 'self'",
@@ -194,7 +194,9 @@ const server = http.createServer((req, res) => {
     res.writeHead(200, headers);
     res.end(data);
   });
-});
+}
+
+const server = http.createServer(handleRequest);
 
 // --- Get local network IP ---
 function getLocalIP() {
@@ -226,7 +228,7 @@ if (HTTPS_PORT) {
     const httpsServer = https.createServer({
       key: fs.readFileSync(path.join(certDir, 'key.pem')),
       cert: fs.readFileSync(path.join(certDir, 'cert.pem')),
-    }, server._events.request);
+    }, handleRequest);
     httpsServer.listen(HTTPS_PORT, () => {
       const localIP = getLocalIP();
       console.log(`HTTPS server: https://localhost:${HTTPS_PORT}`);
