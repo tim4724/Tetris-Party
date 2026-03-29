@@ -11,6 +11,7 @@
     "test:visual:update": "npx playwright test --project=display --project=controller --update-snapshots",
     "test:e2e": "npx playwright test --project=e2e",
     "test:e2e:airconsole": "npx playwright test --project=e2e-airconsole",
+    "test:e2e:airconsole-live": "npx playwright test --project=e2e-airconsole-live",
     "ad:pieces": "node ad/scripts/generate-piece-assets.js",
     "ad:display": "node ad/scripts/capture-display-clip.js",
     "ad:controller": "node ad/scripts/capture-controller-clip.js",
