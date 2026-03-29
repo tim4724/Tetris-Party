@@ -177,8 +177,15 @@ const server = http.createServer((req, res) => {
       // AirConsole entry points need access to the AirConsole SDK and iframe messaging
       var isAirConsole = urlPath === '/display/screen.html' || urlPath === '/controller/controller.html';
       if (isAirConsole) {
-        // No CSP for AirConsole — the SDK needs full access to AirConsole's
-        // domains for scripts, WebSockets, and postMessage communication.
+        headers['Content-Security-Policy'] = [
+          "default-src 'self'",
+          "script-src 'self' https://www.airconsole.com",
+          "style-src 'self' 'unsafe-inline'",
+          "font-src 'self'",
+          "connect-src 'self' https://www.airconsole.com wss://*.airconsole.com",
+          "img-src 'self' data: https://www.airconsole.com",
+          "frame-ancestors https://www.airconsole.com http://www.airconsole.com http://http.airconsole.com",
+        ].join('; ');
       } else {
         headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; connect-src 'self' wss://ws.couch-games.com; img-src 'self' data:";
       }
