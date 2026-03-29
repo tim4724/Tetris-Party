@@ -27,7 +27,7 @@ class AirConsoleAdapter {
     // Callbacks (same signature as PartyConnection)
     this.onOpen = null;
     this.onClose = null;
-    this.onError = null;
+    this.onError = null;     // no-op — AirConsole SDK has no error callback equivalent
     this.onMessage = null;
     this.onProtocol = null;
 

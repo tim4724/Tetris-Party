@@ -316,12 +316,9 @@ test.describe.serial('AirConsole Integration', () => {
       channel.close();
     });
 
-    await s.screenPage.waitForTimeout(6000);
-
-    const count = await s.screenFrame.evaluate(() => {
-      return document.querySelectorAll('#player-list .player-card:not(.empty)').length;
-    });
-    expect(count).toBe(0);
+    await s.screenFrame.waitForFunction(() => {
+      return document.querySelectorAll('#player-list .player-card:not(.empty)').length === 0;
+    }, null, { timeout: 10000 });
 
     await s.screenPage.close();
     await s.ctrlPage.close();

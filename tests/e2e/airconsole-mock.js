@@ -85,10 +85,9 @@
         deviceId: self._deviceId,
         nickname: window.__AC_NICKNAME || null
       });
-      // For controllers: screen sends ready_ack when it sees the connect
+      // Controllers self-fire onReady after a short delay to simulate
+      // the AirConsole platform handshake completing.
       if (!isScreen) {
-        // If screen is already ready, it will send ready_ack via its onConnect handler.
-        // Give it a moment, then self-ready if not already acknowledged.
         setTimeout(function() {
           if (!self._ready) {
             self._ready = true;
