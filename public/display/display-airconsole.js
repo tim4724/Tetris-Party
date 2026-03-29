@@ -62,6 +62,16 @@ renderQR = function(canvas, matrix) {
   _originalRenderQR(canvas, matrix);
 };
 
+// Init music early — AirConsole's iframe has allow="autoplay" so we don't
+// need a user gesture. In standalone mode, initMusic() is called on button click.
+var _origStartGame = typeof startGame === 'function' ? startGame : null;
+if (_origStartGame) {
+  startGame = function() {
+    initMusic();
+    _origStartGame();
+  };
+}
+
 // Skip welcome screen — go straight to lobby.
 // onRoomCreated caches as preCreatedRoom when currentScreen === WELCOME,
 // so setting it to LOBBY ensures the room is applied immediately.
