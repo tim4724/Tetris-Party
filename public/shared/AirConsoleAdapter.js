@@ -143,11 +143,11 @@ class AirConsoleAdapter {
   reconnectNow() {}
   resetReconnectCount() { this.reconnectAttempt = 0; }
 
-  // Safe to omit callback cleanup — connectAndCreateRoom() always creates a new
-  // adapter with the same airconsole instance, which overwrites callbacks in
-  // _wireAirConsole(). Only call close() if a new adapter follows immediately.
   close() {
     this._ready = false;
+    // Clear SDK callbacks to prevent stale adapter from receiving events
+    var ac = this.airconsole;
+    ac.onReady = ac.onConnect = ac.onDisconnect = ac.onMessage = null;
   }
 
   get connected() {

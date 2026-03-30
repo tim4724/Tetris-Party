@@ -171,10 +171,23 @@ test.describe.serial('AirConsole Integration', () => {
     if (browser) await browser.close();
   });
 
+  /** @type {AirConsoleSession|null} */
+  let _session = null;
+
+  test.afterEach(async () => {
+    if (_session) {
+      await _session.screenPage.close().catch(() => {});
+      await _session.ctrlPage.close().catch(() => {});
+      _session = null;
+    }
+  });
+
   /** @returns {Promise<AirConsoleSession>} */
   async function createSession(context, page) {
-    if (USE_MOCK) return createMockSession(context, page);
-    return createLiveSession(screenCtx, ctrlCtx);
+    _session = USE_MOCK
+      ? await createMockSession(context, page)
+      : await createLiveSession(screenCtx, ctrlCtx);
+    return _session;
   }
 
   test('screen shows lobby with AirConsoleAdapter', async ({ page, context }) => {
@@ -186,9 +199,6 @@ test.describe.serial('AirConsole Integration', () => {
     }, null, { timeout: 15000 });
 
     expect(await s.screenFrame.evaluate(() => party.constructor.name)).toBe('AirConsoleAdapter');
-
-    await s.screenPage.close();
-    await s.ctrlPage.close();
   });
 
   test('controller connects and reaches lobby', async ({ page, context }) => {
@@ -202,9 +212,6 @@ test.describe.serial('AirConsole Integration', () => {
     }, null, { timeout: 15000 });
 
     expect(await s.ctrlFrame.evaluate(() => party.constructor.name)).toBe('AirConsoleAdapter');
-
-    await s.screenPage.close();
-    await s.ctrlPage.close();
   });
 
   test('two controllers join and host can start game', async ({ page, context }) => {
@@ -234,9 +241,6 @@ test.describe.serial('AirConsole Integration', () => {
     await s.screenFrame.waitForFunction(() => {
       return document.getElementById('countdown-overlay').classList.contains('hidden');
     }, null, { timeout: 10000 });
-
-    await s.screenPage.close();
-    await s.ctrlPage.close();
     await c2.close();
   });
 
@@ -263,9 +267,6 @@ test.describe.serial('AirConsole Integration', () => {
     await s.screenFrame.waitForSelector('#results-screen:not(.hidden)', { timeout: 60000 });
     await s.ctrlFrame.waitForSelector('#gameover-screen:not(.hidden)', { timeout: 60000 });
     expect(await s.screenFrame.evaluate(() => roomState)).toBe('results');
-
-    await s.screenPage.close();
-    await s.ctrlPage.close();
   });
 
   test('play again works after results', async ({ page, context }) => {
@@ -297,9 +298,6 @@ test.describe.serial('AirConsole Integration', () => {
     await s.ctrlFrame.waitForSelector('#game-screen:not(.hidden):not(.countdown)', { timeout: 15000 });
 
     expect(await s.screenFrame.evaluate(() => roomState)).toBe('playing');
-
-    await s.screenPage.close();
-    await s.ctrlPage.close();
   });
 
   test('controller disconnect detected by display', async ({ page, context }) => {
@@ -320,8 +318,5 @@ test.describe.serial('AirConsole Integration', () => {
     await s.screenFrame.waitForFunction(() => {
       return document.querySelectorAll('#player-list .player-card:not(.empty)').length === 0;
     }, null, { timeout: 10000 });
-
-    await s.screenPage.close();
-    await s.ctrlPage.close();
   });
 });
