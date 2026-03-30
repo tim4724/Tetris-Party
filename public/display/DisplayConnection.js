@@ -238,8 +238,13 @@ function onPeerLeft(clientId) {
   }
 
   if (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN) {
-    // In game — keep player in Map for seamless reconnect, show disconnect overlay
-    showDisconnectQR(clientId);
+    if (lastAliveState[clientId] != null) {
+      // Active game participant — keep in Map for seamless reconnect
+      showDisconnectQR(clientId);
+    } else {
+      // Late joiner (never in the game) — remove silently
+      players.delete(clientId);
+    }
   } else if (roomState === ROOM_STATE.LOBBY) {
     removeLobbyPlayer(clientId);
   } else if (roomState === ROOM_STATE.RESULTS) {
