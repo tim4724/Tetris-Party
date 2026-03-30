@@ -68,3 +68,7 @@ connect = function() {
   }
 };
 
+// Keep ping/pong running for RTT measurement (ping display), but prevent
+// the reconnect overlay from ever showing — AirConsole handles connectivity UI.
+reconnectOverlay.style.display = 'none';
+
