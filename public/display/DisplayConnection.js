@@ -203,8 +203,10 @@ function onDisplayRejoined(partyRoomCode, clients) {
 function onPeerJoined(clientId) {
   if (players.has(clientId)) return;
   if (roomState !== ROOM_STATE.LOBBY) {
-    // In AirConsole mode, players can join at any time via the platform.
-    // returnToLobby() is synchronous — sets roomState to LOBBY before returning.
+    // AirConsole trade-off: a late joiner aborts the current game for all
+    // players and returns to lobby. This is intentional — AirConsole can
+    // connect new players at any time, and we want everyone in the lobby
+    // together rather than silently queueing the new player.
     if (party && party.allowLateJoin) {
       returnToLobby();
     } else {

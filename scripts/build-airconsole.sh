@@ -13,6 +13,14 @@ ZIP_FILE="$PROJECT_DIR/build/airconsole.zip"
 
 echo "Building AirConsole package..."
 
+# Verify AirConsole SDK version is in sync between screen and controller
+SCREEN_SDK=$(grep -o 'airconsole-[0-9.]*\.js' "$PROJECT_DIR/public/display/screen.html")
+CTRL_SDK=$(grep -o 'airconsole-[0-9.]*\.js' "$PROJECT_DIR/public/controller/controller.html")
+if [ "$SCREEN_SDK" != "$CTRL_SDK" ]; then
+  echo "ERROR: AirConsole SDK version mismatch: screen=$SCREEN_SDK controller=$CTRL_SDK"
+  exit 1
+fi
+
 # Clean previous build
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"

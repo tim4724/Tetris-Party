@@ -125,7 +125,8 @@ class AirConsoleAdapter {
       this.airconsole.message(AirConsole.SCREEN, data);
     } else {
       var id = parseInt(to, 10);
-      if (!isNaN(id)) this.airconsole.message(id, data);
+      if (isNaN(id)) { console.warn('[AirConsoleAdapter] sendTo: invalid device ID "' + to + '"'); return; }
+      this.airconsole.message(id, data);
     }
   }
 
