@@ -74,6 +74,19 @@ connect = function() {
 // in ControllerConnection.js can't accidentally re-show it.
 reconnectOverlay.style.display = 'none';
 
+// Override startPing to remove the pong timeout logic — in AirConsole mode,
+// we don't want to stop pinging on timeout since AirConsole handles reconnection.
+// Without this, a slow PONG response stops pings permanently, causing the
+// display's liveness check to show "Disconnected" on the player's board.
+var _origStartPing = startPing;
+startPing = function() {
+  stopPing();
+  lastPongTime = Date.now();
+  pingTimer = setInterval(function() {
+    party.sendTo('display', { type: MSG.PING, t: Date.now() });
+  }, PING_INTERVAL_MS);
+};
+
 // AirConsole status overlay: show "Loading..." until lobby, show errors.
 var _acStatusOverlay = document.getElementById('ac-status-overlay');
 var _origShowScreen = showScreen;
