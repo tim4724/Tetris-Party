@@ -21,19 +21,12 @@ function showLobbyUI() {
   playerIdentityName.textContent = playerName || 'Player';
   updateLevelDisplay();
 
-  if (isHost) {
-    startBtn.classList.remove('hidden');
-    startBtn.disabled = false;
-    setWaitingActionMessage('');
-    updateStartButton();
-    statusText.textContent = '';
-    statusDetail.textContent = '';
-  } else {
-    startBtn.classList.add('hidden');
-    setWaitingActionMessage('Waiting for host to start...');
-    statusText.textContent = '';
-    statusDetail.textContent = '';
-  }
+  startBtn.classList.remove('hidden');
+  startBtn.disabled = false;
+  setWaitingActionMessage('');
+  updateStartButton();
+  statusText.textContent = '';
+  statusDetail.textContent = '';
 
   showScreen('lobby');
 }
@@ -53,11 +46,11 @@ function setWaitingActionMessage(message) {
 
 function onWelcome(data) {
   playerColor = data.playerColor || PLAYER_COLORS[0];
-  isHost = !!data.isHost;
   playerCount = data.playerCount || 1;
   gameCancelled = false;
 
   if (party) party.resetReconnectCount();
+  startPing();
   clearTimeout(disconnectedTimer);
   reconnectOverlay.classList.add('hidden');
 
@@ -66,6 +59,13 @@ function onWelcome(data) {
   if (data.startLevel != null) startLevel = data.startLevel;
 
   if (data.roomState === 'playing' || data.roomState === 'countdown') {
+    // Late joiner (not in active game) — show waiting message
+    if (data.alive === undefined && !data.paused) {
+      setWaitingActionMessage('Game in progress. Please wait for New Game.');
+      showScreen('lobby');
+      return;
+    }
+
     gameScreen.classList.remove('dead');
     gameScreen.classList.remove('paused');
     gameScreen.style.setProperty('--player-color', playerColor);
@@ -74,7 +74,7 @@ function onWelcome(data) {
       onGamePaused();
     } else {
       pauseOverlay.classList.add('hidden');
-      pauseBtn.classList.toggle('hidden', !isHost);
+      pauseBtn.classList.remove('hidden');
     }
 
     if (data.alive === false) {
@@ -103,11 +103,8 @@ function onWelcome(data) {
 
 function onLobbyUpdate(data) {
   playerCount = data.playerCount;
-  if (typeof data.isHost === 'boolean') {
-    isHost = data.isHost;
-  }
   if (data.startLevel != null) startLevel = data.startLevel;
-  if (isHost) updateStartButton();
+  updateStartButton();
   if (currentScreen === 'lobby') updateLevelDisplay();
 }
 
@@ -122,7 +119,7 @@ function onGameStart() {
   reconnectOverlay.classList.add('hidden');
   pauseOverlay.classList.add('hidden');
   pauseBtn.disabled = false;
-  pauseBtn.classList.toggle('hidden', !isHost);
+  pauseBtn.classList.remove('hidden');
   showScreen('game');
   initTouchInput();
 }
@@ -131,7 +128,7 @@ function onPlayerState(data) {
   if (!touchInput) {
     gameScreen.classList.remove('countdown');
     pauseBtn.disabled = false;
-    pauseBtn.classList.toggle('hidden', !isHost);
+    pauseBtn.classList.remove('hidden');
     initTouchInput();
   }
   if (data.lines !== undefined && data.lines > lastLines) {
@@ -151,10 +148,6 @@ function onGameEnd(data) {
 }
 
 function onError(data) {
-  if (data.code === 'HOST_DISCONNECTED') {
-    showErrorState('', 'Host disconnected');
-    return;
-  }
   if (data.message === 'Room not found' || data.message === 'Room is full') {
     showRoomGone();
     return;
@@ -171,7 +164,7 @@ function onGamePaused() {
   pauseOverlay.classList.remove('hidden');
   pauseBtn.disabled = true;
   pauseStatus.textContent = '';
-  pauseButtons.classList.toggle('hidden', !isHost);
+  pauseButtons.classList.remove('hidden');
 }
 
 function onGameResumed() {
@@ -186,8 +179,8 @@ function onGameResumed() {
 
 function renderGameResults(results) {
   resultsList.innerHTML = '';
-  gameoverButtons.classList.toggle('hidden', !isHost);
-  gameoverStatus.textContent = isHost ? '' : 'Waiting for host...';
+  gameoverButtons.classList.remove('hidden');
+  gameoverStatus.textContent = '';
 
   var winnerColor = 'rgba(255, 215, 0, 0.06)';
   if (results && results.length) {

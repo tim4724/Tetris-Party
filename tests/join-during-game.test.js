@@ -7,7 +7,9 @@ const { MSG, ROOM_STATE } = require('../public/shared/protocol');
 // =====================================================================
 // Tests for join-during-countdown / join-during-game behavior.
 //
-// Display side: onHello should reject new players when not in LOBBY.
+// Display side: onHello accepts late joiners during any state.
+//   Late joiners get WELCOME with current roomState so the controller
+//   can show a "Game in progress" waiting screen.
 // Controller side: handleMessage should ignore game broadcasts when
 //   gameCancelled is true (player was rejected).
 // =====================================================================
@@ -15,7 +17,7 @@ const { MSG, ROOM_STATE } = require('../public/shared/protocol');
 // --- Display-side tests (onHello logic) ---
 
 describe('Display: onHello during non-LOBBY states', () => {
-  let players, roomState, hostId, playerOrder, graceTimers, lastAliveState, paused;
+  let players, roomState, playerOrder, lastAliveState, paused;
   let sentMessages;   // [{ to, msg }]
   let party;
   let broadcastCalled, updatePlayerListCalled, updateStartButtonCalled;
@@ -39,9 +41,6 @@ describe('Display: onHello during non-LOBBY states', () => {
 
     if (players.has(fromId)) {
       var existing = players.get(fromId);
-      if (graceTimers.has(fromId)) {
-        graceTimers.delete(fromId);
-      }
       if (name) existing.playerName = sanitizePlayerName(name, existing.playerIndex);
       updatePlayerListCalled = true;
 
@@ -49,7 +48,6 @@ describe('Display: onHello during non-LOBBY states', () => {
         type: MSG.WELCOME,
         playerName: existing.playerName,
         playerColor: existing.playerColor,
-        isHost: fromId === hostId,
         playerCount: players.size,
         roomState: roomState,
         startLevel: existing.startLevel || 1,
@@ -61,12 +59,7 @@ describe('Display: onHello during non-LOBBY states', () => {
       return;
     }
 
-    // New player joining
-    if (roomState !== ROOM_STATE.LOBBY) {
-      party.sendTo(fromId, { type: MSG.ERROR, message: 'Game already in progress' });
-      return;
-    }
-
+    // New player joining (accepted in any state — late joiners wait for next game)
     var index = nextAvailableSlot();
     if (index < 0) {
       party.sendTo(fromId, { type: MSG.ERROR, message: 'Room is full' });
@@ -74,8 +67,6 @@ describe('Display: onHello during non-LOBBY states', () => {
     }
     var color = PLAYER_COLORS[index % PLAYER_COLORS.length];
     var playerName = sanitizePlayerName(name, index);
-    var isHost = hostId === null;
-    if (isHost) hostId = fromId;
 
     players.set(fromId, {
       playerName: playerName,
@@ -90,7 +81,6 @@ describe('Display: onHello during non-LOBBY states', () => {
       type: MSG.WELCOME,
       playerName: playerName,
       playerColor: color,
-      isHost: isHost,
       playerCount: players.size,
       roomState: roomState,
       startLevel: 1
@@ -104,9 +94,7 @@ describe('Display: onHello during non-LOBBY states', () => {
   beforeEach(() => {
     players = new Map();
     roomState = ROOM_STATE.LOBBY;
-    hostId = null;
     playerOrder = [];
-    graceTimers = new Map();
     lastAliveState = {};
     paused = false;
     sentMessages = [];
@@ -128,22 +116,22 @@ describe('Display: onHello during non-LOBBY states', () => {
     assert.strictEqual(players.has('player1'), true);
   });
 
-  test('new player during COUNTDOWN gets ERROR', () => {
+  test('new player during COUNTDOWN gets WELCOME as late joiner', () => {
     roomState = ROOM_STATE.COUNTDOWN;
     onHello('player2', { type: MSG.HELLO, name: 'Bob' });
     assert.strictEqual(sentMessages.length, 1);
-    assert.strictEqual(sentMessages[0].msg.type, MSG.ERROR);
-    assert.strictEqual(sentMessages[0].msg.message, 'Game already in progress');
-    assert.strictEqual(players.has('player2'), false);
+    assert.strictEqual(sentMessages[0].msg.type, MSG.WELCOME);
+    assert.strictEqual(sentMessages[0].msg.roomState, ROOM_STATE.COUNTDOWN);
+    assert.strictEqual(players.has('player2'), true);
   });
 
-  test('new player during PLAYING gets ERROR', () => {
+  test('new player during PLAYING gets WELCOME as late joiner', () => {
     roomState = ROOM_STATE.PLAYING;
     onHello('player3', { type: MSG.HELLO, name: 'Carol' });
     assert.strictEqual(sentMessages.length, 1);
-    assert.strictEqual(sentMessages[0].msg.type, MSG.ERROR);
-    assert.strictEqual(sentMessages[0].msg.message, 'Game already in progress');
-    assert.strictEqual(players.has('player3'), false);
+    assert.strictEqual(sentMessages[0].msg.type, MSG.WELCOME);
+    assert.strictEqual(sentMessages[0].msg.roomState, ROOM_STATE.PLAYING);
+    assert.strictEqual(players.has('player3'), true);
   });
 
   test('existing player reconnecting during COUNTDOWN gets WELCOME', () => {
@@ -178,7 +166,7 @@ describe('Display: onHello during non-LOBBY states', () => {
 // --- Controller-side tests (handleMessage guard) ---
 
 describe('Controller: handleMessage ignores broadcasts when gameCancelled', () => {
-  let gameCancelled, currentScreen, playerColor, isHost, playerCount;
+  let gameCancelled, currentScreen, playerColor, playerCount;
   let screenShown, touchInitialized;
 
   // Minimal handleMessage extracted from controller.js
@@ -215,7 +203,6 @@ describe('Controller: handleMessage ignores broadcasts when gameCancelled', () =
     gameCancelled = false;
     currentScreen = 'name';
     playerColor = null;
-    isHost = false;
     playerCount = 0;
     screenShown = null;
     touchInitialized = false;

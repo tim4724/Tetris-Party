@@ -18,7 +18,6 @@ var playerName = null;
 var roomCode = null;
 var touchInput = null;
 var currentScreen = 'name';
-var isHost = false;
 var playerCount = 0;
 var gameCancelled = false;
 var lastLines = 0;

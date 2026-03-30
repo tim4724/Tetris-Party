@@ -127,8 +127,6 @@ function resumeGame() {
 
 function returnToLobby() {
   clearCountdownTimers();
-  graceTimers.forEach(clearTimeout);
-  graceTimers.clear();
   countdownCallback = null;
   countdownRemaining = 0;
   paused = false;
@@ -143,19 +141,6 @@ function returnToLobby() {
     if (entry[1].lastPingTime && Date.now() - entry[1].lastPingTime > GameConstants.LIVENESS_TIMEOUT_MS) {
       disconnectedIds.push(entry[0]);
     }
-  }
-
-  if (hostId !== null && disconnectedIds.indexOf(hostId) >= 0) {
-    setRoomState(ROOM_STATE.LOBBY);
-    party.broadcast({ type: MSG.ERROR, code: 'HOST_DISCONNECTED', message: 'Host disconnected' });
-    players.clear();
-    playerOrder = [];
-    hostId = null;
-    lastAliveState = {};
-    updatePlayerList();
-    updateStartButton();
-    returnToLobbyUI();
-    return;
   }
 
   for (var i = 0; i < disconnectedIds.length; i++) {

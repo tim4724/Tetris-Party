@@ -112,7 +112,6 @@ function applyRoomCreated(partyRoomCode, newJoinUrl) {
   if (music) music.stop();
   players.clear();
   playerOrder = [];
-  hostId = null;
   paused = false;
   gameState = null;
   boardRenderers = [];
@@ -177,7 +176,6 @@ function onDisplayRejoined(partyRoomCode, clients) {
       type: MSG.WELCOME,
       playerName: info.playerName,
       playerColor: info.playerColor,
-      isHost: id === hostId,
       playerCount: players.size,
       roomState: roomState,
       startLevel: info.startLevel || 1,
@@ -202,14 +200,11 @@ function onDisplayRejoined(partyRoomCode, clients) {
 
 function onPeerJoined(clientId) {
   if (players.has(clientId)) return;
-  if (roomState !== ROOM_STATE.LOBBY) return;
   if (players.size >= GameConstants.MAX_PLAYERS) return;
 
   var index = nextAvailableSlot();
   if (index < 0) return;
   var color = PLAYER_COLORS[index % PLAYER_COLORS.length];
-  var isHost = hostId === null;
-  if (isHost) hostId = clientId;
 
   players.set(clientId, {
     playerName: 'P' + (index + 1),
@@ -220,8 +215,10 @@ function onPeerJoined(clientId) {
   });
   playerOrder.push(clientId);
 
-  updatePlayerList();
-  updateStartButton();
+  if (roomState === ROOM_STATE.LOBBY) {
+    updatePlayerList();
+    updateStartButton();
+  }
 }
 
 function onPeerLeft(clientId) {
@@ -234,51 +231,33 @@ function onPeerLeft(clientId) {
     if (displayGame) displayGame.handleSoftDropEnd(clientId);
   }
 
-  if (roomState === ROOM_STATE.LOBBY) {
-    // Grace period: hold slot for 5s so reconnecting controller can rejoin
-    var graceTimer = setTimeout(function() {
-      graceTimers.delete(clientId);
-      if (!players.has(clientId)) return;
-      removeLobbyPlayer(clientId);
-    }, 5000);
-    graceTimers.set(clientId, graceTimer);
+  if (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN) {
+    // In game — keep player in Map for seamless reconnect, show disconnect overlay
+    showDisconnectQR(clientId);
+  } else if (roomState === ROOM_STATE.LOBBY) {
+    removeLobbyPlayer(clientId);
   } else if (roomState === ROOM_STATE.RESULTS) {
-    if (clientId === hostId) {
-      // Host left — kick everyone back to lobby
+    players.delete(clientId);
+    var idx = playerOrder.indexOf(clientId);
+    if (idx !== -1) playerOrder.splice(idx, 1);
+    garbageIndicatorEffects.delete(clientId);
+    garbageDefenceEffects.delete(clientId);
+    if (players.size === 0) {
       lastResults = null;
       setRoomState(ROOM_STATE.LOBBY);
-      removeLobbyPlayer(clientId);
-    } else {
-      // Non-host left — stay on results screen, just remove them
-      players.delete(clientId);
-      var idx = playerOrder.indexOf(clientId);
-      if (idx !== -1) playerOrder.splice(idx, 1);
+      returnToLobbyUI();
     }
-  } else {
-    // In game/countdown — show disconnect QR overlay
-    showDisconnectQR(clientId);
   }
 }
 
 function removeLobbyPlayer(clientId) {
-  if (clientId === hostId) {
-    // Host disconnected — kick everyone back
-    hostId = null;
-    party.broadcast({ type: MSG.ERROR, code: 'HOST_DISCONNECTED', message: 'Host disconnected' });
-    players.clear();
-    playerOrder = [];
-    garbageIndicatorEffects.clear();
-    garbageDefenceEffects.clear();
-    updatePlayerList();
-    updateStartButton();
-    returnToLobbyUI();
-  } else {
-    players.delete(clientId);
-    playerOrder = playerOrder.filter(function(id) { return id !== clientId; });
-    garbageIndicatorEffects.delete(clientId);
-    garbageDefenceEffects.delete(clientId);
-    updatePlayerList();
-    updateStartButton();
+  players.delete(clientId);
+  playerOrder = playerOrder.filter(function(id) { return id !== clientId; });
+  garbageIndicatorEffects.delete(clientId);
+  garbageDefenceEffects.delete(clientId);
+  updatePlayerList();
+  updateStartButton();
+  if (players.size > 0) {
     broadcastLobbyUpdate();
   }
 }
@@ -293,7 +272,6 @@ function broadcastLobbyUpdate() {
     party.sendTo(id, {
       type: MSG.LOBBY_UPDATE,
       playerCount: players.size,
-      isHost: id === hostId,
       startLevel: entry[1].startLevel || 1
     });
   }

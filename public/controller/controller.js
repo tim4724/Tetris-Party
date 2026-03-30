@@ -35,7 +35,7 @@ function handleMessage(data) {
           gameScreen.style.setProperty('--player-color', playerColor);
           pauseOverlay.classList.add('hidden');
           pauseBtn.disabled = false;
-          pauseBtn.classList.toggle('hidden', !isHost);
+          pauseBtn.classList.remove('hidden');
           showScreen('game');
         }
         if (data.value === 'GO') {
@@ -161,19 +161,16 @@ muteBtn.addEventListener('click', function () {
 // =====================================================================
 
 pauseBtn.addEventListener('click', function () {
-  if (!isHost) return;
   vibrate(10);
   sendToDisplay(MSG.PAUSE_GAME);
 });
 
 pauseContinueBtn.addEventListener('click', function () {
-  if (!isHost) return;
   vibrate(10);
   sendToDisplay(MSG.RESUME_GAME);
 });
 
 pauseNewGameBtn.addEventListener('click', function () {
-  if (!isHost) return;
   vibrate(10);
   sendToDisplay(MSG.RETURN_TO_LOBBY);
 });
@@ -192,7 +189,7 @@ lobbyBackBtn.addEventListener('click', function () {
 });
 
 startBtn.addEventListener('click', function () {
-  if (!isHost || startBtn.disabled) return;
+  if (startBtn.disabled) return;
   vibrate(10);
   sendToDisplay(MSG.START_GAME);
 });
@@ -214,13 +211,11 @@ levelPlusBtn.addEventListener('click', function () {
 });
 
 playAgainBtn.addEventListener('click', function () {
-  if (!isHost) return;
   vibrate(10);
   sendToDisplay(MSG.PLAY_AGAIN);
 });
 
 newGameBtn.addEventListener('click', function () {
-  if (!isHost) return;
   vibrate(10);
   sendToDisplay(MSG.RETURN_TO_LOBBY);
 });

@@ -28,19 +28,19 @@ function handleControllerMessage(fromId, msg) {
         onSoftDrop(fromId, msg.speed);
         break;
       case MSG.START_GAME:
-        if (fromId === hostId) startGame();
+        startGame();
         break;
       case MSG.PLAY_AGAIN:
-        if (fromId === hostId) playAgain();
+        playAgain();
         break;
       case MSG.RETURN_TO_LOBBY:
-        if (fromId === hostId) returnToLobby();
+        returnToLobby();
         break;
       case MSG.PAUSE_GAME:
-        if (fromId === hostId) pauseGame();
+        pauseGame();
         break;
       case MSG.RESUME_GAME:
-        if (fromId === hostId) resumeGame();
+        resumeGame();
         break;
       case MSG.SET_LEVEL:
         onSetLevel(fromId, msg);
@@ -64,12 +64,6 @@ function onHello(fromId, msg) {
   if (players.has(fromId)) {
     var existing = players.get(fromId);
 
-    // Clear grace timer if any
-    if (graceTimers.has(fromId)) {
-      clearTimeout(graceTimers.get(fromId));
-      graceTimers.delete(fromId);
-    }
-
     // Update name, sanitizing "P1"–"P4" to match actual slot
     if (name) existing.playerName = sanitizePlayerName(name, existing.playerIndex);
     updatePlayerList();
@@ -79,7 +73,6 @@ function onHello(fromId, msg) {
       type: MSG.WELCOME,
       playerName: existing.playerName,
       playerColor: existing.playerColor,
-      isHost: fromId === hostId,
       playerCount: players.size,
       roomState: roomState,
       startLevel: existing.startLevel || 1,
@@ -96,11 +89,6 @@ function onHello(fromId, msg) {
   }
 
   // New player joining
-  if (roomState !== ROOM_STATE.LOBBY) {
-    party.sendTo(fromId, { type: MSG.ERROR, message: 'Game already in progress' });
-    return;
-  }
-
   var index = nextAvailableSlot();
   if (index < 0) {
     party.sendTo(fromId, { type: MSG.ERROR, message: 'Room is full' });
@@ -108,8 +96,6 @@ function onHello(fromId, msg) {
   }
   var color = PLAYER_COLORS[index % PLAYER_COLORS.length];
   var playerName = sanitizePlayerName(name, index);
-  var isHost = hostId === null;
-  if (isHost) hostId = fromId;
 
   players.set(fromId, {
     playerName: playerName,
@@ -124,7 +110,6 @@ function onHello(fromId, msg) {
     type: MSG.WELCOME,
     playerName: playerName,
     playerColor: color,
-    isHost: isHost,
     playerCount: players.size,
     roomState: roomState,
     startLevel: 1
