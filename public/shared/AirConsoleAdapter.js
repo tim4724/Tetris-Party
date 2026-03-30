@@ -145,6 +145,8 @@ class AirConsoleAdapter {
 
   close() {
     this._ready = false;
+    // Clear adapter callbacks (prevents stale setTimeout self-echo from firing)
+    this.onOpen = this.onClose = this.onError = this.onMessage = this.onProtocol = null;
     // Clear SDK callbacks to prevent stale adapter from receiving events
     var ac = this.airconsole;
     ac.onReady = ac.onConnect = ac.onDisconnect = ac.onMessage = null;

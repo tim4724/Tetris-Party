@@ -109,6 +109,11 @@ function onLobbyUpdate(data) {
   if (data.startLevel != null) startLevel = data.startLevel;
   if (isHost) updateStartButton();
   if (currentScreen === 'lobby') updateLevelDisplay();
+  // Update gameover buttons if host was promoted during results screen
+  if (currentScreen === 'gameover') {
+    gameoverButtons.classList.toggle('hidden', !isHost);
+    gameoverStatus.textContent = isHost ? '' : 'Waiting for host...';
+  }
 }
 
 function onGameStart() {
