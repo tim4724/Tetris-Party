@@ -72,3 +72,23 @@ connect = function() {
 // the reconnect overlay from ever showing — AirConsole handles connectivity UI.
 reconnectOverlay.style.display = 'none';
 
+// AirConsole status overlay: show "Loading..." until lobby, show errors.
+var _acStatusOverlay = document.getElementById('ac-status-overlay');
+var _origShowScreen = showScreen;
+showScreen = function(name) {
+  _origShowScreen(name);
+  // Hide loading overlay once we leave the name screen
+  if (_acStatusOverlay && name !== 'name') {
+    _acStatusOverlay.classList.add('hidden');
+  }
+};
+
+// Override showErrorState to show errors in our overlay instead of the hidden name screen
+var _origShowErrorState = showErrorState;
+showErrorState = function(heading, detail) {
+  if (_acStatusOverlay) {
+    _acStatusOverlay.textContent = detail || heading || 'Error';
+    _acStatusOverlay.classList.remove('hidden');
+  }
+};
+
