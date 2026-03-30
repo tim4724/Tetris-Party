@@ -43,7 +43,12 @@ cp "$BUILD_DIR/controller/controller.html" "$BUILD_DIR/controller.html"
 
 # Inject version into display-airconsole.js (replaces __AC_VERSION__ placeholder)
 APP_VERSION=$(node -e "console.log(require('$PROJECT_DIR/package.json').version)")
-sed -i '' "s/__AC_VERSION__/$APP_VERSION/" "$BUILD_DIR/display/display-airconsole.js"
+# Portable sed -i (macOS requires '' suffix, Linux doesn't)
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  sed -i '' "s/__AC_VERSION__/$APP_VERSION/" "$BUILD_DIR/display/display-airconsole.js"
+else
+  sed -i "s/__AC_VERSION__/$APP_VERSION/" "$BUILD_DIR/display/display-airconsole.js"
+fi
 echo "Injected version: $APP_VERSION"
 
 # Remove standalone-only entry points and duplicate AirConsole HTML from subdirs
