@@ -59,8 +59,8 @@ function onWelcome(data) {
   if (data.startLevel != null) startLevel = data.startLevel;
 
   if (data.roomState === 'playing' || data.roomState === 'countdown') {
-    // Late joiner (not in active game) — show waiting message
-    if (data.alive === undefined && !data.paused) {
+    // Late joiner (not in active game) — display omits alive field
+    if (data.alive === undefined) {
       setWaitingActionMessage('Game in progress. Please wait for New Game.');
       showScreen('lobby');
       return;

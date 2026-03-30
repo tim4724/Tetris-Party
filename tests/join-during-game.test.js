@@ -63,7 +63,7 @@ describe('Display: onHello during non-LOBBY states', () => {
       updatePlayerListCalled = true;
 
       var isLateJoiner = (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN)
-        && lastAliveState[fromId] == null;
+        && playerOrder.indexOf(fromId) < 0;
 
       var welcomeMsg = {
         type: MSG.WELCOME,

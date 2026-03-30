@@ -71,7 +71,7 @@ function onHello(fromId, msg) {
     // Late joiner: registered via onPeerJoined during active game but never
     // participated. Omit alive/paused so controller shows waiting screen.
     var isLateJoiner = (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN)
-      && lastAliveState[fromId] == null;
+      && playerOrder.indexOf(fromId) < 0;
 
     // Send welcome with current state
     var welcomeMsg = {

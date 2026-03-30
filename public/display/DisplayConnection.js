@@ -173,7 +173,7 @@ function onDisplayRejoined(partyRoomCode, clients) {
     const id = entry[0];
     const info = entry[1];
     var isLateJoiner = (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN)
-      && lastAliveState[id] == null;
+      && playerOrder.indexOf(id) < 0;
     var welcomeMsg = {
       type: MSG.WELCOME,
       playerName: info.playerName,
@@ -238,7 +238,7 @@ function onPeerLeft(clientId) {
   }
 
   if (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN) {
-    if (lastAliveState[clientId] != null) {
+    if (playerOrder.indexOf(clientId) >= 0) {
       // Active game participant — keep in Map for seamless reconnect
       showDisconnectQR(clientId);
     } else {
