@@ -31,10 +31,10 @@ function handleControllerMessage(fromId, msg) {
         startGame();
         break;
       case MSG.PLAY_AGAIN:
-        if (playerOrder.indexOf(fromId) >= 0) playAgain();
+        playAgain();
         break;
       case MSG.RETURN_TO_LOBBY:
-        if (playerOrder.indexOf(fromId) >= 0) returnToLobby();
+        returnToLobby();
         break;
       case MSG.PAUSE_GAME:
         if (playerOrder.indexOf(fromId) >= 0) pauseGame();
