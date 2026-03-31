@@ -164,8 +164,10 @@ function onSetLevel(fromId, msg) {
   var level = parseInt(msg.level, 10);
   if (isNaN(level) || level < 1 || level > 15) return;
   player.startLevel = level;
-  updatePlayerList();
-  broadcastLobbyUpdate();
+  if (roomState === ROOM_STATE.LOBBY) {
+    updatePlayerList();
+    broadcastLobbyUpdate();
+  }
 }
 
 function removePlayer(clientId, immediate) {

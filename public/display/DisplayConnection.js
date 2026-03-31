@@ -262,6 +262,7 @@ function onPeerLeft(clientId) {
       lastResults = null;
       setRoomState(ROOM_STATE.LOBBY);
       party.broadcast({ type: MSG.RETURN_TO_LOBBY, playerCount: players.size });
+      broadcastLobbyUpdate();
       returnToLobbyUI();
     }
   }

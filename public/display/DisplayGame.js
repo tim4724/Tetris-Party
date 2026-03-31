@@ -130,6 +130,7 @@ function resumeGame() {
 }
 
 function returnToLobby() {
+  if (roomState === ROOM_STATE.LOBBY) return;
   clearCountdownTimers();
   countdownCallback = null;
   countdownRemaining = 0;
