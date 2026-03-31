@@ -253,7 +253,12 @@ function onPeerLeft(clientId) {
     if (idx !== -1) playerOrder.splice(idx, 1);
     garbageIndicatorEffects.delete(clientId);
     garbageDefenceEffects.delete(clientId);
-    if (players.size === 0) {
+    // Return to lobby when no game participants remain (late joiners don't count)
+    var hasParticipants = false;
+    for (var i = 0; i < playerOrder.length; i++) {
+      if (players.has(playerOrder[i])) { hasParticipants = true; break; }
+    }
+    if (!hasParticipants) {
       lastResults = null;
       setRoomState(ROOM_STATE.LOBBY);
       returnToLobbyUI();
