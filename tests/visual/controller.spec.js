@@ -54,6 +54,22 @@ test.describe('Controller', () => {
     await expect(player).toHaveScreenshot('03-lobby.png');
   });
 
+  test('lobby - late joiner waiting', async ({ page, context }) => {
+    const { controllers } = await setupJoinedRoom(page, context, ['Player 1']);
+    const player1 = controllers[0];
+    // Start the game
+    await player1.click('#start-btn');
+    await waitForControllerGame(player1);
+    // Late joiner connects mid-game
+    const { roomCode } = await page.evaluate(() => ({ roomCode }));
+    const lateJoiner = await joinController(context, roomCode, 'Late Joiner');
+    await lateJoiner.waitForFunction(() =>
+      document.getElementById('waiting-action-text').textContent.includes('Game in progress')
+    );
+    await stabilizeControllerUI(lateJoiner);
+    await expect(lateJoiner).toHaveScreenshot('03b-lobby-late-joiner.png');
+  });
+
   test('game screen - all player colors', async ({ page, context }) => {
     const names = ['Red', 'Teal', 'Yellow', 'Purple', 'Green', 'Magenta', 'Indigo', 'Coral'];
     const { controllers } = await setupJoinedRoom(page, context, names);
