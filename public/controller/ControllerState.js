@@ -20,6 +20,7 @@ var touchInput = null;
 var currentScreen = 'name';
 var playerCount = 0;
 var gameCancelled = false;
+var waitingForNextGame = false;
 var lastLines = 0;
 var lastGameResults = null;
 var startLevel = 1;

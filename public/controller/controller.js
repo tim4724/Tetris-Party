@@ -15,6 +15,11 @@ function handleMessage(data) {
     // Ignore game broadcasts after rejection (e.g., joined during countdown)
     // Only allow WELCOME (re-admission) and ERROR (new rejection info) through.
     if (gameCancelled && data.type !== MSG.WELCOME && data.type !== MSG.ERROR) return;
+    // Late joiner waiting for next game — ignore game broadcasts but allow
+    // WELCOME (re-admission), GAME_END (show results), RETURN_TO_LOBBY, LOBBY_UPDATE, ERROR
+    if (waitingForNextGame && data.type !== MSG.WELCOME && data.type !== MSG.GAME_END
+        && data.type !== MSG.RETURN_TO_LOBBY && data.type !== MSG.LOBBY_UPDATE
+        && data.type !== MSG.ERROR && data.type !== MSG.PONG) return;
 
     switch (data.type) {
       case MSG.WELCOME:
@@ -58,6 +63,7 @@ function handleMessage(data) {
         onGameResumed();
         break;
       case MSG.RETURN_TO_LOBBY:
+        waitingForNextGame = false;
         playerCount = data.playerCount || playerCount;
         gameScreen.classList.remove('dead');
         gameScreen.classList.remove('paused');

@@ -50,6 +50,7 @@ function onWelcome(data) {
   playerColor = data.playerColor || PLAYER_COLORS[0];
   playerCount = data.playerCount || 1;
   gameCancelled = false;
+  waitingForNextGame = false;
 
   if (party) party.resetReconnectCount();
   startPing();
@@ -63,6 +64,7 @@ function onWelcome(data) {
   if (data.roomState === 'playing' || data.roomState === 'countdown') {
     // Late joiner (not in active game) — display omits alive field
     if (data.alive === undefined) {
+      waitingForNextGame = true;
       showLobbyUI();
       startBtn.classList.add('hidden');
       startBtn.disabled = true;
