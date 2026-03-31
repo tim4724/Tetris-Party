@@ -244,6 +244,8 @@ function onPeerLeft(clientId) {
     } else {
       // Late joiner (never in the game) — remove silently
       players.delete(clientId);
+      garbageIndicatorEffects.delete(clientId);
+      garbageDefenceEffects.delete(clientId);
     }
   } else if (roomState === ROOM_STATE.LOBBY) {
     removeLobbyPlayer(clientId);
@@ -261,8 +263,8 @@ function onPeerLeft(clientId) {
     if (!hasParticipants) {
       lastResults = null;
       setRoomState(ROOM_STATE.LOBBY);
-      party.broadcast({ type: MSG.RETURN_TO_LOBBY, playerCount: players.size });
       broadcastLobbyUpdate();
+      party.broadcast({ type: MSG.RETURN_TO_LOBBY, playerCount: players.size });
       returnToLobbyUI();
     }
   }
