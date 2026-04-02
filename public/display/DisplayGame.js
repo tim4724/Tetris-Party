@@ -225,6 +225,7 @@ function stopDisplayGame() {
     clearTimeout(entry[1]);
   }
   softDropTimers.clear();
+  lastHardDropTime.clear();
   garbageDefenceEffects.clear();
   clearCountdownTimers();
 }
@@ -233,6 +234,10 @@ function runGameLocally() {
   stopDisplayGame();
 
   var Game = window.GameEngine.Game;
+  // Sort by slot index so game engine order matches board positions
+  playerOrder.sort(function(a, b) {
+    return (players.get(a)?.playerIndex ?? 0) - (players.get(b)?.playerIndex ?? 0);
+  });
   // Snapshot playerOrder at game start — prevents mid-game layout drift
   playerOrder = playerOrder.slice();
   var gamePlayers = new Map();
