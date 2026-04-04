@@ -42,7 +42,7 @@
     // Determine role from URL or opts
     // screen.html → device 0, controller.html → random device ID > 0
     var isScreen = window.location.pathname.indexOf('screen') !== -1;
-    this._deviceId = isScreen ? 0 : (window.__AC_DEVICE_ID || (100 + Math.floor(Math.random() * 900)));
+    this._deviceId = isScreen ? 0 : (window.__AC_DEVICE_ID || (window.__AC_NEXT_ID = (window.__AC_NEXT_ID || 100) + 1));
     window.__AC_DEVICE_ID = this._deviceId;
 
     this._channel.onmessage = function(event) {

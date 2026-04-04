@@ -96,7 +96,7 @@ class AirConsoleAdapter {
         if (self.onProtocol) self.onProtocol('peer_joined', { clientId: String(ids[i]) });
       }
     } else {
-      if (this.onProtocol) this.onProtocol('joined', { room: code, clients: [] });
+      if (this.onProtocol) this.onProtocol('joined', { room: code, clients: [] }); // peers delivered via peer_joined from display
     }
   }
 
