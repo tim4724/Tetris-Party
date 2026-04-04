@@ -291,7 +291,7 @@ function runGameLocally() {
       party.broadcast({ type: MSG.GAME_END, elapsed: results.elapsed, results: results.results });
       onGameEnd(results);
     }
-  }, seed);
+  }, seed, gameMode);
 
   displayGame.init();
 }
@@ -332,7 +332,11 @@ function onLineClear(msg) {
   if (idx < 0 || !boardRenderers[idx]) return;
   var br = boardRenderers[idx];
   var isQuad = msg.lines === 4;
-  animations.addLineClear(br.x, br.y, br.cellSize, msg.rows || [], isQuad);
+  if (br instanceof HexBoardRenderer) {
+    animations.addHexCellClear(br, msg.clearCells || [], msg.lines);
+  } else {
+    animations.addLineClear(br.x, br.y, br.cellSize, msg.rows || [], isQuad);
+  }
 }
 
 function onGarbageCancelled(msg) {
@@ -355,7 +359,8 @@ function onGarbageCancelled(msg) {
     // Top-down coords (row 0 = top of board). The meter occupies
     // rows (VISIBLE_HEIGHT - oldPending) through VISIBLE_HEIGHT-1. The meter shrinks from the top,
     // so flash the rows that disappear at the top of the old meter.
-    var rowStart = GameConstants.VISIBLE_HEIGHT - oldPending;
+    var visHeight = gameMode === 'hex' ? HexConstants.HEX_VISIBLE_ROWS : GameConstants.VISIBLE_HEIGHT;
+    var rowStart = visHeight - oldPending;
     var existing = garbageDefenceEffects.get(msg.playerId) || [];
     existing.push({
       startTime: performance.now(),
@@ -402,7 +407,7 @@ function onGarbageSent(msg) {
     maxAlpha: 0.94,
     color: attackerColor,
     lines: msg.lines,
-    rowStart: Math.max(0, GameConstants.VISIBLE_HEIGHT - msg.lines)
+    rowStart: Math.max(0, (gameMode === 'hex' ? HexConstants.HEX_VISIBLE_ROWS : GameConstants.VISIBLE_HEIGHT) - msg.lines)
   });
   garbageIndicatorEffects.set(msg.toId, shifted);
 }
@@ -415,7 +420,12 @@ function onPieceLock(msg) {
   var isNeon = br.styleTier === STYLE_TIERS.NEON_FLAT;
   var colors = isNeon ? NEON_PIECE_COLORS : PIECE_COLORS;
   var pieceColor = colors[msg.typeId] || '#ffffff';
-  animations.addLockFlash(br.x, br.y, br.cellSize, msg.blocks, pieceColor);
+  if (br instanceof HexBoardRenderer) {
+    // Convert hex block positions to pixel coordinates for sparkles
+    animations.addHexLockFlash(br, msg.blocks, pieceColor);
+  } else {
+    animations.addLockFlash(br.x, br.y, br.cellSize, msg.blocks, pieceColor);
+  }
 }
 
 function onPlayerKO(msg) {

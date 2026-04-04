@@ -155,6 +155,115 @@ class Animations {
     }
   }
 
+  addHexCellClear(br, cells, linesCleared) {
+    if (!Array.isArray(cells) || cells.length === 0) return;
+    var duration = THEME.timing.lineClear;
+    var isQuad = linesCleared >= 4;
+    var isTriple = linesCleared === 3;
+
+    // Capture renderer values by value so the closure doesn't hold a stale br reference
+    // (calculateLayout clears animations.active before rebuilding renderers, so this is
+    // safe today, but capturing by value matches the classic addLineClear pattern).
+    var boardX = br.x, boardY = br.y, hexSize = br.hexSize;
+    var hexH = br.hexH, colW = br.colW;
+
+    function hexCenter(col, row) {
+      return {
+        x: boardX + colW * col + hexSize,
+        y: boardY + hexH * (row + 0.5 * (col & 1)) + hexH / 2
+      };
+    }
+    function drawHexFill(ctx, cx, cy, size, fill) {
+      ctx.beginPath();
+      for (var i = 0; i < 6; i++) {
+        var a = Math.PI / 3 * i;
+        var hx = cx + size * Math.cos(a);
+        var hy = cy + size * Math.sin(a);
+        i === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+      }
+      ctx.closePath();
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
+
+    this.active.push({
+      type: 'hexCellClear',
+      startTime: performance.now(),
+      duration: duration,
+      render: function(ctx, progress) {
+        var quadRgb = isQuad ? hexToRgb(THEME.color.quad) : null;
+        for (var ci = 0; ci < cells.length; ci++) {
+          var col = cells[ci][0], row = cells[ci][1];
+          if (row < 0) continue;
+          var pos = hexCenter(col, row);
+          if (progress < 0.25) {
+            var flashAlpha = 0.9 * (1 - (progress / 0.25) * 0.5);
+            drawHexFill(ctx, pos.x, pos.y, hexSize,
+              quadRgb ? 'rgba(' + quadRgb.r + ',' + quadRgb.g + ',' + quadRgb.b + ',' + flashAlpha + ')' : 'rgba(255, 255, 255, ' + flashAlpha + ')');
+          } else {
+            var fadeAlpha = 0.5 * (1 - (progress - 0.25) / 0.75);
+            if (fadeAlpha <= 0) continue;
+            var shrink = hexSize * (1 - (progress - 0.25));
+            drawHexFill(ctx, pos.x, pos.y, shrink,
+              quadRgb ? 'rgba(' + quadRgb.r + ',' + quadRgb.g + ',' + quadRgb.b + ',' + fadeAlpha + ')' : 'rgba(255, 255, 255, ' + fadeAlpha + ')');
+          }
+        }
+      }
+    });
+
+    // Text popup for multi-line clears
+    var firstCell = cells.find(function(c) { return c[1] >= 0; });
+    if (firstCell) {
+      var pos = hexCenter(Math.floor(HexConstants.HEX_COLS / 2), firstCell[1]);
+      if (isQuad) {
+        this.addTextPopup(pos.x, pos.y, 'QUAD!', THEME.color.quad, true, br.cellSize);
+      } else if (isTriple) {
+        this.addTextPopup(pos.x, pos.y, 'TRIPLE!', THEME.color.triple, true, br.cellSize);
+      } else if (linesCleared === 2) {
+        this.addTextPopup(pos.x, pos.y, 'DOUBLE', THEME.color.text.white, false, br.cellSize);
+      }
+    }
+
+    // Sparkle particles
+    for (var si = 0; si < cells.length; si++) {
+      var sc = cells[si][0], sr = cells[si][1];
+      if (sr < 0) continue;
+      var sparkPos = hexCenter(sc, sr);
+      var particleCount = isQuad ? 4 : 2;
+      for (var j = 0; j < particleCount; j++) {
+        this._addSparkle(
+          sparkPos.x + (Math.random() - 0.5) * hexSize * 2,
+          sparkPos.y,
+          isQuad ? THEME.color.quad : '#ffffff',
+          200 + Math.random() * 400,
+          hexSize
+        );
+      }
+    }
+  }
+
+  addHexLockFlash(br, blocks, pieceColor) {
+    if (!blocks || blocks.length === 0) return;
+    var occupied = new Set();
+    for (var i = 0; i < blocks.length; i++) occupied.add(blocks[i][0] + ',' + blocks[i][1]);
+    for (var k = 0; k < blocks.length; k++) {
+      var col = blocks[k][0], row = blocks[k][1];
+      if (row < 0 || row >= HexConstants.HEX_VISIBLE_ROWS) continue;
+      if (occupied.has(col + ',' + (row + 1))) continue;
+      var pos = br._hexCenter(col, row);
+      for (var j = 0; j < 5; j++) {
+        this._addSparkle(
+          pos.x + (Math.random() - 0.5) * br.hexW,
+          pos.y + br.hexSize,
+          pieceColor,
+          150 + Math.random() * 250,
+          br.cellSize,
+          0.08, 0.1
+        );
+      }
+    }
+  }
+
   addGarbageShake(boardX, boardY) {
     const duration = THEME.timing.garbageShake;
     this.active.push({

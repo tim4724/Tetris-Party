@@ -1,0 +1,310 @@
+'use strict';
+
+// UMD: works in Node.js (require) and browser (window.HexPlayerBoardModule)
+// Flat-top hex board — columns are vertically aligned, so left/right is col ± 1.
+(function(exports) {
+
+const hexConst = (typeof require !== 'undefined') ? require('./HexConstants') : window.HexConstants;
+const BaseBoardModule = (typeof require !== 'undefined') ? require('./BaseBoard') : window.BaseBoardModule;
+const HexPieceModule = (typeof require !== 'undefined') ? require('./HexPiece') : window.HexPieceModule;
+
+const findClearableZigzags = hexConst.findClearableZigzags;
+const HEX_COLS = hexConst.HEX_COLS;
+const HEX_TOTAL_ROWS = hexConst.HEX_TOTAL_ROWS;
+const HEX_BUFFER_ROWS = hexConst.HEX_BUFFER_ROWS;
+const HEX_PIECE_TYPES = hexConst.HEX_PIECE_TYPES;
+const HEX_GARBAGE_CELL = hexConst.HEX_GARBAGE_CELL;
+
+const BaseBoard = BaseBoardModule.BaseBoard;
+const LINE_CLEAR_DELAY_MS = BaseBoardModule.LINE_CLEAR_DELAY_MS;
+
+const HexPiece = HexPieceModule.HexPiece;
+const KICKS = HexPieceModule.KICKS;
+
+// ===================== HEX PLAYER BOARD =====================
+class HexPlayerBoard extends BaseBoard {
+  constructor(playerId, seed, startLevel) {
+    super(playerId, seed, startLevel, {
+      cols: HEX_COLS,
+      totalRows: HEX_TOTAL_ROWS,
+      bufferRows: HEX_BUFFER_ROWS,
+      pieceTypes: HEX_PIECE_TYPES
+    });
+
+    this.clearingCells = null;
+
+    this._fillNextQueue();
+  }
+
+  // --- Abstract method implementations ---
+
+  _createPiece(type) {
+    return new HexPiece(type);
+  }
+
+  _isClearing() {
+    return this.clearingCells !== null;
+  }
+
+  _drop(piece) {
+    return this._hexDrop(piece);
+  }
+
+  _isOnSurface() {
+    if (!this.currentPiece) return false;
+    return this._hexDrop(this.currentPiece) === null;
+  }
+
+  _preDropToVisible() {
+    if (!this.currentPiece) return;
+    while (this.currentPiece.anchorRow < HEX_BUFFER_ROWS - 1) {
+      const next = this._hexDrop(this.currentPiece);
+      if (!next) break;
+      this.currentPiece = next;
+    }
+    this.gravityCounter = 0;
+  }
+
+  // --- Hex-specific methods ---
+
+  // Simple drop: row + 1, same column. No lane system needed.
+  _hexDrop(piece) {
+    const newRow = piece.anchorRow + 1;
+    if (newRow >= HEX_TOTAL_ROWS) return null;
+    const test = piece.clone();
+    test.anchorRow = newRow;
+    if (this.isValidPosition(test)) return test;
+    return null;
+  }
+
+  _ghostOf(piece) {
+    let g = piece.clone();
+    for (let i = 0; i < HEX_TOTAL_ROWS; i++) {
+      const n = this._hexDrop(g);
+      if (!n) return g;
+      g = n;
+    }
+    return g;
+  }
+
+  // ===================== MOVEMENT =====================
+  moveLeft() {
+    if (!this.currentPiece || !this.alive) return false;
+    return this._move(-1);
+  }
+
+  moveRight() {
+    if (!this.currentPiece || !this.alive) return false;
+    return this._move(1);
+  }
+
+  _move(dir) {
+    const test = this.currentPiece.clone();
+    test.anchorCol += dir;
+    if (!this.isValidPosition(test)) return false;
+    this.currentPiece = test;
+    this._resetLockTimerIfOnSurface();
+    return true;
+  }
+
+  // ===================== ROTATION =====================
+  rotateCW() {
+    if (!this.currentPiece || !this.alive) return false;
+    return this._tryRotate('cw');
+  }
+
+  rotateCCW() {
+    if (!this.currentPiece || !this.alive) return false;
+    return this._tryRotate('ccw');
+  }
+
+  _tryRotate(dir) {
+    const test = this.currentPiece.clone();
+    if (dir === 'cw') test.rotateCW(); else test.rotateCCW();
+    test._adjustAnchorRow();
+
+    for (let i = 0; i < KICKS.length; i++) {
+      const kicked = test.clone();
+      kicked.anchorCol += KICKS[i][0];
+      kicked.anchorRow += KICKS[i][1];
+      if (!this.isValidPosition(kicked)) continue;
+      this.currentPiece = kicked;
+      this._resetLockTimerIfOnSurface();
+      return true;
+    }
+    return false;
+  }
+
+  // ===================== HARD DROP =====================
+  hardDrop() {
+    if (!this.currentPiece || !this.alive) return null;
+    this.currentPiece = this._ghostOf(this.currentPiece);
+    return this._lockAndProcess();
+  }
+
+  // ===================== LOCK & LINE CLEAR =====================
+  _lockAndProcess() {
+    const lockedBlocks = [];
+    let lockedTypeId = 0;
+    if (this.currentPiece) {
+      lockedTypeId = this.currentPiece.typeId;
+      const abs = this.currentPiece.getAbsoluteBlocks();
+      for (let i = 0; i < abs.length; i++) {
+        const visibleRow = abs[i][1] - HEX_BUFFER_ROWS;
+        if (visibleRow >= 0) lockedBlocks.push([abs[i][0], visibleRow]);
+      }
+    }
+
+    this.lockPiece();
+
+    const grid = this.grid;
+    const result = findClearableZigzags(HEX_COLS, HEX_TOTAL_ROWS, function(col, row) {
+      return grid[row][col] !== 0;
+    }, null, HEX_BUFFER_ROWS);
+    const linesCleared = result.linesCleared;
+    const clearCells = result.clearCells;
+
+    if (linesCleared > 0) {
+      this.lines += linesCleared;
+      // Store clearing cells as array of [col, row] for animation
+      this.clearingCells = [];
+      for (const key in clearCells) {
+        const parts = key.split(',');
+        this.clearingCells.push([parseInt(parts[0]), parseInt(parts[1])]);
+      }
+      this.clearingTimer = LINE_CLEAR_DELAY_MS;
+      this.currentPiece = null;
+    } else {
+      this._applyPendingGarbage();
+      this.spawnPiece();
+    }
+
+    // Return visible-coordinate cells for renderer
+    const visibleClearCells = [];
+    if (this.clearingCells) {
+      for (let vc = 0; vc < this.clearingCells.length; vc++) {
+        const vr = this.clearingCells[vc][1] - HEX_BUFFER_ROWS;
+        if (vr >= 0) visibleClearCells.push([this.clearingCells[vc][0], vr]);
+      }
+    }
+
+    return {
+      linesCleared,
+      clearCells: visibleClearCells,
+      alive: this.alive,
+      lockedBlocks,
+      lockedTypeId
+    };
+  }
+
+  _finishClearLines() {
+    if (!this.clearingCells) return;
+
+    // Build set of cleared positions per column, sorted top-to-bottom
+    const clearedByCol = {};
+    for (let i = 0; i < this.clearingCells.length; i++) {
+      const col = this.clearingCells[i][0], row = this.clearingCells[i][1];
+      if (row >= 0 && row < HEX_TOTAL_ROWS && col >= 0 && col < HEX_COLS) {
+        if (!clearedByCol[col]) clearedByCol[col] = [];
+        clearedByCol[col].push(row);
+      }
+    }
+
+    // For each column, remove only the cleared cells and shift above down.
+    for (let c = 0; c < HEX_COLS; c++) {
+      const cleared = clearedByCol[c];
+      if (!cleared) continue;
+      cleared.sort((a, b) => b - a); // bottom-first
+      for (let ci = 0; ci < cleared.length; ci++) {
+        const cr = cleared[ci];
+        for (let sr = cr; sr > 0; sr--) {
+          this.grid[sr][c] = this.grid[sr - 1][c];
+        }
+        this.grid[0][c] = 0;
+        // Cells above cr shifted down by 1, so bump their tracked indices.
+        // cleared is sorted descending, so all remaining entries are above cr.
+        for (let cj = ci + 1; cj < cleared.length; cj++) {
+          cleared[cj]++;
+        }
+      }
+    }
+
+    this.clearingCells = null;
+    this.clearingTimer = null;
+    this._applyPendingGarbage();
+    this.spawnPiece();
+  }
+
+  lockPiece() {
+    if (!this.currentPiece) return;
+    const blocks = this.currentPiece.getAbsoluteBlocks();
+    for (const [col, row] of blocks) {
+      if (row >= 0 && row < HEX_TOTAL_ROWS && col >= 0 && col < HEX_COLS) {
+        this.grid[row][col] = this.currentPiece.typeId;
+      }
+    }
+  }
+
+  // ===================== GARBAGE =====================
+  applyGarbage(lines, gapColumn) {
+    lines = Math.min(lines, HEX_TOTAL_ROWS);
+    this.grid.splice(0, lines);
+    for (let i = 0; i < lines; i++) {
+      const row = new Array(HEX_COLS).fill(HEX_GARBAGE_CELL);
+      row[gapColumn % HEX_COLS] = 0;
+      this.grid.push(row);
+    }
+  }
+
+  // ===================== QUERIES =====================
+  isValidPosition(piece) {
+    const blocks = piece.getAbsoluteBlocks();
+    for (const [col, row] of blocks) {
+      if (col < 0 || col >= HEX_COLS) return false;
+      if (row < 0 || row >= HEX_TOTAL_ROWS) return false;
+      if (this.grid[row][col] !== 0) return false;
+    }
+    return true;
+  }
+
+  getGhostY() {
+    if (!this.currentPiece) return 0;
+    const ghost = this._ghostOf(this.currentPiece);
+    return ghost.anchorRow;
+  }
+
+  getState() {
+    const visibleGrid = this.grid.slice(HEX_BUFFER_ROWS);
+    const ghost = this.currentPiece ? this._ghostOf(this.currentPiece) : null;
+
+    return {
+      grid: visibleGrid,
+      currentPiece: this.currentPiece ? {
+        type: this.currentPiece.type,
+        typeId: this.currentPiece.typeId,
+        anchorCol: this.currentPiece.anchorCol,
+        anchorRow: this.currentPiece.anchorRow - HEX_BUFFER_ROWS,
+        cells: this.currentPiece.cells,
+        blocks: this.currentPiece.getAbsoluteBlocks().map(b => [b[0], b[1] - HEX_BUFFER_ROWS])
+      } : null,
+      ghost: ghost ? {
+        anchorCol: ghost.anchorCol,
+        anchorRow: ghost.anchorRow - HEX_BUFFER_ROWS,
+        blocks: ghost.getAbsoluteBlocks().map(b => [b[0], b[1] - HEX_BUFFER_ROWS])
+      } : null,
+      holdPiece: this.holdPiece,
+      nextPieces: this.nextPieces.slice(0, 3),
+      level: this.getLevel(),
+      lines: this.lines,
+      alive: this.alive,
+      pendingGarbage: this.pendingGarbage.reduce((sum, g) => sum + g.lines, 0),
+      clearingCells: this.clearingCells ? this.clearingCells
+        .map(c => [c[0], c[1] - HEX_BUFFER_ROWS])
+        .filter(c => c[1] >= 0) : null
+    };
+  }
+}
+
+exports.HexPlayerBoard = HexPlayerBoard;
+
+})(typeof module !== 'undefined' ? module.exports : (window.HexPlayerBoardModule = {}));
