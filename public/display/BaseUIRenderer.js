@@ -197,6 +197,18 @@ class BaseUIRenderer {
 
     this._fillBoardArea('rgba(0, 0, 0, ' + THEME.opacity.overlay + ')');
 
+    ctx.fillStyle = playerColor || 'rgba(0, 200, 255, 0.7)';
+    ctx.font = this._fontDisconnect;
+    ctx.textAlign = 'center';
+    ctx.letterSpacing = '0.1em';
+
+    if (!qrImg) {
+      ctx.textBaseline = 'middle';
+      ctx.fillText(t('disconnected'), bx + bw / 2, by + bh / 2, bw * 0.9);
+      ctx.letterSpacing = '0px';
+      return;
+    }
+
     var labelSize = Math.max(10, this.cellSize * THEME.font.cellScale.name);
     var labelGap = labelSize * 1.2;
     var qrSize = Math.min(bw, bh) * 0.5;
@@ -216,20 +228,16 @@ class BaseUIRenderer {
     ctx.lineWidth = 1;
     ctx.stroke();
 
-    if (qrImg) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.roundRect(outerX + pad, groupY + pad, qrSize, qrSize, Math.max(1, qrRadius - pad));
-      ctx.clip();
-      ctx.drawImage(qrImg, outerX + pad, groupY + pad, qrSize, qrSize);
-      ctx.restore();
-    }
+    ctx.save();
+    ctx.beginPath();
+    ctx.roundRect(outerX + pad, groupY + pad, qrSize, qrSize, Math.max(1, qrRadius - pad));
+    ctx.clip();
+    ctx.drawImage(qrImg, outerX + pad, groupY + pad, qrSize, qrSize);
+    ctx.restore();
 
     ctx.fillStyle = playerColor || 'rgba(0, 200, 255, 0.7)';
     ctx.font = this._fontDisconnect;
-    ctx.textAlign = 'center';
     ctx.textBaseline = 'top';
-    ctx.letterSpacing = '0.1em';
     ctx.fillText(t('scan_to_rejoin'), bx + bw / 2, groupY + outerSize + labelGap, bw * 0.9);
     ctx.letterSpacing = '0px';
   }
