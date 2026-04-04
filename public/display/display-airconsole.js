@@ -47,6 +47,27 @@ airconsole.onResume = function() {
   if (autoPaused) { autoPaused = false; resumeGame(); }
 };
 
+// Wire ad events — pause and mute during ads, resume after.
+var _adMutedByUs = false;
+airconsole.onAdShow = function() {
+  console.log('[AirConsole] onAdShow — pausing for ad');
+  if (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN) {
+    if (!paused) {
+      paused = true;
+      autoPaused = true;
+      if (roomState === ROOM_STATE.COUNTDOWN) clearCountdownTimers();
+      if (displayGame) displayGame.pause();
+    }
+  }
+  if (music && !muted) { music.pause(); _adMutedByUs = true; }
+};
+
+airconsole.onAdComplete = function() {
+  console.log('[AirConsole] onAdComplete — resuming after ad');
+  if (_adMutedByUs) { _adMutedByUs = false; if (music) music.resume(); }
+  if (autoPaused) { autoPaused = false; resumeGame(); }
+};
+
 // Replace PartyConnection with a factory that returns AirConsoleAdapter.
 PartyConnection = function() {
   return new AirConsoleAdapter(airconsole, { role: 'display' });
