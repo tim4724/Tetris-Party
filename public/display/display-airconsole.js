@@ -31,8 +31,8 @@ var _acPaused = false;
 airconsole.onPause = function() {
   console.log('[AirConsole] onPause — connection unstable');
   if (roomState !== ROOM_STATE.PLAYING && roomState !== ROOM_STATE.COUNTDOWN) return;
-  if (paused) return;
   _acPaused = true;
+  if (paused) return;
   paused = true;
   autoPaused = true;
   if (roomState === ROOM_STATE.COUNTDOWN) clearCountdownTimers();
@@ -44,6 +44,7 @@ airconsole.onResume = function() {
   console.log('[AirConsole] onResume — connection restored');
   if (!_acPaused) return;
   _acPaused = false;
+  if (_adPaused) return;
   if (autoPaused) { autoPaused = false; resumeGame(); }
 };
 
@@ -53,8 +54,8 @@ var _adMutedByUs = false;
 airconsole.onAdShow = function() {
   console.log('[AirConsole] onAdShow — pausing for ad');
   if (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN) {
+    _adPaused = true;
     if (!paused) {
-      _adPaused = true;
       paused = true;
       autoPaused = true;
       if (roomState === ROOM_STATE.COUNTDOWN) clearCountdownTimers();
@@ -69,6 +70,7 @@ airconsole.onAdComplete = function() {
   if (_adMutedByUs) { _adMutedByUs = false; if (music) music.resume(); }
   if (!_adPaused) return;
   _adPaused = false;
+  if (_acPaused) return;
   if (autoPaused && !allPlayersDisconnected()) { autoPaused = false; resumeGame(); }
 };
 

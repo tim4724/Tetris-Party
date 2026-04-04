@@ -145,6 +145,8 @@
   // Test helpers — trigger SDK lifecycle events
   AirConsole.prototype.triggerPause = function() { if (this.onPause) this.onPause(); };
   AirConsole.prototype.triggerResume = function() { if (this.onResume) this.onResume(); };
+  AirConsole.prototype.triggerAdShow = function() { if (this.onAdShow) this.onAdShow(); };
+  AirConsole.prototype.triggerAdComplete = function() { if (this.onAdComplete) this.onAdComplete(); };
   AirConsole.prototype.triggerDisconnect = function() {
     this._channel.postMessage({ _ac_type: 'disconnect', deviceId: this._deviceId });
   };

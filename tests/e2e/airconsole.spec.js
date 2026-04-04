@@ -354,4 +354,34 @@ test.describe.serial('AirConsole Integration', () => {
 
     expect(await s.screenFrame.evaluate(() => roomState)).toBe('playing');
   });
+
+  test('ad pause/resume during gameplay', async ({ page, context }) => {
+    if (!USE_MOCK) {
+      test.skip(true, 'Ad test only in mock mode');
+      return;
+    }
+    const s = await createSession(context, page);
+
+    await s.screenFrame.waitForFunction(() => players.size >= 1, null, { timeout: 15000 });
+    await s.ctrlFrame.waitForFunction(() => currentScreen === 'lobby' && playerColor !== null, null, { timeout: 15000 });
+
+    await s.ctrlFrame.evaluate(() => {
+      const plus = document.getElementById('level-plus-btn');
+      for (let i = 0; i < 14; i++) plus.click();
+    });
+    await s.ctrlPage.waitForTimeout(300);
+
+    await s.ctrlFrame.locator('#start-btn').click();
+    await s.screenFrame.waitForFunction(() => roomState === 'playing', null, { timeout: 15000 });
+
+    // Ad starts — game pauses
+    await s.screenPage.evaluate(() => window.airconsole.triggerAdShow());
+    await s.screenFrame.waitForFunction(() => paused === true, null, { timeout: 5000 });
+
+    // Ad ends — game resumes
+    await s.screenPage.evaluate(() => window.airconsole.triggerAdComplete());
+    await s.screenFrame.waitForFunction(() => paused === false, null, { timeout: 5000 });
+
+    expect(await s.screenFrame.evaluate(() => roomState)).toBe('playing');
+  });
 });
