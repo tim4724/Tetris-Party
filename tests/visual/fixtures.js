@@ -3,6 +3,23 @@
 
 const { PLAYER_COLORS } = require('../../public/shared/theme.js');
 
+// Compute ghost Y by dropping a piece down a grid until it collides.
+// Grid is 22 visible rows; piece blocks are [col, row] offsets.
+function computeGhostY(grid, piece) {
+  const rows = grid.length;
+  const cols = grid[0].length;
+  let y = piece.y;
+  while (true) {
+    y += 1;
+    var blocked = piece.blocks.some(function(b) {
+      var gx = piece.x + b[0];
+      var gy = y + b[1];
+      return gy >= rows || gx < 0 || gx >= cols || grid[gy][gx] !== 0;
+    });
+    if (blocked) return y - 1;
+  }
+}
+
 const LIVE_LINES = [24, 16, 10, 5, 20, 12, 8, 3];
 const LIVE_LEVELS = [3, 2, 2, 1, 3, 2, 1, 1];
 const LIVE_HOLD = ['O', 'S', 'T', 'I', 'J', 'Z', 'L', 'S'];
@@ -41,9 +58,6 @@ const LIVE_PIECES = [
   { typeId: 4, x: 7, y: 3, blocks: [[0, 0], [1, 0], [0, 1], [1, 1]] },
 ];
 
-// Ghost Y — computed to be the lowest valid row for each piece/grid combination.
-// Verified: no ghost block overlaps any occupied grid cell.
-const LIVE_GHOST_Y = [16, 16, 17, 18, 17, 18, 17, 18];
 
 const RESULT_LINES = [48, 36, 24, 10, 40, 28, 18, 6];
 const RESULT_LEVELS = [5, 4, 3, 2, 5, 3, 2, 1];
@@ -169,27 +183,28 @@ function buildGameState(playerIds, options) {
   const deadIds = new Set(options.deadPlayerIds || []);
   const allDead = !!options.allDead;
   const pieces = options.pieces || LIVE_PIECES;
-  const ghostYs = options.ghostYs || LIVE_GHOST_Y;
 
   return {
-    players: playerIds.map((id, index) => ({
-      id: id,
-      alive: allDead ? false : !deadIds.has(id),
+    players: playerIds.map((id, index) => {
+      const grid = cloneGrid((GRIDS[index] || GRIDS[GRIDS.length - 1])());
+      const p = pieces[index] || pieces[0];
+      const piece = { typeId: p.typeId, x: p.x, y: p.y, blocks: p.blocks.map((block) => block.slice()) };
+      return {
+        id: id,
+        alive: allDead ? false : !deadIds.has(id),
 
-      lines: LIVE_LINES[index] || LIVE_LINES[LIVE_LINES.length - 1],
-      level: LIVE_LEVELS[index] || LIVE_LEVELS[LIVE_LEVELS.length - 1],
-      grid: cloneGrid((GRIDS[index] || GRIDS[GRIDS.length - 1])()),
-      currentPiece: (() => {
-        const p = pieces[index] || pieces[0];
-        return { typeId: p.typeId, x: p.x, y: p.y, blocks: p.blocks.map((block) => block.slice()) };
-      })(),
-      ghostY: ghostYs[index] != null ? ghostYs[index] : ghostYs[ghostYs.length - 1],
-      holdPiece: LIVE_HOLD[index] || LIVE_HOLD[LIVE_HOLD.length - 1],
-      nextPieces: (LIVE_NEXT[index] || LIVE_NEXT[LIVE_NEXT.length - 1]).slice(),
-      pendingGarbage: index === 0 ? 3 : index === 2 ? 2 : 0,
-      playerName: 'Player ' + (index + 1),
-      playerColor: PLAYER_COLORS[index % PLAYER_COLORS.length]
-    })),
+        lines: LIVE_LINES[index] || LIVE_LINES[LIVE_LINES.length - 1],
+        level: LIVE_LEVELS[index] || LIVE_LEVELS[LIVE_LEVELS.length - 1],
+        grid: grid,
+        currentPiece: piece,
+        ghostY: computeGhostY(grid, piece),
+        holdPiece: LIVE_HOLD[index] || LIVE_HOLD[LIVE_HOLD.length - 1],
+        nextPieces: (LIVE_NEXT[index] || LIVE_NEXT[LIVE_NEXT.length - 1]).slice(),
+        pendingGarbage: index === 0 ? 3 : index === 2 ? 2 : 0,
+        playerName: 'Player ' + (index + 1),
+        playerColor: PLAYER_COLORS[index % PLAYER_COLORS.length]
+      };
+    }),
     elapsed: options.elapsed || 65000
   };
 }
@@ -241,25 +256,30 @@ function buildStyleTierGameState(playerIds) {
   const tierNames  = ['Normal', 'Square', 'Neon'];
   const allColorsGrid = createAllColorsGrid();
 
+  const tierPiece = { typeId: 6, x: 4, y: 3, blocks: [[1, 0], [0, 1], [1, 1], [2, 1]] };
+
   return {
-    players: playerIds.map((id, index) => ({
+    players: playerIds.map((id, index) => {
+      const grid = cloneGrid(allColorsGrid);
+      return {
       id: id,
       alive: true,
 
       lines: tierLines[index] || tierLines[0],
       level: tierLevels[index] || tierLevels[0],
-      grid: cloneGrid(allColorsGrid),
+      grid: grid,
       currentPiece: {
-        typeId: 6, x: 4, y: 3,
-        blocks: [[1, 0], [0, 1], [1, 1], [2, 1]]
+        typeId: tierPiece.typeId, x: tierPiece.x, y: tierPiece.y,
+        blocks: tierPiece.blocks.map(function(b) { return b.slice(); })
       },
-      ghostY: 13,
+      ghostY: computeGhostY(grid, tierPiece),
       holdPiece: 'I',
       nextPieces: ['J', 'L', 'O', 'S', 'Z'],
       pendingGarbage: 2,
       playerName: tierNames[index] || ('Player ' + (index + 1)),
       playerColor: PLAYER_COLORS[index % PLAYER_COLORS.length]
-    })),
+      };
+    }),
     elapsed: 65000
   };
 }

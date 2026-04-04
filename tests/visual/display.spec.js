@@ -96,8 +96,7 @@ test.describe('Display', () => {
     await injectGameState(page, 1, {
       pieces: [
         { typeId: 1, x: 6, y: 2, blocks: [[0, 1], [1, 1], [2, 1], [3, 1]] }
-      ],
-      ghostYs: [14]
+      ]
     });
     await page.waitForTimeout(150);
     await expect(page).toHaveScreenshot('05-game-1p.png');
@@ -110,8 +109,7 @@ test.describe('Display', () => {
       pieces: [
         { typeId: 6, x: 7, y: 2, blocks: [[1, 0], [0, 1], [1, 1], [2, 1]] },
         { typeId: 2, x: 7, y: 3, blocks: [[0, 0], [0, 1], [1, 1], [2, 1]] }
-      ],
-      ghostYs: [14, 14]
+      ]
     });
     await page.waitForTimeout(150);
     await expect(page).toHaveScreenshot('06-game-2p.png');
@@ -126,8 +124,7 @@ test.describe('Display', () => {
         { typeId: 7, x: 7, y: 3, blocks: [[0, 0], [1, 0], [1, 1], [2, 1]] },
         { typeId: 3, x: 3, y: 2, blocks: [[2, 0], [0, 1], [1, 1], [2, 1]] },
         { typeId: 6, x: 3, y: 3, blocks: [[1, 0], [0, 1], [1, 1], [2, 1]] }
-      ],
-      ghostYs: [14, 14, 15, 16]
+      ]
     });
     await page.waitForTimeout(150);
     await expect(page).toHaveScreenshot('07-game-4p.png');
