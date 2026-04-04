@@ -16,6 +16,8 @@ function updateControllerModeUI(mode) {
     opts[i].classList.toggle('selected', opts[i].getAttribute('data-mode') === mode);
   }
   if (welcomeBg) welcomeBg.setMode(mode);
+  var link = document.querySelector('link[rel="icon"]');
+  if (link) link.href = mode === 'hex' ? '/favicon-hex.svg' : '/favicon-classic.svg';
 }
 
 function updateLevelDisplay() {

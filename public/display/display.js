@@ -227,12 +227,22 @@ if (savedMode === 'hex' || savedMode === 'classic') {
   gameMode = savedMode;
   updateModeUI(gameMode);
   if (welcomeBg) welcomeBg.setMode(gameMode);
+  if (savedMode === 'hex') {
+    var link = document.querySelector('link[rel="icon"]');
+    if (link) link.href = '/favicon-hex.svg';
+  }
+}
+
+function setFavicon(mode) {
+  var link = document.querySelector('link[rel="icon"]');
+  if (link) link.href = mode === 'hex' ? '/favicon-hex.svg' : '/favicon-classic.svg';
 }
 
 function setGameMode(mode) {
   if (mode !== 'classic' && mode !== 'hex') return;
   gameMode = mode;
   updateModeUI(mode);
+  setFavicon(mode);
   if (welcomeBg) welcomeBg.setMode(mode);
   localStorage.setItem('stacker_game_mode', mode);
   if (party && roomState === ROOM_STATE.LOBBY) broadcastLobbyUpdate();

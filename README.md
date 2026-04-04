@@ -1,6 +1,6 @@
 # Stacker Party
 
-![Stacker Party gameplay banner](banner/readme-header.png)
+![Stacker Party gameplay banner](artwork/readme-header.png)
 
 Browser-based multiplayer stacker where phones become controllers and a shared screen shows the action.
 
@@ -64,7 +64,7 @@ public/
   controller/# Phone touch controller
   shared/    # Protocol, relay connection, colors, theme, shared UI
 tests/       # Unit tests (node:test) and Playwright visual snapshots
-banner/      # GitHub banner/preview image generator (Playwright)
+artwork/     # Banner, favicon, and cover art generators (Playwright)
 ```
 
 ## Configuration

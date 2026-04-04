@@ -1,5 +1,5 @@
 // Banner generator — captures real display + controllers via Party-Server
-// Usage: node banner/generate.js
+// Usage: node artwork/generate.js
 // Requires: server running on port 4100, Party-Server reachable
 
 const { chromium } = require('playwright');
