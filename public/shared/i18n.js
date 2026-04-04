@@ -70,7 +70,7 @@ var LOCALES = {
     // Privacy page
     privacy_title: 'PRIVACY NOTICE',
     privacy_data: 'data',
-    privacy_data_detail: 'IP addresses are processed by the reverse proxy to serve the site. They appear in temporary server logs and are not stored persistently or shared with third parties.',
+    privacy_data_detail: 'IP addresses are processed by the web server and the WebSocket relay to serve the site and enable multiplayer communication. They appear in temporary server logs and are not stored persistently or shared with third parties. Processing is based on legitimate interest in operating the service (Art. 6(1)(f) GDPR).',
     privacy_tracking: 'tracking',
     privacy_tracking_detail: 'No cookies, analytics, or third-party services are used.',
     privacy_gameplay: 'gameplay',
@@ -126,7 +126,7 @@ var LOCALES = {
     enter_name: 'Name eingeben...', touchpad: 'Touchpad', privacy: 'Datenschutz',
     privacy_title: 'DATENSCHUTZHINWEIS',
     privacy_data: 'Daten',
-    privacy_data_detail: 'IP-Adressen werden vom Reverse-Proxy zur Bereitstellung der Seite verarbeitet. Sie erscheinen in temporären Server-Logs und werden weder dauerhaft gespeichert noch an Dritte weitergegeben.',
+    privacy_data_detail: 'IP-Adressen werden vom Webserver und dem WebSocket-Relay zur Bereitstellung der Seite und zur Ermöglichung der Multiplayer-Kommunikation verarbeitet. Sie erscheinen in temporären Server-Logs und werden weder dauerhaft gespeichert noch an Dritte weitergegeben. Die Verarbeitung erfolgt auf Grundlage des berechtigten Interesses am Betrieb des Dienstes (Art. 6 Abs. 1 lit. f DSGVO).',
     privacy_tracking: 'Tracking',
     privacy_tracking_detail: 'Es werden keine Cookies, Analysedienste oder Drittanbieterdienste verwendet.',
     privacy_gameplay: 'Spielbetrieb',
