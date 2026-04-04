@@ -67,6 +67,17 @@ var LOCALES = {
     touchpad: 'Touchpad',
     privacy: 'Privacy',
 
+    // Privacy page
+    privacy_title: 'PRIVACY NOTICE',
+    privacy_data: 'data',
+    privacy_data_detail: 'IP addresses are processed by the reverse proxy to serve the site. They appear in temporary server logs and are not stored persistently or shared with third parties.',
+    privacy_tracking: 'tracking',
+    privacy_tracking_detail: 'No cookies, analytics, or third-party services are used.',
+    privacy_gameplay: 'gameplay',
+    privacy_gameplay_detail: 'Player names and inputs are relayed between players during a session and exist only in memory. Nothing is stored.',
+    privacy_contact: 'contact',
+    privacy_updated: 'last updated march 2026',
+
     // Credits
     stacked_by: 'Stacked by Tim',
     music_by: 'Music by FoxSynergy',
@@ -113,6 +124,15 @@ var LOCALES = {
     n_lines: { one: '{count} Zeile', other: '{count} Zeilen' },
     level_n: 'Level {level}', player: 'Spieler', level_heading: 'Level',
     enter_name: 'Name eingeben...', touchpad: 'Touchpad', privacy: 'Datenschutz',
+    privacy_title: 'DATENSCHUTZHINWEIS',
+    privacy_data: 'Daten',
+    privacy_data_detail: 'IP-Adressen werden vom Reverse-Proxy zur Bereitstellung der Seite verarbeitet. Sie erscheinen in temporären Server-Logs und werden weder dauerhaft gespeichert noch an Dritte weitergegeben.',
+    privacy_tracking: 'Tracking',
+    privacy_tracking_detail: 'Es werden keine Cookies, Analysedienste oder Drittanbieterdienste verwendet.',
+    privacy_gameplay: 'Spielbetrieb',
+    privacy_gameplay_detail: 'Spielernamen und Eingaben werden während einer Sitzung zwischen den Spielern übertragen und existieren nur im Arbeitsspeicher. Es wird nichts gespeichert.',
+    privacy_contact: 'Kontakt',
+    privacy_updated: 'Zuletzt aktualisiert März 2026',
     stacked_by: 'Entwickelt von Tim', music_by: 'Musik von FoxSynergy',
     hex_lines_level: 'Zeilen {lines}  Level {level}',
     swipe: 'Wischen', tap: 'Tippen', flick: 'Schnippen',
