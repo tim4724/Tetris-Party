@@ -89,12 +89,12 @@ test.describe('Reconnection', () => {
     // Close one controller
     await c1.close();
 
-    // Wait a moment — game should still be running (not ended)
-    await page.waitForTimeout(2000);
-
-    const roomState = await page.evaluate(() => roomState);
-    // Should be PLAYING (auto-paused), not RESULTS
-    expect(roomState).not.toBe('results');
+    // Game should still be running (not ended) after a brief settle period
+    const endedEarly = await page.waitForFunction(
+      () => typeof roomState !== 'undefined' && roomState === 'results',
+      null, { timeout: 2000 }
+    ).then(() => true).catch(() => false);
+    expect(endedEarly).toBe(false);
   });
 
   test('new controller joining mid-game is treated as late joiner', async ({ page, context }) => {

@@ -69,7 +69,7 @@ class BoardRenderer {
 
     // 3. Placed blocks from grid (cached to offscreen canvas)
     if (playerState.grid) {
-      const gv = playerState.gridVersion;
+      const gv = playerState.gridVersion ?? -1;
       if (gv !== this._cachedGridVersion || newTier !== this._cachedGridTier) {
         this._renderGridToCache(playerState.grid, colors);
         this._cachedGridVersion = gv;
