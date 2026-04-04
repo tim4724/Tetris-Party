@@ -150,7 +150,8 @@ class UIRenderer extends BaseUIRenderer {
     for (const [bx, by] of blocks) {
       this.ctx.drawImage(stamp,
         offsetX + (bx - bounds.minX) * size,
-        offsetY + (by - bounds.minY) * size);
+        offsetY + (by - bounds.minY) * size,
+        stamp.cssW, stamp.cssH);
     }
   }
 

@@ -164,7 +164,7 @@ class HexUIRenderer extends BaseUIRenderer {
       var o = bounds.offsets[i];
       var px = ox + colW * (o.col - bounds.minC) + hexS;
       var py = oy + hexH * (o.row - bounds.minR + 0.5 * (o.col & 1)) + hexH / 2;
-      ctx.drawImage(stamp, px - drawS - 1, py - stamp.height / 2);
+      ctx.drawImage(stamp, px - drawS - 1, py - stamp.cssH / 2, stamp.cssW, stamp.cssH);
     }
   }
 }

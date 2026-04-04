@@ -68,7 +68,7 @@ class HexBoardRenderer {
 
   _drawFilledHex(cx, cy, size, color) {
     var stamp = getHexStamp(this._styleTier, color, size);
-    this.ctx.drawImage(stamp, cx - size - 1, cy - stamp.height / 2);
+    this.ctx.drawImage(stamp, cx - size - 1, cy - stamp.cssH / 2, stamp.cssW, stamp.cssH);
   }
 
   render(playerState, timestamp) {

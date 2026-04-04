@@ -182,7 +182,7 @@ class BoardRenderer {
           const stamp = cellVal === 8
             ? getGarbageStamp(this.cellSize)
             : getBlockStamp(this._styleTier, colors[cellVal], this.cellSize);
-          gc.drawImage(stamp, c * this.cellSize, r * this.cellSize);
+          gc.drawImage(stamp, c * this.cellSize, r * this.cellSize, stamp.cssW, stamp.cssH);
         }
       }
     }
@@ -203,7 +203,7 @@ class BoardRenderer {
     const stamp = isGarbage
       ? getGarbageStamp(this.cellSize)
       : getBlockStamp(this._styleTier, color, this.cellSize);
-    this.ctx.drawImage(stamp, x, y);
+    this.ctx.drawImage(stamp, x, y, stamp.cssW, stamp.cssH);
   }
 
   // Used by DisplayRender __TEST__._extraGhosts path; main render uses batched compound path above.

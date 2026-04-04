@@ -130,19 +130,25 @@ function ghostColor(hex) {
 // Offscreen block stamp cache — pre-renders each (tier, color,
 // cellSize) block to a small canvas so the main render loop
 // can blit with a single drawImage() call.
+// Stamps are rendered at devicePixelRatio resolution for crisp
+// display on high-DPI screens.
 // ============================================================
 var _stampCache = new Map();
+var _stampDpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
 
 function _createStampCanvas(size) {
-  if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(size, size);
-  var c = document.createElement('canvas');
-  c.width = size; c.height = size;
-  return c;
+  var px = Math.ceil(size * _stampDpr);
+  var oc;
+  if (typeof OffscreenCanvas !== 'undefined') oc = new OffscreenCanvas(px, px);
+  else { oc = document.createElement('canvas'); oc.width = px; oc.height = px; }
+  oc.cssW = size;
+  oc.cssH = size;
+  return oc;
 }
 
 function getBlockStamp(tier, color, cellSize) {
   var size = Math.round(cellSize);
-  var key = tier + '_' + color + '_' + size;
+  var key = tier + '_' + color + '_' + size + '_' + _stampDpr;
   var stamp = _stampCache.get(key);
   if (stamp) return stamp;
   var inset = size * THEME.size.blockGap;
@@ -150,6 +156,7 @@ function getBlockStamp(tier, color, cellSize) {
   var r = THEME.radius.block(size);
   var oc = _createStampCanvas(size);
   var c = oc.getContext('2d');
+  c.setTransform(_stampDpr, 0, 0, _stampDpr, 0, 0);
 
   if (tier === STYLE_TIERS.PILLOW) {
     _stampPillow(c, size, inset, s, r, color);
@@ -165,7 +172,7 @@ function getBlockStamp(tier, color, cellSize) {
 
 function getMiniBlockStamp(tier, color, miniSize) {
   var size = Math.round(miniSize);
-  var key = 'mi_' + tier + '_' + color + '_' + size;
+  var key = 'mi_' + tier + '_' + color + '_' + size + '_' + _stampDpr;
   var stamp = _stampCache.get(key);
   if (stamp) return stamp;
   var inset = size * THEME.size.blockGap;
@@ -173,6 +180,7 @@ function getMiniBlockStamp(tier, color, miniSize) {
   var r = THEME.radius.mini(size);
   var oc = _createStampCanvas(size);
   var c = oc.getContext('2d');
+  c.setTransform(_stampDpr, 0, 0, _stampDpr, 0, 0);
 
   if (tier === STYLE_TIERS.PILLOW) {
     _stampPillow(c, size, inset, s, r, color);
@@ -188,7 +196,7 @@ function getMiniBlockStamp(tier, color, miniSize) {
 
 function getGarbageStamp(cellSize) {
   var size = Math.round(cellSize);
-  var key = 'g_' + size;
+  var key = 'g_' + size + '_' + _stampDpr;
   var stamp = _stampCache.get(key);
   if (stamp) return stamp;
   var inset = size * THEME.size.blockGap;
@@ -196,6 +204,7 @@ function getGarbageStamp(cellSize) {
   var r = THEME.radius.block(size);
   var oc = _createStampCanvas(size);
   var c = oc.getContext('2d');
+  c.setTransform(_stampDpr, 0, 0, _stampDpr, 0, 0);
 
   c.fillStyle = THEME.color.garbage;
   roundRect(c, inset, inset, s, s, r);
@@ -208,6 +217,7 @@ function getGarbageStamp(cellSize) {
 }
 
 function clearStampCache() {
+  _stampDpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
   _stampCache.clear();
 }
 
@@ -219,23 +229,28 @@ function clearStampCache() {
 function _createHexStampCanvas(hexSize) {
   var w = Math.ceil(2 * hexSize) + 2;   // +2 for stroke bleed
   var h = Math.ceil(Math.sqrt(3) * hexSize) + 2;
-  if (typeof OffscreenCanvas !== 'undefined') return new OffscreenCanvas(w, h);
-  var c = document.createElement('canvas');
-  c.width = w; c.height = h;
-  return c;
+  var pw = Math.ceil(w * _stampDpr);
+  var ph = Math.ceil(h * _stampDpr);
+  var oc;
+  if (typeof OffscreenCanvas !== 'undefined') oc = new OffscreenCanvas(pw, ph);
+  else { oc = document.createElement('canvas'); oc.width = pw; oc.height = ph; }
+  oc.cssW = w;
+  oc.cssH = h;
+  return oc;
 }
 
 function getHexStamp(tier, color, hexSize) {
   // Use rounded-tenth key to avoid cache explosion from float drift,
   // but render at exact size to prevent blurriness
   var sizeKey = Math.round(hexSize * 10);
-  var key = 'hx_' + tier + '_' + color + '_' + sizeKey;
+  var key = 'hx_' + tier + '_' + color + '_' + sizeKey + '_' + _stampDpr;
   var stamp = _stampCache.get(key);
   if (stamp) return stamp;
   var size = hexSize;
   var oc = _createHexStampCanvas(size);
   var c = oc.getContext('2d');
-  var cx = size + 1, cy = oc.height / 2;  // +1 for stroke padding
+  c.setTransform(_stampDpr, 0, 0, _stampDpr, 0, 0);
+  var cx = size + 1, cy = oc.cssH / 2;  // +1 for stroke padding
 
   if (tier === STYLE_TIERS.PILLOW) {
     _stampHexPillow(c, cx, cy, size, color);
@@ -251,13 +266,14 @@ function getHexStamp(tier, color, hexSize) {
 
 function getMiniHexStamp(tier, color, hexSize) {
   var sizeKey = Math.round(hexSize * 10);
-  var key = 'mhx_' + tier + '_' + color + '_' + sizeKey;
+  var key = 'mhx_' + tier + '_' + color + '_' + sizeKey + '_' + _stampDpr;
   var stamp = _stampCache.get(key);
   if (stamp) return stamp;
   var size = hexSize;
   var oc = _createHexStampCanvas(size);
   var c = oc.getContext('2d');
-  var cx = size + 1, cy = oc.height / 2;
+  c.setTransform(_stampDpr, 0, 0, _stampDpr, 0, 0);
+  var cx = size + 1, cy = oc.cssH / 2;
 
   if (tier === STYLE_TIERS.PILLOW) {
     _stampHexPillow(c, cx, cy, size, color);

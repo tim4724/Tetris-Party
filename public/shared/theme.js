@@ -74,7 +74,7 @@ const THEME = Object.freeze({
   // ---- Colors ----
   color: Object.freeze({
     bg: Object.freeze({
-      primary:   '#0a0a0f',
+      primary:   '#06060f',
       board:     '#0c0c12',
       secondary: '#12121c',
       card:      '#1a1a2a',

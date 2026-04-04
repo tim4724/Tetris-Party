@@ -9,6 +9,19 @@ var _SQRT3 = Math.sqrt(3);
 // Piece data is derived from engine modules (GamePiece, HexPieceModule) at
 // runtime so it stays in sync automatically when pieces change.
 
+// Inline flat-top hex path for use when CanvasUtils.js is not loaded (controller).
+function _wbHexPath(ctx, cx, cy, size) {
+  if (typeof hexPath === 'function') { hexPath(ctx, cx, cy, size); return; }
+  ctx.beginPath();
+  for (var i = 0; i < 6; i++) {
+    var a = Math.PI / 3 * i;
+    var x = cx + size * Math.cos(a);
+    var y = cy + size * Math.sin(a);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.closePath();
+}
+
 class WelcomeBackground {
   // Populated once from engine modules via _syncFromEngine()
   static SHAPES = null;
@@ -208,7 +221,6 @@ class WelcomeBackground {
       drift,
       opacity,
       color,
-      rgbaStr: this._rgba(color, opacity),
       x: 0,
       y: 0,
     };
@@ -235,7 +247,6 @@ class WelcomeBackground {
       drift: 0,
       opacity,
       color,
-      rgbaStr: this._rgba(color, opacity),
       x: 0,
       y: 0,
     };
@@ -278,49 +289,81 @@ class WelcomeBackground {
         continue;
       }
 
-      ctx.fillStyle = p.rgbaStr;
+      ctx.globalAlpha = p.opacity;
 
       if (p.hex) {
         this._drawHexPiece(ctx, p);
       } else {
         this._drawClassicPiece(ctx, p);
       }
+
+      ctx.globalAlpha = 1;
     }
   };
 
   _drawClassicPiece(ctx, p) {
-    const r = Math.min(3, p.blockSize * 0.12);
-    for (const [col, row] of p.blocks) {
-      const bx = p.x + col * p.blockSize;
-      const by = p.y + row * p.blockSize;
-      ctx.beginPath();
-      ctx.roundRect(bx, by, p.blockSize - 1, p.blockSize - 1, r);
-      ctx.fill();
+    const size = p.blockSize;
+    const hasStamps = typeof getBlockStamp === 'function';
+    if (hasStamps) {
+      const stamp = getBlockStamp(STYLE_TIERS.NORMAL, p.color, size);
+      for (const [col, row] of p.blocks) {
+        ctx.drawImage(stamp, p.x + col * size, p.y + row * size, stamp.cssW, stamp.cssH);
+      }
+    } else {
+      const inset = size * 0.03;
+      const s = size - inset * 2;
+      const r = size * 0.12;
+      for (const [col, row] of p.blocks) {
+        const bx = p.x + col * size + inset;
+        const by = p.y + row * size + inset;
+        // Gradient fill
+        const g = ctx.createLinearGradient(bx, by, bx, by + s);
+        g.addColorStop(0, p.color);
+        g.addColorStop(1, p.color);
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.roundRect(bx, by, s, s, r);
+        ctx.fill();
+        // Darken bottom half
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.fillRect(bx + r, by + s * 0.5, s - r * 2, s * 0.5);
+        // Top highlight
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.fillRect(bx + r, by, s - r * 2, s * 0.1);
+      }
     }
   }
 
   _drawHexPiece(ctx, p) {
     const size = p.blockSize;
-    for (const [q, r] of p.cells) {
-      // Axial to pixel (flat-top hex)
-      const cx = p.x + size * 1.5 * q;
-      const cy = p.y + size * _SQRT3 * (r + q / 2);
-      this._drawHexagon(ctx, cx, cy, size * 0.92);
+    const sCell = size * 0.94;
+    const hasStamps = typeof getHexStamp === 'function';
+    if (hasStamps) {
+      const stamp = getHexStamp(STYLE_TIERS.NORMAL, p.color, sCell);
+      for (const [q, r] of p.cells) {
+        const cx = p.x + size * 1.5 * q;
+        const cy = p.y + size * _SQRT3 * (r + q / 2);
+        ctx.drawImage(stamp, cx - sCell - 1, cy - stamp.cssH / 2, stamp.cssW, stamp.cssH);
+      }
+    } else {
+      for (const [q, r] of p.cells) {
+        const cx = p.x + size * 1.5 * q;
+        const cy = p.y + size * _SQRT3 * (r + q / 2);
+        // Base fill
+        _wbHexPath(ctx, cx, cy, sCell);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        // Darken bottom half via clip
+        _wbHexPath(ctx, cx, cy, sCell);
+        ctx.save();
+        ctx.clip();
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.fillRect(cx - sCell, cy, sCell * 2, sCell);
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        ctx.fillRect(cx - sCell * 0.5, cy - sCell * 0.88, sCell, sCell * 0.12);
+        ctx.restore();
+      }
     }
   }
 
-  _drawHexagon(ctx, cx, cy, size) {
-    hexPath(ctx, cx, cy, size);
-    ctx.fill();
-  }
-
-  _rgba(hex, alpha) {
-    let rgb = this._rgbCache && this._rgbCache[hex];
-    if (!rgb) {
-      if (!this._rgbCache) this._rgbCache = {};
-      rgb = parseInt(hex.slice(1, 3), 16) + ',' + parseInt(hex.slice(3, 5), 16) + ',' + parseInt(hex.slice(5, 7), 16);
-      this._rgbCache[hex] = rgb;
-    }
-    return `rgba(${rgb},${alpha})`;
-  }
 }

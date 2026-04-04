@@ -52,9 +52,7 @@ html, body {
     max(env(safe-area-inset-top), 8px)
     12px
     calc(env(safe-area-inset-bottom) + 16px);
-  background:
-    radial-gradient(ellipse at 50% 22%, var(--glow-blue) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 82%, rgba(0, 255, 136, 0.04) 0%, transparent 48%);
+  background: none;
 }
 
 .controller-shell__frame {
@@ -634,10 +632,7 @@ html, body {
 
 /* Game over screen */
 #gameover-screen {
-  background:
-    radial-gradient(ellipse at 50% 20%, var(--winner-glow, rgba(255, 215, 0, 0.06)) 0%, transparent 60%),
-    radial-gradient(ellipse at 50% 90%, rgba(68, 68, 255, 0.03) 0%, transparent 40%),
-    var(--bg-primary);
+  background: var(--bg-primary);
   animation: fadeIn 0.4s ease-out both;
 }
 
