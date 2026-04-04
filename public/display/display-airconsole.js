@@ -7,6 +7,10 @@
 // callbacks and calls party.connect() — works with AirConsole instead.
 // =====================================================================
 
+// AirConsole requires fresh audio state on each load (no persisted mute).
+// DisplayState.js already read muted from localStorage — reset it here.
+muted = false;
+
 var airconsole = new AirConsole({
   orientation: AirConsole.ORIENTATION_LANDSCAPE,
   silence_inactive_players: false

@@ -7,6 +7,10 @@
 // and calls party.connect() — works with AirConsole instead.
 // =====================================================================
 
+// AirConsole requires fresh audio state on each load (no persisted mute).
+// Clear before controller.js reads it.
+try { localStorage.removeItem('stacker_muted'); } catch (e) { /* iframe sandbox */ }
+
 var airconsole = new AirConsole({
   orientation: AirConsole.ORIENTATION_PORTRAIT,
   silence_inactive_players: false
