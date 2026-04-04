@@ -99,7 +99,8 @@ function onHello(fromId, msg) {
       playerCount: players.size,
       roomState: roomState,
       startLevel: existing.startLevel || 1,
-      gameMode: gameMode
+      gameMode: gameMode,
+      locale: getLocale()
     };
     if (!isLateJoiner) {
       welcomeMsg.alive = lastAliveState[fromId] != null ? lastAliveState[fromId] : true;
@@ -141,7 +142,8 @@ function onHello(fromId, msg) {
     playerCount: players.size,
     roomState: roomState,
     startLevel: 1,
-    gameMode: gameMode
+    gameMode: gameMode,
+    locale: getLocale()
   };
   if (roomState === ROOM_STATE.RESULTS && lastResults) {
     welcomeMsg.results = lastResults.results;

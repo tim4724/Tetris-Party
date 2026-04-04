@@ -143,22 +143,22 @@ function performDisconnect() {
   nameInput.focus();
 }
 
-function showRoomGone() {
-  if (roomCode) sessionStorage.removeItem('clientId_' + roomCode);
+function showRoomGone(heading) {
+  try { if (roomCode) sessionStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
   gameCancelled = true;
   if (party) party.close();
   nameForm.classList.add('hidden');
   nameJoinBtn.classList.add('hidden');
   nameStatusText.textContent = '';
   nameStatusDetail.textContent = '';
-  roomGoneHeading.textContent = t('room_not_found');
+  roomGoneHeading.textContent = heading || t('room_not_found');
   roomGoneDetail.textContent = t('scan_qr_to_join');
   roomGoneMessage.classList.remove('hidden');
   showScreen('name');
 }
 
 function showErrorState(heading, detail) {
-  sessionStorage.removeItem('clientId_' + roomCode);
+  try { sessionStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
   gameCancelled = true;
   stopPing();
 

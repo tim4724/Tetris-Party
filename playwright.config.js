@@ -13,7 +13,7 @@ module.exports = defineConfig({
     toHaveScreenshot: { maxDiffPixelRatio: 0 },
   },
   webServer: {
-    command: 'node server/index.js',
+    command: 'node scripts/generate-airconsole-html.js && node server/index.js',
     env: {
       ...process.env,
       PORT: '4100',
@@ -51,6 +51,13 @@ module.exports = defineConfig({
     {
       name: 'e2e',
       testDir: './tests/e2e',
+      testIgnore: /airconsole.*\.spec\.js/,
+      use: { viewport: { width: 1280, height: 720 } },
+    },
+    {
+      name: 'e2e-airconsole',
+      testDir: './tests/e2e',
+      testMatch: 'airconsole.spec.js',
       use: { viewport: { width: 1280, height: 720 } },
     },
   ],
