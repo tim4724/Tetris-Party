@@ -91,7 +91,7 @@ var LOCALES = {
     hold: 'HOLD', next: 'NEXT', level: 'LEVEL', lines: 'ZEILEN',
     ko: 'K.O.', go: 'LOS', scan_to_rejoin: 'SCANNEN ZUM BEITRETEN',
     quad: 'QUAD!', triple: 'TRIPLE!', double: 'DOUBLE',
-    scan_to_join: 'Zum Beitreten scannen', square: 'SQUARE', hex: 'HEX',
+    scan_to_join: 'Scannen zum Beitreten', square: 'SQUARE', hex: 'HEX',
     new_badge: 'NEU', waiting_for_players: 'Warte auf Spieler...',
     start_n_players: { one: 'START ({count} Spieler)', other: 'START ({count} Spieler)' },
     start: 'START', start_new_game: 'NEUES SPIEL STARTEN',
@@ -331,7 +331,7 @@ var LOCALES = {
 
   ru: {
     hold: 'ХОЛД', next: 'ДАЛЕЕ', level: 'УРОВЕНЬ', lines: 'ЛИНИИ',
-    ko: 'K.O.', go: 'СТАРТ', scan_to_rejoin: 'СКАН ДЛЯ ВОЗВРАТА',
+    ko: 'K.O.', go: 'СТАРТ', scan_to_rejoin: 'СКАНИРУЙТЕ ДЛЯ ВХОДА',
     quad: 'КВАД!', triple: 'ТРИПЛ!', double: 'ДАБЛ',
     scan_to_join: 'Сканируйте для входа', square: 'КВАДРАТ', hex: 'ГЕКС',
     new_badge: 'НОВОЕ', waiting_for_players: 'Ожидание игроков...',
@@ -432,7 +432,7 @@ var LOCALES = {
     level_n: 'Seviye {level}', player: 'Oyuncu', level_heading: 'Seviye',
     enter_name: 'İsim gir...', touchpad: 'Touchpad',
     privacy: 'Gizlilik',
-    stacked_by: 'Tim tarafından yapıldı', music_by: 'Müzik: FoxSynergy',
+    stacked_by: 'Yapımcı: Tim', music_by: 'Müzik: FoxSynergy',
     hex_lines_level: 'Satır {lines}  Seviye {level}',
     swipe: 'Kaydır', tap: 'Dokun', flick: 'Fırlat',
     gesture_move: 'hareket', gesture_rotate: 'döndür',
