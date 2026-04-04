@@ -72,6 +72,7 @@ function onWelcome(data) {
   if (data.startLevel != null) startLevel = data.startLevel;
 
   if (data.gameMode) updateControllerModeUI(data.gameMode);
+  if (data.locale) { setLocale(data.locale); translatePage(); }
 
   if (data.roomState === 'playing' || data.roomState === 'countdown') {
     // Late joiner (not in active game) — display omits alive field
