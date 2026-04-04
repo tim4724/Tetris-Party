@@ -4,6 +4,7 @@ const {
   gotoDisplayTest,
   stopDisplayBackground,
   waitForFont,
+  waitForGameRender,
 } = require('./helpers');
 const { buildHexGameState, buildHexStyleTierState, buildPlayerIds, buildPlayers } = require('./hex-fixtures');
 
@@ -21,9 +22,7 @@ async function injectHexGameState(page, playerCount, options) {
     window.__TEST__.setGameMode('hex');
     window.__TEST__.injectGameState(s);
   }, { s: state });
-  await page.waitForSelector('#game-screen:not(.hidden)');
-  // Wait for render loop to draw the first frame with new state
-  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  await waitForGameRender(page);
 }
 
 test.describe('Hex Display', () => {
@@ -89,8 +88,7 @@ test.describe('Hex Display', () => {
       window.__TEST__.setGameMode('hex');
       window.__TEST__.injectGameState(s);
     }, { s: state });
-    await page.waitForSelector('#game-screen:not(.hidden)');
-    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await waitForGameRender(page);
     await expect(page).toHaveScreenshot('hex-08-style-tiers.png');
   });
 
@@ -106,8 +104,7 @@ test.describe('Hex Display', () => {
       window.__TEST__.injectGameState(s);
       window.__TEST__.injectKO('player2');
     }, { s: state });
-    await page.waitForSelector('#game-screen:not(.hidden)');
-    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await waitForGameRender(page);
     await expect(page).toHaveScreenshot('hex-09-ko-overlay.png');
   });
 
@@ -120,7 +117,7 @@ test.describe('Hex Display', () => {
       joinUrl = 'http://example.com/TESTROOM';
       showDisconnectQR('player2');
     });
-    await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    await waitForGameRender(page);
     await expect(page).toHaveScreenshot('hex-10-disconnected.png');
   });
 });
