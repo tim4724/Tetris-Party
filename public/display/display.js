@@ -2,9 +2,9 @@
 
 // =====================================================================
 // Display Entry Point — init, event listeners
-// Depends on: DisplayState.js, DisplayUI.js, DisplayConnection.js,
-//             DisplayGame.js, DisplayInput.js, DisplayRender.js,
-//             DisplayTestHarness.js, DisplayLiveness.js
+// Depends on: DisplayState.js (urlParams, debugCount), DisplayUI.js,
+//             DisplayConnection.js, DisplayGame.js, DisplayInput.js,
+//             DisplayRender.js, DisplayTestHarness.js, DisplayLiveness.js
 // Loaded last; wires up event listeners and initializes
 // =====================================================================
 

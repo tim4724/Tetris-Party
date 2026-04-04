@@ -2,12 +2,10 @@
 
 // =====================================================================
 // Display Test Harness — window.__TEST__ API and debug state builders
-// Depends on: DisplayState.js (globals), DisplayUI.js, DisplayGame.js
+// Depends on: DisplayState.js (globals: urlParams, debugCount), DisplayUI.js, DisplayGame.js
 // Loaded before display.js; only active when ?test=1 or ?debug=N
 // =====================================================================
 
-var urlParams = new URLSearchParams(window.location.search);
-var debugCount = parseInt(urlParams.get('debug'), 10);
 if (urlParams.get('test') === '1' || debugCount > 0) {
   window.__TEST__ = {
     addPlayers: function(playerList) {

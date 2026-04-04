@@ -7,6 +7,10 @@
 // --- Screen Constants ---
 var SCREEN = { WELCOME: 'welcome', LOBBY: 'lobby', GAME: 'game', RESULTS: 'results' };
 
+// --- URL Parameters ---
+var urlParams = new URLSearchParams(window.location.search);
+var debugCount = parseInt(urlParams.get('debug'), 10) || 0;
+
 // --- State ---
 var currentScreen = SCREEN.WELCOME;
 var party = null;
