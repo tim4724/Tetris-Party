@@ -44,7 +44,7 @@ const MOCK_SCRIPT = path.join(__dirname, 'airconsole-mock.js');
 // ---- Mock mode helpers ----
 
 async function setupMockPage(page, opts = {}) {
-  await page.route('**/airconsole-1.10.0.js', (route) => {
+  await page.route('**/airconsole-*.js', (route) => {
     route.fulfill({ status: 200, contentType: 'text/javascript', body: '// blocked' });
   });
   if (opts.nickname || opts.deviceId) {

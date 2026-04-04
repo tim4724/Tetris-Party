@@ -19,7 +19,7 @@ const fs = require('fs');
 const path = require('path');
 
 const PUBLIC = path.join(__dirname, '..', 'public');
-const SDK_VERSION = getArg('--sdk-version') || '1.10.0';
+const SDK_VERSION = getArg('--sdk-version') || '1.11.0';
 const SDK_TAG = `  <script src="https://www.airconsole.com/api/airconsole-${SDK_VERSION}.js"></script>\n`;
 
 // ---------------------------------------------------------------------------

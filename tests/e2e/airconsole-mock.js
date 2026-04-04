@@ -8,7 +8,7 @@
  * without the real AirConsole iframe infrastructure.
  *
  * Injected via page.addInitScript() BEFORE the real AirConsole SDK loads.
- * The <script src="airconsole-1.10.0.js"> in screen.html / controller.html
+ * The AirConsole SDK script in screen.html / controller.html
  * is intercepted (blocked) so this mock takes its place.
  */
 
