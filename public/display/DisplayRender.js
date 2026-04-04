@@ -97,16 +97,6 @@ function renderFrame(timestamp) {
   ctx.fillStyle = THEME.color.bg.primary;
   ctx.fillRect(0, 0, w, h);
 
-  if (!renderFrame._vignette || renderFrame._vw !== w || renderFrame._vh !== h) {
-    renderFrame._vignette = ctx.createRadialGradient(w / 2, h / 2, h * 0.2, w / 2, h / 2, h * 0.8);
-    renderFrame._vignette.addColorStop(0, 'rgba(15, 15, 40, 0.3)');
-    renderFrame._vignette.addColorStop(1, 'rgba(0, 0, 0, 0.4)');
-    renderFrame._vw = w;
-    renderFrame._vh = h;
-  }
-  ctx.fillStyle = renderFrame._vignette;
-  ctx.fillRect(0, 0, w, h);
-
   if (!gameState) {
     for (var i = 0; i < playerOrder.length; i++) {
       if (!boardRenderers[i] || !uiRenderers[i]) continue;
