@@ -31,6 +31,25 @@ class Music {
     this.masterGain.gain.value = MASTER_VOLUME;
     this.masterGain.connect(this.ctx.destination);
 
+    // When the browser unblocks audio (e.g. Firefox tab permission change),
+    // the context may transition to 'running' on its own, or it may just
+    // allow future resume() calls to succeed.  Handle both cases.
+    this.ctx.addEventListener('statechange', () => {
+      if (this.ctx.state === 'running' && this.playing && !this.source && this.buffer) {
+        this._startSource();
+      }
+    });
+    // Firefox doesn't auto-resume suspended contexts when the user changes
+    // the autoplay permission — it just allows future resume() calls.
+    // Retry resume on any user interaction so audio starts without a reload.
+    this._retryResume = () => {
+      if (this.ctx && this.ctx.state === 'suspended' && this.playing) {
+        this.ctx.resume().catch(() => {});
+      }
+    };
+    document.addEventListener('click', this._retryResume, { passive: true });
+    document.addEventListener('keydown', this._retryResume, { passive: true });
+
     this._loadTrack();
   }
 
@@ -63,6 +82,15 @@ class Music {
     source.connect(this.masterGain);
     source.start(0);
     this.source = source;
+    this._removeRetryListeners();
+  }
+
+  _removeRetryListeners() {
+    if (this._retryResume) {
+      document.removeEventListener('click', this._retryResume);
+      document.removeEventListener('keydown', this._retryResume);
+      this._retryResume = null;
+    }
   }
 
   _stopSource() {
