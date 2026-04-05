@@ -31,6 +31,18 @@ class Music {
     this.masterGain.gain.value = MASTER_VOLUME;
     this.masterGain.connect(this.ctx.destination);
 
+    // When the browser unblocks audio (e.g. Firefox tab permission change),
+    // the context may transition to 'running' on its own, or it may just
+    // allow future resume() calls to succeed.  Handle both cases.
+    this.ctx.addEventListener('statechange', () => {
+      if (this.ctx.state === 'running') {
+        this._removeRetryListeners();
+        if (this.playing && !this.source && this.buffer) {
+          this._startSource();
+        }
+      }
+    });
+
     this._loadTrack();
   }
 
@@ -63,6 +75,28 @@ class Music {
     source.connect(this.masterGain);
     source.start(0);
     this.source = source;
+    if (this.ctx.state === 'running') {
+      this._removeRetryListeners();
+    }
+  }
+
+  _addRetryListeners() {
+    if (this._retryResume) return;
+    this._retryResume = () => {
+      if (this.ctx && this.ctx.state === 'suspended' && this.playing) {
+        this.ctx.resume().catch(() => {});
+      }
+    };
+    document.addEventListener('click', this._retryResume, { passive: true });
+    document.addEventListener('keydown', this._retryResume, { passive: true });
+  }
+
+  _removeRetryListeners() {
+    if (this._retryResume) {
+      document.removeEventListener('click', this._retryResume);
+      document.removeEventListener('keydown', this._retryResume);
+      this._retryResume = null;
+    }
   }
 
   _stopSource() {
@@ -77,6 +111,10 @@ class Music {
     if (!this.ctx) return;
     if (this.ctx.state === 'suspended') {
       this.ctx.resume().catch(e => console.warn('AudioContext resume failed:', e));
+      // Firefox doesn't auto-resume suspended contexts when the user changes
+      // the autoplay permission — it just allows future resume() calls.
+      // Retry resume on any user interaction so audio starts without a reload.
+      this._addRetryListeners();
     }
 
     this.generation++;
@@ -95,6 +133,7 @@ class Music {
 
   stop() {
     this.playing = false;
+    this._removeRetryListeners();
     const gen = ++this.generation;
 
     if (this.masterGain && this.ctx) {
@@ -113,6 +152,7 @@ class Music {
   pause() {
     if (!this.playing) return;
     this.playing = false;
+    this._removeRetryListeners();
     const gen = ++this.generation;
 
     if (this.masterGain && this.ctx) {
@@ -141,6 +181,10 @@ class Music {
       this.masterGain.gain.setValueAtTime(0, this.ctx.currentTime);
       this.masterGain.gain.linearRampToValueAtTime(targetVolume, this.ctx.currentTime + 0.3);
     }).catch(e => console.warn('AudioContext resume failed:', e));
+
+    if (this.ctx.state === 'suspended') {
+      this._addRetryListeners();
+    }
   }
 
   setSpeed(level) {
