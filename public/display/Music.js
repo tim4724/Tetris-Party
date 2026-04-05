@@ -39,16 +39,6 @@ class Music {
         this._startSource();
       }
     });
-    // Firefox doesn't auto-resume suspended contexts when the user changes
-    // the autoplay permission — it just allows future resume() calls.
-    // Retry resume on any user interaction so audio starts without a reload.
-    this._retryResume = () => {
-      if (this.ctx && this.ctx.state === 'suspended' && this.playing) {
-        this.ctx.resume().catch(() => {});
-      }
-    };
-    document.addEventListener('click', this._retryResume, { passive: true });
-    document.addEventListener('keydown', this._retryResume, { passive: true });
 
     this._loadTrack();
   }
@@ -85,6 +75,17 @@ class Music {
     this._removeRetryListeners();
   }
 
+  _addRetryListeners() {
+    if (this._retryResume) return;
+    this._retryResume = () => {
+      if (this.ctx && this.ctx.state === 'suspended' && this.playing) {
+        this.ctx.resume().catch(() => {});
+      }
+    };
+    document.addEventListener('click', this._retryResume, { passive: true });
+    document.addEventListener('keydown', this._retryResume, { passive: true });
+  }
+
   _removeRetryListeners() {
     if (this._retryResume) {
       document.removeEventListener('click', this._retryResume);
@@ -105,6 +106,10 @@ class Music {
     if (!this.ctx) return;
     if (this.ctx.state === 'suspended') {
       this.ctx.resume().catch(e => console.warn('AudioContext resume failed:', e));
+      // Firefox doesn't auto-resume suspended contexts when the user changes
+      // the autoplay permission — it just allows future resume() calls.
+      // Retry resume on any user interaction so audio starts without a reload.
+      this._addRetryListeners();
     }
 
     this.generation++;
