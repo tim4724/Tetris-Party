@@ -123,6 +123,7 @@ class Music {
 
   stop() {
     this.playing = false;
+    this._removeRetryListeners();
     const gen = ++this.generation;
 
     if (this.masterGain && this.ctx) {
