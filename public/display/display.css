@@ -76,7 +76,8 @@ html, body {
   gap: 6px;
 }
 
-#welcome-footer a {
+#welcome-footer a,
+#lobby-footer a {
   color: var(--text-secondary);
   font-family: system-ui, -apple-system, sans-serif;
   font-size: clamp(13px, 1.5vw, 16px);
@@ -86,7 +87,8 @@ html, body {
   transition: color var(--transition-normal), filter var(--transition-normal);
 }
 
-#welcome-footer a:hover {
+#welcome-footer a:hover,
+#lobby-footer a:hover {
   filter: drop-shadow(0 0 6px rgba(0, 200, 255, 0.2));
 }
 
@@ -114,19 +116,6 @@ html, body {
   gap: 8px;
 }
 
-#lobby-footer a {
-  color: var(--text-secondary);
-  font-family: system-ui, -apple-system, sans-serif;
-  font-size: clamp(13px, 1.5vw, 16px);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-decoration: none;
-  transition: color var(--transition-normal), filter var(--transition-normal);
-}
-
-#lobby-footer a:hover {
-  filter: drop-shadow(0 0 6px rgba(0, 200, 255, 0.2));
-}
 
 /* ============================================
    Lobby Screen
