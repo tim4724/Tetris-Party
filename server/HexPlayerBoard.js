@@ -32,9 +32,11 @@ class HexPlayerBoard extends BaseBoard {
     });
 
     this.clearingCells = null;
+    this._visibleClearingCellsCache = null;
 
     // Pre-allocated block arrays for getState() — avoids per-frame allocation.
     // Each board instance gets its own arrays so multi-player snapshots don't alias.
+    // Sized for 4 cells per piece — update if a 5+ cell piece is ever added.
     this._stateBlocksCurrent = [[0,0],[0,0],[0,0],[0,0]];
     this._stateBlocksGhost = [[0,0],[0,0],[0,0],[0,0]];
 
@@ -80,9 +82,7 @@ class HexPlayerBoard extends BaseBoard {
   _preDropToVisible() {
     if (!this.currentPiece) return;
     while (this.currentPiece.anchorRow < HEX_BUFFER_ROWS - 1) {
-      const next = this._hexDrop(this.currentPiece);
-      if (!next) break;
-      this.currentPiece = next;
+      if (!this._hexDrop(this.currentPiece)) break;
     }
     this.gravityCounter = 0;
   }
@@ -195,6 +195,8 @@ class HexPlayerBoard extends BaseBoard {
     if (linesCleared > 0) {
       this.lines += linesCleared;
       this.clearingCells = clearCells;
+      // Pre-compute visible-coordinate version once (stable during animation)
+      this._visibleClearingCellsCache = this._computeVisibleClearingCells();
       this.clearingTimer = LINE_CLEAR_DELAY_MS;
       this.currentPiece = null;
     } else {
@@ -254,6 +256,7 @@ class HexPlayerBoard extends BaseBoard {
     }
 
     this.clearingCells = null;
+    this._visibleClearingCellsCache = null;
     this.clearingTimer = null;
     this._applyPendingGarbage();
     this.spawnPiece();
@@ -278,7 +281,7 @@ class HexPlayerBoard extends BaseBoard {
     return ghost.anchorRow;
   }
 
-  _visibleClearingCells() {
+  _computeVisibleClearingCells() {
     var out = [];
     for (var i = 0; i < this.clearingCells.length; i++) {
       var vr = this.clearingCells[i][1] - HEX_BUFFER_ROWS;
@@ -287,9 +290,9 @@ class HexPlayerBoard extends BaseBoard {
     return out;
   }
 
-  // Returns snapshot for rendering. grid and nextPieces are cached references —
-  // callers must treat the returned object as read-only. Row arrays are shared
-  // with the live grid, so call only once per tick after all mutations are complete.
+  // Returns snapshot for rendering. grid, nextPieces, blocks, and cells are live
+  // references — callers must treat the returned object as read-only and consume it
+  // before the next tick. cells objects are mutated in place on rotation.
   getState() {
     if (this.gridVersion !== this._visibleGridVersion) {
       this._visibleGrid = this.grid.slice(HEX_BUFFER_ROWS);
@@ -302,7 +305,8 @@ class HexPlayerBoard extends BaseBoard {
     const visibleGrid = this._visibleGrid;
     const ghost = this.currentPiece ? this._ghostOf(this.currentPiece) : null;
 
-    // Populate pre-allocated block arrays from scratch (no allocation)
+    // Populate pre-allocated block arrays from scratch (no allocation).
+    // _absoluteBlocksFast() returns a shared scratch — consume before the next call.
     var cpBlocks = null;
     if (this.currentPiece) {
       var abs = this.currentPiece._absoluteBlocksFast();
@@ -343,7 +347,7 @@ class HexPlayerBoard extends BaseBoard {
       lines: this.lines,
       alive: this.alive,
       pendingGarbage: this.pendingGarbage.reduce((sum, g) => sum + g.lines, 0),
-      clearingCells: this.clearingCells ? this._visibleClearingCells() : null,
+      clearingCells: this._visibleClearingCellsCache,
       gridVersion: this.gridVersion
     };
   }

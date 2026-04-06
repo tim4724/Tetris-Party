@@ -8,7 +8,8 @@
 var lastThrottled = null;
 var lastMusicLevel = 0;
 
-function pruneEffects(effectsMap, playerId, timestamp) {
+// Returns all effects if any is still active; otherwise clears the map entry and returns [].
+function getOrClearEffects(effectsMap, playerId, timestamp) {
   var effects = effectsMap.get(playerId) || [];
   for (var i = 0; i < effects.length; i++) {
     if (timestamp - effects[i].startTime < effects[i].duration) return effects;
@@ -139,8 +140,8 @@ function renderFrame(timestamp) {
       }
 
       var pInfo = players.get(playerData.id);
-      var activeGarbageIndicatorEffects = pruneEffects(garbageIndicatorEffects, playerData.id, timestamp);
-      var activeGarbageDefenceEffects = pruneEffects(garbageDefenceEffects, playerData.id, timestamp);
+      var activeGarbageIndicatorEffects = getOrClearEffects(garbageIndicatorEffects, playerData.id, timestamp);
+      var activeGarbageDefenceEffects = getOrClearEffects(garbageDefenceEffects, playerData.id, timestamp);
       // playerData is a fresh snapshot per frame (getState() allocates new objects);
       // mutating it here avoids Object.assign overhead.
       playerData.garbageIndicatorEffects = activeGarbageIndicatorEffects;
