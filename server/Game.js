@@ -31,6 +31,8 @@ class Game {
       this.playerIds.push(id);
     }
 
+    this._aliveCount = this.playerIds.length;
+
     var garbageBoardWidth = this.gameMode === 'hex' ? HexConstants.HEX_COLS : undefined;
     this.garbageManager = new GarbageManager(mulberry32(seed ^ 0x47617262), garbageBoardWidth);
     for (const id of this.playerIds) {
@@ -147,6 +149,7 @@ class Game {
         // Emit KO for players that died outside tick (e.g. processInput hard_drop)
         if (!board._koEmitted) {
           board._koEmitted = true;
+          this._aliveCount--;
           this.callbacks.onEvent({ type: 'player_ko', playerId: id });
         }
         continue;
@@ -174,6 +177,7 @@ class Game {
       // Check if player just died during tick
       if (!board.alive) {
         board._koEmitted = true;
+        this._aliveCount--;
         this.callbacks.onEvent({ type: 'player_ko', playerId: id });
       }
     }
@@ -274,17 +278,15 @@ class Game {
   checkWinCondition() {
     if (this.ended) return;
 
-    const alive = this.playerIds.filter(id => this.boards.get(id).alive);
-
     // Multiplayer: last-man-standing
-    if (this.playerIds.length >= 2 && alive.length <= 1) {
+    if (this.playerIds.length >= 2 && this._aliveCount <= 1) {
       this.ended = true;
       this.stop();
       this.callbacks.onGameEnd(this.getResults());
     }
 
     // Single player: end when they die
-    if (this.playerIds.length === 1 && alive.length === 0) {
+    if (this.playerIds.length === 1 && this._aliveCount === 0) {
       this.ended = true;
       this.stop();
       this.callbacks.onGameEnd(this.getResults());

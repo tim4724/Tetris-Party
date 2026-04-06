@@ -19,6 +19,10 @@ function axialToOffset(q, r) {
 function rotateCW(q, r) { return { q: -r, r: q + r }; }
 function rotateCCW(q, r) { return { q: q + r, r: -q }; }
 
+// Scratch arrays for getAbsoluteBlocks — avoids allocation on every call
+var _absBlocksScratch = [[0,0],[0,0],[0,0],[0,0]];
+var _axialScratch = { q: 0, r: 0 };
+
 // ===================== PIECE DEFINITIONS =====================
 // Same shapes as pointy-top hex — axial coords are orientation-independent.
 var HEX_PIECES = {
@@ -58,13 +62,29 @@ class HexPiece {
   }
 
   getAbsoluteBlocks() {
-    var a = offsetToAxial(this.anchorCol, this.anchorRow);
+    var ac = this.anchorCol, ar = this.anchorRow;
+    var aq = ac, aRr = ar - ((ac - (ac & 1)) >> 1);
     var result = [];
     for (var i = 0; i < this.cells.length; i++) {
-      var off = axialToOffset(a.q + this.cells[i].q, a.r + this.cells[i].r);
-      result.push([off.col, off.row]);
+      var cq = aq + this.cells[i].q;
+      var cr = aRr + this.cells[i].r;
+      result.push([cq, cr + ((cq - (cq & 1)) >> 1)]);
     }
     return result;
+  }
+
+  // Non-allocating version for hot paths (isValidPosition, lockPiece).
+  // Returns a shared scratch array — caller must consume before the next call.
+  _absoluteBlocksFast() {
+    var ac = this.anchorCol, ar = this.anchorRow;
+    var aq = ac, aRr = ar - ((ac - (ac & 1)) >> 1);
+    for (var i = 0; i < this.cells.length; i++) {
+      var cq = aq + this.cells[i].q;
+      var cr = aRr + this.cells[i].r;
+      _absBlocksScratch[i][0] = cq;
+      _absBlocksScratch[i][1] = cr + ((cq - (cq & 1)) >> 1);
+    }
+    return _absBlocksScratch;
   }
 
   clone() {

@@ -24,6 +24,8 @@ function playCountdownBeep(isGo) {
   osc.connect(gain);
   gain.connect(actx.destination);
 
+  osc.onended = function() { gain.disconnect(); };
+
   if (isGo) {
     osc.type = 'square';
     osc.frequency.setValueAtTime(600, actx.currentTime);

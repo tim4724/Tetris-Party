@@ -47,10 +47,11 @@ class BaseUIRenderer {
   render(playerState, timestamp) {
     this._styleTier = getStyleTier(playerState.level || 1);
     if (getDisplayFont() !== this._cachedFontFamily) this._updateCachedFonts();
+    var nextLayout = this._nextPanelLayout(playerState);
     this.drawPlayerName(playerState);
     this.drawHoldPanel(playerState);
-    this.drawNextPanel(playerState);
-    this.drawLevelLines(playerState);
+    this.drawNextPanel(playerState, nextLayout);
+    this.drawLevelLines(playerState, nextLayout);
     if (playerState.pendingGarbage > 0) {
       this.drawGarbageMeter(playerState.pendingGarbage);
     }
@@ -106,12 +107,11 @@ class BaseUIRenderer {
     return { startY: startY, boxHeight: boxHeight, pieceSpacing: pieceSpacing };
   }
 
-  drawNextPanel(playerState) {
+  drawNextPanel(playerState, layout) {
     var ctx = this.ctx;
     var panelX = this.boardX + this.boardWidth + this.panelGap;
     var panelY = this.boardY;
     var boxWidth = this.miniSize * THEME.size.panelWidth;
-    var layout = this._nextPanelLayout(playerState);
 
     ctx.fillStyle = 'rgba(255, 255, 255, ' + THEME.opacity.label + ')';
     ctx.font = this._fontLabel;
@@ -134,10 +134,9 @@ class BaseUIRenderer {
     }
   }
 
-  drawLevelLines(playerState) {
+  drawLevelLines(playerState, layout) {
     var ctx = this.ctx;
     var panelX = this.boardX + this.boardWidth + this.panelGap;
-    var layout = this._nextPanelLayout(playerState);
     var belowNextY = layout.startY + layout.boxHeight + this.cellSize * 0.5;
 
     var lines = playerState.lines || 0;
@@ -246,19 +245,19 @@ class BaseUIRenderer {
     var ctx = this.ctx;
     var r = THEME.radius.panel(this.cellSize);
 
+    ctx.beginPath();
+    _addRoundRectSubPath(ctx, x, y, w, h, r);
+
     ctx.fillStyle = THEME.color.bg.board;
-    roundRect(ctx, x, y, w, h, r);
     ctx.fill();
 
     if (this._panelTintFill) {
       ctx.fillStyle = this._panelTintFill;
-      roundRect(ctx, x, y, w, h, r);
       ctx.fill();
     }
 
     ctx.strokeStyle = this._panelStroke;
     ctx.lineWidth = this.cellSize * THEME.stroke.border;
-    roundRect(ctx, x, y, w, h, r);
     ctx.stroke();
   }
 }

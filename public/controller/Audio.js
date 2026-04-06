@@ -4,10 +4,12 @@ var ControllerAudio = (function () {
   var audioCtx = null;
   var muted = false;
   var primed = false;
+  var noiseBuffer = null;
 
   function getCtx() {
     if (!audioCtx) {
       audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      noiseBuffer = null; // buffer is context-specific, must regenerate
     }
     if (audioCtx.state === 'suspended') {
       audioCtx.resume();
@@ -37,6 +39,7 @@ var ControllerAudio = (function () {
     osc.type = 'sine';
     gain.gain.setValueAtTime(1.0, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.04);
+    osc.onended = function() { gain.disconnect(); };
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.04);
   }
@@ -55,6 +58,7 @@ var ControllerAudio = (function () {
     osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, ctx.currentTime + duration);
     gain.gain.setValueAtTime(0.3, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.onended = function() { gain.disconnect(); };
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + duration);
   }
@@ -72,18 +76,22 @@ var ControllerAudio = (function () {
     osc.frequency.exponentialRampToValueAtTime(30, t + 0.1);
     gain.gain.setValueAtTime(0.9, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.1);
+    osc.onended = function() { gain.disconnect(); };
     osc.start(t);
     osc.stop(t + 0.1);
-    var buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
-    var data = buf.getChannelData(0);
-    for (var i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    if (!noiseBuffer) {
+      noiseBuffer = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+      var data = noiseBuffer.getChannelData(0);
+      for (var i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    }
     var noise = ctx.createBufferSource();
     var nGain = ctx.createGain();
-    noise.buffer = buf;
+    noise.buffer = noiseBuffer;
     noise.connect(nGain);
     nGain.connect(ctx.destination);
     nGain.gain.setValueAtTime(0.36, t);
     nGain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+    noise.onended = function() { nGain.disconnect(); };
     noise.start(t);
   }
 
@@ -100,6 +108,7 @@ var ControllerAudio = (function () {
     osc.frequency.exponentialRampToValueAtTime(250, t + 0.08);
     gain.gain.setValueAtTime(0.6, t);
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+    osc.onended = function() { gain.disconnect(); };
     osc.start(t);
     osc.stop(t + 0.08);
   }

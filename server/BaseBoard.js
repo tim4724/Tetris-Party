@@ -88,23 +88,47 @@ class BaseBoard {
   }
 
   isValidPosition(piece) {
-    const blocks = piece.getAbsoluteBlocks();
-    for (let i = 0; i < blocks.length; i++) {
-      const col = blocks[i][0], row = blocks[i][1];
-      if (col < 0 || col >= this.cols) return false;
-      if (row < 0 || row >= this.totalRows) return false;
-      if (this.grid[row][col] !== 0) return false;
+    // Classic Piece: getBlocks() returns static array, offset by x/y — no allocation
+    // HexPiece: must use getAbsoluteBlocks() for axial→offset conversion
+    if (piece.x != null) {
+      const blocks = piece.getBlocks();
+      const px = piece.x, py = piece.y;
+      for (let i = 0; i < blocks.length; i++) {
+        const col = blocks[i][0] + px, row = blocks[i][1] + py;
+        if (col < 0 || col >= this.cols) return false;
+        if (row < 0 || row >= this.totalRows) return false;
+        if (this.grid[row][col] !== 0) return false;
+      }
+    } else {
+      const blocks = piece._absoluteBlocksFast();
+      for (let i = 0; i < blocks.length; i++) {
+        const col = blocks[i][0], row = blocks[i][1];
+        if (col < 0 || col >= this.cols) return false;
+        if (row < 0 || row >= this.totalRows) return false;
+        if (this.grid[row][col] !== 0) return false;
+      }
     }
     return true;
   }
 
   lockPiece() {
     if (!this.currentPiece) return;
-    const blocks = this.currentPiece.getAbsoluteBlocks();
-    for (let i = 0; i < blocks.length; i++) {
-      const col = blocks[i][0], row = blocks[i][1];
-      if (row >= 0 && row < this.totalRows && col >= 0 && col < this.cols) {
-        this.grid[row][col] = this.currentPiece.typeId;
+    if (this.currentPiece.x != null) {
+      const blocks = this.currentPiece.getBlocks();
+      const px = this.currentPiece.x, py = this.currentPiece.y;
+      for (let i = 0; i < blocks.length; i++) {
+        const col = blocks[i][0] + px, row = blocks[i][1] + py;
+        if (row >= 0 && row < this.totalRows && col >= 0 && col < this.cols) {
+          this.grid[row][col] = this.currentPiece.typeId;
+        }
+      }
+    } else {
+      const blocks = this.currentPiece._absoluteBlocksFast();
+      for (let i = 0; i < blocks.length; i++) {
+        const col = blocks[i][0], row = blocks[i][1];
+        if (row >= 0 && row < this.totalRows && col >= 0 && col < this.cols) {
+          this.grid[row][col] = this.currentPiece.typeId;
+        }
       }
     }
     this.gridVersion++;

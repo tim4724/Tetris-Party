@@ -27,6 +27,17 @@ class PlayerBoard extends BaseBoard {
     // Line clear animation state
     this.clearingRows = null;
 
+    // Ghost cache (invalidated when piece moves or grid changes)
+    this._cachedGhostY = 0;
+    this._ghostKeyX = -1;
+    this._ghostKeyY = -1;
+    this._ghostKeyRot = -1;
+    this._ghostKeyGV = -1;
+
+    // Visible grid cache (re-sliced only when gridVersion changes)
+    this._visibleGrid = null;
+    this._visibleGridVersion = -1;
+
     // Fill the next queue
     this._fillNextQueue();
   }
@@ -217,21 +228,33 @@ class PlayerBoard extends BaseBoard {
 
   getGhostY() {
     if (!this.currentPiece) return 0;
-    const test = this.currentPiece.clone();
+    var p = this.currentPiece;
+    if (p.x === this._ghostKeyX && p.y === this._ghostKeyY &&
+        p.rotation === this._ghostKeyRot && this.gridVersion === this._ghostKeyGV) {
+      return this._cachedGhostY;
+    }
+    const test = p.clone();
     while (true) {
       test.y += 1;
       if (!this.isValidPosition(test)) {
-        return test.y - 1;
+        this._cachedGhostY = test.y - 1;
+        this._ghostKeyX = p.x; this._ghostKeyY = p.y;
+        this._ghostKeyRot = p.rotation; this._ghostKeyGV = this.gridVersion;
+        return this._cachedGhostY;
       }
     }
   }
 
   getState() {
-    // Return only visible rows (bottom 22 of the 26-row grid)
-    const visibleGrid = this.grid.slice(BUFFER_ROWS);
+    // Return only visible rows (cached; re-sliced only when grid changes)
+    if (this.gridVersion !== this._visibleGridVersion) {
+      this._visibleGrid = this.grid.slice(BUFFER_ROWS);
+      this._cachedNextPieces = this.nextPieces.slice(0, 3);
+      this._visibleGridVersion = this.gridVersion;
+    }
 
     return {
-      grid: visibleGrid,
+      grid: this._visibleGrid,
       currentPiece: this.currentPiece ? {
         type: this.currentPiece.type,
         typeId: this.currentPiece.typeId,
@@ -242,7 +265,7 @@ class PlayerBoard extends BaseBoard {
       } : null,
       ghostY: this.currentPiece ? this.getGhostY() - BUFFER_ROWS : null,
       holdPiece: this.holdPiece,
-      nextPieces: this.nextPieces.slice(0, 3),
+      nextPieces: this._cachedNextPieces,
       level: this.getLevel(),
       lines: this.lines,
       alive: this.alive,

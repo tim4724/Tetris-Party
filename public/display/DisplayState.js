@@ -92,6 +92,10 @@ try { muted = localStorage.getItem('stacker_muted') === '1'; } catch (e) { /* if
 // Render loop RAF handle (for stop/start)
 var rafId = null;
 
+// Cached window dimensions (updated on resize, avoids forced layout in render loop)
+var cachedW = window.innerWidth;
+var cachedH = window.innerHeight;
+
 // Wake Lock — prevents screen sleep during active games
 var wakeLock = null;
 
@@ -182,11 +186,13 @@ function initCanvas() {
 
 function resizeCanvas() {
   if (!canvas) return;
+  cachedW = window.innerWidth;
+  cachedH = window.innerHeight;
   var dpr = window.devicePixelRatio || 1;
-  canvas.width = window.innerWidth * dpr;
-  canvas.height = window.innerHeight * dpr;
-  canvas.style.width = window.innerWidth + 'px';
-  canvas.style.height = window.innerHeight + 'px';
+  canvas.width = cachedW * dpr;
+  canvas.height = cachedH * dpr;
+  canvas.style.width = cachedW + 'px';
+  canvas.style.height = cachedH + 'px';
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   if (currentScreen === SCREEN.GAME) {
     calculateLayout();

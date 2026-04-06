@@ -33,6 +33,17 @@ class HexPlayerBoard extends BaseBoard {
 
     this.clearingCells = null;
 
+    // Ghost cache (invalidated when piece moves or grid changes)
+    this._cachedGhost = null;
+    this._ghostKeyCol = -1;
+    this._ghostKeyRow = -1;
+    this._ghostKeyType = '';
+    this._ghostKeyGV = -1;
+
+    // Visible grid cache (re-sliced only when gridVersion changes)
+    this._visibleGrid = null;
+    this._visibleGridVersion = -1;
+
     this._fillNextQueue();
   }
 
@@ -78,12 +89,19 @@ class HexPlayerBoard extends BaseBoard {
   }
 
   _ghostOf(piece) {
+    if (piece.anchorCol === this._ghostKeyCol && piece.anchorRow === this._ghostKeyRow &&
+        piece.type === this._ghostKeyType && this.gridVersion === this._ghostKeyGV) {
+      return this._cachedGhost;
+    }
     let g = piece.clone();
     for (let i = 0; i < HEX_TOTAL_ROWS; i++) {
       const n = this._hexDrop(g);
-      if (!n) return g;
+      if (!n) break;
       g = n;
     }
+    this._cachedGhost = g;
+    this._ghostKeyCol = piece.anchorCol; this._ghostKeyRow = piece.anchorRow;
+    this._ghostKeyType = piece.type; this._ghostKeyGV = this.gridVersion;
     return g;
   }
 
@@ -256,7 +274,12 @@ class HexPlayerBoard extends BaseBoard {
   }
 
   getState() {
-    const visibleGrid = this.grid.slice(HEX_BUFFER_ROWS);
+    if (this.gridVersion !== this._visibleGridVersion) {
+      this._visibleGrid = this.grid.slice(HEX_BUFFER_ROWS);
+      this._cachedNextPieces = this.nextPieces.slice(0, 3);
+      this._visibleGridVersion = this.gridVersion;
+    }
+    const visibleGrid = this._visibleGrid;
     const ghost = this.currentPiece ? this._ghostOf(this.currentPiece) : null;
 
     return {
@@ -275,7 +298,7 @@ class HexPlayerBoard extends BaseBoard {
         blocks: ghost.getAbsoluteBlocks().map(b => [b[0], b[1] - HEX_BUFFER_ROWS])
       } : null,
       holdPiece: this.holdPiece,
-      nextPieces: this.nextPieces.slice(0, 3),
+      nextPieces: this._cachedNextPieces,
       level: this.getLevel(),
       lines: this.lines,
       alive: this.alive,

@@ -359,7 +359,7 @@ function drawTimer(elapsedMs) {
   if (n > 0 && n % 2 === 1) {
     startX = THEME.size.canvasPad + timerSize * 0.3;
   } else {
-    startX = window.innerWidth / 2 - timerWidth / 2;
+    startX = cachedW / 2 - timerWidth / 2;
   }
   var btnTop = timerSize * 0.6;
   var y = btnTop;

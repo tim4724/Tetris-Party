@@ -385,10 +385,13 @@ class Animations {
     var write = 0;
     for (var i = 0; i < arr.length; i++) {
       var anim = arr[i];
+      // Prune animations that completed on the previous frame (already rendered at progress=1)
+      if (anim._progress >= 1) continue;
       var elapsed = timestamp - anim.startTime;
       var progress = Math.min(elapsed / anim.duration, 1);
+      anim._progress = progress;
       if (anim.update) anim.update(progress);
-      if (progress < 1) arr[write++] = anim;
+      arr[write++] = anim; // keep even if progress===1 so render() draws the final frame
     }
     arr.length = write;
   }
@@ -401,10 +404,8 @@ class Animations {
     const ctx = this.ctx;
 
     for (const anim of this.active) {
-      const elapsed = timestamp - anim.startTime;
-      const progress = Math.min(elapsed / anim.duration, 1);
       if (anim.render) {
-        anim.render(ctx, progress);
+        anim.render(ctx, anim._progress);
       }
     }
   }

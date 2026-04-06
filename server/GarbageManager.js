@@ -8,19 +8,24 @@ var BOARD_WIDTH = constants.BOARD_WIDTH;
 var GARBAGE_TABLE = constants.GARBAGE_TABLE;
 var GARBAGE_DELAY_MS = constants.GARBAGE_DELAY_MS;
 
+var _readyGarbage = [];
+
 class GarbageManager {
   constructor(rng, boardWidth) {
     this.queues = new Map(); // playerId -> array of { lines, gapColumn, senderId, msLeft }
+    this._pendingTotals = new Map(); // playerId -> total pending lines
     this.rng = rng || Math.random;
     this.boardWidth = boardWidth || BOARD_WIDTH;
   }
 
   addPlayer(playerId) {
     this.queues.set(playerId, []);
+    this._pendingTotals.set(playerId, 0);
   }
 
   removePlayer(playerId) {
     this.queues.delete(playerId);
+    this._pendingTotals.delete(playerId);
   }
 
   /**
@@ -28,20 +33,21 @@ class GarbageManager {
    * Returns an array of { playerId, lines, gapColumn, senderId } for garbage that is ready.
    */
   tick(deltaMs) {
-    const ready = [];
+    _readyGarbage.length = 0;
     for (const [playerId, queue] of this.queues) {
       let writeIdx = 0;
       for (let i = 0; i < queue.length; i++) {
         queue[i].msLeft -= deltaMs;
         if (queue[i].msLeft <= 0) {
-          ready.push({ playerId, lines: queue[i].lines, gapColumn: queue[i].gapColumn, senderId: queue[i].senderId });
+          this._pendingTotals.set(playerId, (this._pendingTotals.get(playerId) || 0) - queue[i].lines);
+          _readyGarbage.push({ playerId, lines: queue[i].lines, gapColumn: queue[i].gapColumn, senderId: queue[i].senderId });
         } else {
           queue[writeIdx++] = queue[i];
         }
       }
       queue.length = writeIdx;
     }
-    return ready;
+    return _readyGarbage;
   }
 
   processLineClear(senderId, linesCleared, getStackHeight, defenseLines, garbageOverride) {
@@ -66,6 +72,9 @@ class GarbageManager {
         defenseRemaining = 0;
       }
     }
+    if (cancelled > 0) {
+      this._pendingTotals.set(senderId, (this._pendingTotals.get(senderId) || 0) - cancelled);
+    }
 
     // Send net attack to opponent with the lowest stack
     const netAttack = Math.max(0, garbageLines - cancelled);
@@ -77,6 +86,7 @@ class GarbageManager {
         const gapColumn = this.generateGapColumn();
         const queue = this.queues.get(targetId);
         queue.push({ lines: netAttack, gapColumn, senderId, msLeft: GARBAGE_DELAY_MS });
+        this._pendingTotals.set(targetId, (this._pendingTotals.get(targetId) || 0) + netAttack);
         deliveries.push({ fromId: senderId, toId: targetId, lines: netAttack, gapColumn });
         sent = netAttack;
       }
@@ -103,9 +113,7 @@ class GarbageManager {
   }
 
   getPendingLines(playerId) {
-    const queue = this.queues.get(playerId);
-    if (!queue) return 0;
-    return queue.reduce((sum, g) => sum + g.lines, 0);
+    return this._pendingTotals.get(playerId) || 0;
   }
 
   generateGapColumn() {
