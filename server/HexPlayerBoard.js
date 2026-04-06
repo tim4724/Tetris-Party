@@ -43,6 +43,8 @@ class HexPlayerBoard extends BaseBoard {
     // Visible grid cache (re-sliced only when gridVersion changes)
     this._visibleGrid = null;
     this._visibleGridVersion = -1;
+    this._cachedNextPieces = null;
+    this._cachedNextVersion = -1;
 
     this._fillNextQueue();
   }
@@ -276,8 +278,11 @@ class HexPlayerBoard extends BaseBoard {
   getState() {
     if (this.gridVersion !== this._visibleGridVersion) {
       this._visibleGrid = this.grid.slice(HEX_BUFFER_ROWS);
-      this._cachedNextPieces = this.nextPieces.slice(0, 3);
       this._visibleGridVersion = this.gridVersion;
+    }
+    if (this._nextVersion !== this._cachedNextVersion) {
+      this._cachedNextPieces = this.nextPieces.slice(0, 3);
+      this._cachedNextVersion = this._nextVersion;
     }
     const visibleGrid = this._visibleGrid;
     const ghost = this.currentPiece ? this._ghostOf(this.currentPiece) : null;

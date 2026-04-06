@@ -49,6 +49,7 @@ class BaseBoard {
     this.pendingGarbage = [];
     this.clearingTimer = null;
     this.gridVersion = 0;   // bumped on lock/clear/garbage for dirty tracking
+    this._nextVersion = 0;  // bumped when nextPieces changes (hold, spawn)
 
     // Subclasses must call this._fillNextQueue() in their own constructor
     // (after setting up any subclass-specific state).
@@ -149,6 +150,7 @@ class BaseBoard {
   spawnPiece() {
     this._fillNextQueue();
     const type = this.nextPieces.shift();
+    this._nextVersion++;
     this.currentPiece = this._createPiece(type);
     this.holdUsed = false;
     this.lockTimer = null;
@@ -174,6 +176,7 @@ class BaseBoard {
       this.holdPiece = currentType;
       this._fillNextQueue();
       const nextType = this.nextPieces.shift();
+      this._nextVersion++;
       this.currentPiece = this._createPiece(nextType);
     }
 

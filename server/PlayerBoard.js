@@ -37,6 +37,8 @@ class PlayerBoard extends BaseBoard {
     // Visible grid cache (re-sliced only when gridVersion changes)
     this._visibleGrid = null;
     this._visibleGridVersion = -1;
+    this._cachedNextPieces = null;
+    this._cachedNextVersion = -1;
 
     // Fill the next queue
     this._fillNextQueue();
@@ -249,8 +251,11 @@ class PlayerBoard extends BaseBoard {
     // Return only visible rows (cached; re-sliced only when grid changes)
     if (this.gridVersion !== this._visibleGridVersion) {
       this._visibleGrid = this.grid.slice(BUFFER_ROWS);
-      this._cachedNextPieces = this.nextPieces.slice(0, 3);
       this._visibleGridVersion = this.gridVersion;
+    }
+    if (this._nextVersion !== this._cachedNextVersion) {
+      this._cachedNextPieces = this.nextPieces.slice(0, 3);
+      this._cachedNextVersion = this._nextVersion;
     }
 
     return {
