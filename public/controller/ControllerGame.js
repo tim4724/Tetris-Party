@@ -298,6 +298,7 @@ var GLOW_SIZE = 100;
 var GLOW_OPACITY = 0.36;
 var GLOW_GROW = 0.15;
 var _feedbackRect = null;
+window.addEventListener('resize', function() { _feedbackRect = null; });
 
 function showGlow(x, y, progress) {
   if (!glowEl) {
