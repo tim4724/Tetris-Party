@@ -1,6 +1,6 @@
 {
   "name": "couch-games",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "Browser-based multiplayer stacker with phone controllers",
   "main": "server/index.js",
   "scripts": {
