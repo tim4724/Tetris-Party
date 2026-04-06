@@ -89,7 +89,7 @@ class HexPlayerBoard extends BaseBoard {
 
   // --- Hex-specific methods ---
 
-  // Simple drop: row + 1, same column. Mutates piece in place.
+  // Simple drop: row + 1, same column. Mutates piece in place; restores on failure.
   _hexDrop(piece) {
     if (piece.anchorRow + 1 >= HEX_TOTAL_ROWS) return null;
     piece.anchorRow += 1;
@@ -202,18 +202,9 @@ class HexPlayerBoard extends BaseBoard {
       this.spawnPiece();
     }
 
-    // Return visible-coordinate cells for renderer
-    const visibleClearCells = [];
-    if (this.clearingCells) {
-      for (let vc = 0; vc < this.clearingCells.length; vc++) {
-        const vr = this.clearingCells[vc][1] - HEX_BUFFER_ROWS;
-        if (vr >= 0) visibleClearCells.push([this.clearingCells[vc][0], vr]);
-      }
-    }
-
     return {
       linesCleared,
-      clearCells: visibleClearCells,
+      clearCells: this._visibleClearingCellsCache || [],
       alive: this.alive,
       lockedBlocks,
       lockedTypeId
