@@ -25,6 +25,9 @@ for (const [type, blocks] of Object.entries(MINI_PIECES)) {
 
 const PIECE_TYPE_TO_ID = GameConstants.PIECE_TYPE_TO_ID;
 
+var _getIndicatorColor = function(e) { return e.color; };
+var _getDefenceColor = function() { return THEME.color.text.white; };
+
 class UIRenderer extends BaseUIRenderer {
   getGarbageMeterLayout() {
     return {
@@ -100,11 +103,11 @@ class UIRenderer extends BaseUIRenderer {
   }
 
   drawGarbageIndicatorEffects(effects, timestamp) {
-    this._drawGarbageEffects(effects, timestamp, function(e) { return e.color; }, 0.2);
+    this._drawGarbageEffects(effects, timestamp, _getIndicatorColor, 0.2);
   }
 
   drawGarbageDefenceEffects(effects, timestamp) {
-    this._drawGarbageEffects(effects, timestamp, function() { return THEME.color.text.white; }, 0.3);
+    this._drawGarbageEffects(effects, timestamp, _getDefenceColor, 0.3);
   }
 
   drawMiniPiece(centerX, centerY, pieceType, size) {
