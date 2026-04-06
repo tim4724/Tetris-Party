@@ -88,7 +88,7 @@ function findClearableZigzags(cols, totalRows, isFilled, ghostContributes, minRo
       linesCleared++;
       for (var cj = 0; cj < zag.length; cj++) {
         usedCells[zag[cj][0] + ',' + zag[cj][1]] = true;
-        clearCells.push(zag[cj]);
+        clearCells.push([zag[cj][0], zag[cj][1]]);
       }
     }
   }
