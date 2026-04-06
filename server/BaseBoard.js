@@ -49,6 +49,7 @@ class BaseBoard {
     this.pendingGarbage = [];
     this.clearingTimer = null;
     this.gridVersion = 0;   // bumped on lock/clear/garbage for dirty tracking
+    this._nextVersion = 0;  // bumped when nextPieces changes (hold, spawn)
 
     // Subclasses must call this._fillNextQueue() in their own constructor
     // (after setting up any subclass-specific state).
@@ -88,23 +89,47 @@ class BaseBoard {
   }
 
   isValidPosition(piece) {
-    const blocks = piece.getAbsoluteBlocks();
-    for (let i = 0; i < blocks.length; i++) {
-      const col = blocks[i][0], row = blocks[i][1];
-      if (col < 0 || col >= this.cols) return false;
-      if (row < 0 || row >= this.totalRows) return false;
-      if (this.grid[row][col] !== 0) return false;
+    // Dispatch: Piece defines getBlocks() (static array + x/y offset, no allocation).
+    // HexPiece does not — it uses _absoluteBlocksFast() for axial→offset conversion.
+    if (piece.getBlocks) {
+      const blocks = piece.getBlocks();
+      const px = piece.x, py = piece.y;
+      for (let i = 0; i < blocks.length; i++) {
+        const col = blocks[i][0] + px, row = blocks[i][1] + py;
+        if (col < 0 || col >= this.cols) return false;
+        if (row < 0 || row >= this.totalRows) return false;
+        if (this.grid[row][col] !== 0) return false;
+      }
+    } else {
+      const blocks = piece._absoluteBlocksFast();
+      for (let i = 0; i < blocks.length; i++) {
+        const col = blocks[i][0], row = blocks[i][1];
+        if (col < 0 || col >= this.cols) return false;
+        if (row < 0 || row >= this.totalRows) return false;
+        if (this.grid[row][col] !== 0) return false;
+      }
     }
     return true;
   }
 
   lockPiece() {
     if (!this.currentPiece) return;
-    const blocks = this.currentPiece.getAbsoluteBlocks();
-    for (let i = 0; i < blocks.length; i++) {
-      const col = blocks[i][0], row = blocks[i][1];
-      if (row >= 0 && row < this.totalRows && col >= 0 && col < this.cols) {
-        this.grid[row][col] = this.currentPiece.typeId;
+    if (this.currentPiece.getBlocks) {
+      const blocks = this.currentPiece.getBlocks();
+      const px = this.currentPiece.x, py = this.currentPiece.y;
+      for (let i = 0; i < blocks.length; i++) {
+        const col = blocks[i][0] + px, row = blocks[i][1] + py;
+        if (row >= 0 && row < this.totalRows && col >= 0 && col < this.cols) {
+          this.grid[row][col] = this.currentPiece.typeId;
+        }
+      }
+    } else {
+      const blocks = this.currentPiece._absoluteBlocksFast();
+      for (let i = 0; i < blocks.length; i++) {
+        const col = blocks[i][0], row = blocks[i][1];
+        if (row >= 0 && row < this.totalRows && col >= 0 && col < this.cols) {
+          this.grid[row][col] = this.currentPiece.typeId;
+        }
       }
     }
     this.gridVersion++;
@@ -125,6 +150,7 @@ class BaseBoard {
   spawnPiece() {
     this._fillNextQueue();
     const type = this.nextPieces.shift();
+    this._nextVersion++;
     this.currentPiece = this._createPiece(type);
     this.holdUsed = false;
     this.lockTimer = null;
@@ -150,6 +176,7 @@ class BaseBoard {
       this.holdPiece = currentType;
       this._fillNextQueue();
       const nextType = this.nextPieces.shift();
+      this._nextVersion++;
       this.currentPiece = this._createPiece(nextType);
     }
 

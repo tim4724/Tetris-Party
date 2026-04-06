@@ -19,6 +19,10 @@ function axialToOffset(q, r) {
 function rotateCW(q, r) { return { q: -r, r: q + r }; }
 function rotateCCW(q, r) { return { q: q + r, r: -q }; }
 
+// Scratch arrays for getAbsoluteBlocks — avoids allocation on every call.
+// All HEX_PIECES have exactly 4 cells; update if a 5+ cell piece is added.
+var _absBlocksScratch = [[0,0],[0,0],[0,0],[0,0]];
+
 // ===================== PIECE DEFINITIONS =====================
 // Same shapes as pointy-top hex — axial coords are orientation-independent.
 var HEX_PIECES = {
@@ -41,6 +45,7 @@ class HexPiece {
     this.cells = HEX_PIECES[type].map(function(c) { return { q: c[0], r: c[1] }; });
     this.anchorCol = 5;  // center of 11-col grid
     this.anchorRow = 0;
+    this._rotId = 0;    // incremented on rotate, used for ghost cache key
     // In odd-q (flat-top), column parity affects offset row mapping,
     // so we must compute the actual minimum offset row of all blocks.
     this._adjustAnchorRow();
@@ -58,13 +63,30 @@ class HexPiece {
   }
 
   getAbsoluteBlocks() {
-    var a = offsetToAxial(this.anchorCol, this.anchorRow);
+    var ac = this.anchorCol, ar = this.anchorRow;
+    var aq = ac, aRr = ar - ((ac - (ac & 1)) >> 1);
     var result = [];
     for (var i = 0; i < this.cells.length; i++) {
-      var off = axialToOffset(a.q + this.cells[i].q, a.r + this.cells[i].r);
-      result.push([off.col, off.row]);
+      var cq = aq + this.cells[i].q;
+      var cr = aRr + this.cells[i].r;
+      result.push([cq, cr + ((cq - (cq & 1)) >> 1)]);
     }
     return result;
+  }
+
+  // Non-allocating version for hot paths (isValidPosition, lockPiece).
+  // Returns a shared scratch array — caller must consume before the next call.
+  _absoluteBlocksFast() {
+    while (_absBlocksScratch.length < this.cells.length) _absBlocksScratch.push([0, 0]);
+    var ac = this.anchorCol, ar = this.anchorRow;
+    var aq = ac, aRr = ar - ((ac - (ac & 1)) >> 1);
+    for (var i = 0; i < this.cells.length; i++) {
+      var cq = aq + this.cells[i].q;
+      var cr = aRr + this.cells[i].r;
+      _absBlocksScratch[i][0] = cq;
+      _absBlocksScratch[i][1] = cr + ((cq - (cq & 1)) >> 1);
+    }
+    return _absBlocksScratch;
   }
 
   clone() {
@@ -74,10 +96,12 @@ class HexPiece {
     p.cells = this.cells.map(function(c) { return { q: c.q, r: c.r }; });
     p.anchorCol = this.anchorCol;
     p.anchorRow = this.anchorRow;
+    p._rotId = this._rotId;
     return p;
   }
 
   rotateCW() {
+    this._rotId++;
     this.cells = this.cells.map(function(c) {
       var rot = rotateCW(c.q, c.r);
       return { q: rot.q, r: rot.r };
@@ -85,6 +109,7 @@ class HexPiece {
   }
 
   rotateCCW() {
+    this._rotId++;
     this.cells = this.cells.map(function(c) {
       var rot = rotateCCW(c.q, c.r);
       return { q: rot.q, r: rot.r };

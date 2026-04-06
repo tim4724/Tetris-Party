@@ -297,6 +297,8 @@ function removeKoOverlay() {
 var GLOW_SIZE = 100;
 var GLOW_OPACITY = 0.36;
 var GLOW_GROW = 0.15;
+var _feedbackRect = null;
+window.addEventListener('resize', function() { _feedbackRect = null; });
 
 function showGlow(x, y, progress) {
   if (!glowEl) {
@@ -304,9 +306,9 @@ function showGlow(x, y, progress) {
     glowEl.className = 'feedback-glow';
     feedbackLayer.appendChild(glowEl);
   }
-  var rect = feedbackLayer.getBoundingClientRect();
-  var lx = x - rect.left;
-  var ly = y - rect.top;
+  if (!_feedbackRect) _feedbackRect = feedbackLayer.getBoundingClientRect();
+  var lx = x - _feedbackRect.left;
+  var ly = y - _feedbackRect.top;
   var p = progress || 0;
   var scale = 1 + p * GLOW_GROW;
   glowEl.style.transform = 'translate(' + (lx - GLOW_SIZE / 2) + 'px,' + (ly - GLOW_SIZE / 2) + 'px) scale(' + scale + ')';
@@ -351,6 +353,7 @@ function initTouchInput() {
     lastTouchX = e.clientX;
     lastTouchY = e.clientY;
     if (e.type === 'pointerdown') {
+      _feedbackRect = feedbackLayer.getBoundingClientRect();
       anchorX = e.clientX;
       anchorY = e.clientY;
       showGlow(e.clientX, e.clientY, 0);

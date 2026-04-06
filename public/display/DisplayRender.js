@@ -92,8 +92,8 @@ function renderLoop(timestamp) {
 }
 
 function renderFrame(timestamp) {
-  var w = window.innerWidth;
-  var h = window.innerHeight;
+  var w = cachedW;
+  var h = cachedH;
   ctx.fillStyle = THEME.color.bg.primary;
   ctx.fillRect(0, 0, w, h);
 
