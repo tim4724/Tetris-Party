@@ -155,6 +155,8 @@ function buildHexAllPiecesGhostState(playerIds, tierLevel) {
     var gBlocks = gp.getAbsoluteBlocks();
     extraGhosts.push({
       typeId: gp.typeId,
+      x: 0,
+      ghostY: 0,
       blocks: gBlocks.map(function(b) { return [b[0], b[1]]; }),
     });
   }
