@@ -7,10 +7,10 @@
 
 var lastThrottled = null;
 var lastMusicLevel = 0;
-var _NO_SHAKE = { x: 0, y: 0 };
+var _NO_SHAKE = Object.freeze({ x: 0, y: 0 });
 
 // Returns all effects if any is still active; otherwise clears the map entry and returns [].
-var _EMPTY_EFFECTS = [];
+var _EMPTY_EFFECTS = Object.freeze([]);
 function getOrClearEffects(effectsMap, playerId, timestamp) {
   var effects = effectsMap.get(playerId);
   if (!effects) return _EMPTY_EFFECTS;
