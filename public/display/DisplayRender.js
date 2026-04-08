@@ -170,7 +170,7 @@ function renderFrame(timestamp) {
               var gby = ghost.blocks[bl][1];
               var drawCol = ghost.x + gbx;
               var drawRow = ghost.ghostY + gby;
-              if (drawRow >= 0 && drawCol >= 0) br.drawGhostBlock(drawCol, drawRow, gc);
+              br.drawGhostBlock(drawCol, drawRow, gc);
             }
           }
         }

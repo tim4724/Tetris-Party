@@ -96,7 +96,7 @@ class HexBoardRenderer {
 
   // Draw a ghost block at grid (col, row) — used by test harness for extra ghosts
   drawGhostBlock(col, row, gc) {
-    if (row < 0 || row >= HEX_VIS_ROWS) return;
+    if (row < 0 || row >= HEX_VIS_ROWS || col < 0 || col >= HEX_COLS_N) return;
     var pos = this._hexCenter(col, row);
     this._drawHex(pos.x, pos.y, this._sCell, gc.fill, gc.outline);
   }

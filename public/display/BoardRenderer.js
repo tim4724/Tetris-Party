@@ -208,6 +208,7 @@ class BoardRenderer {
 
   // Used by DisplayRender __TEST__._extraGhosts path; main render uses batched compound path above.
   drawGhostBlock(col, row, color) {
+    if (row < 0 || row >= VISIBLE_ROWS || col < 0 || col >= COLS) return;
     const ctx = this.ctx;
     const x = this.x + col * this.cellSize;
     const y = this.y + row * this.cellSize;
