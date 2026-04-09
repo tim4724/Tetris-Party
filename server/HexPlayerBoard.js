@@ -267,7 +267,7 @@ class HexPlayerBoard extends BaseBoard {
     // Try gap columns until one doesn't add new clearable zigzags.
     // The original gapColumn is tried first; if it creates new clears, shift by 1.
     const firstGarbageRow = HEX_TOTAL_ROWS - lines;
-    let gap = gapColumn % HEX_COLS;
+    let gap;
     for (let attempt = 0; attempt < HEX_COLS; attempt++) {
       gap = (gapColumn + attempt) % HEX_COLS;
       for (let i = 0; i < lines; i++) {

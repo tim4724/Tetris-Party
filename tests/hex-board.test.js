@@ -606,7 +606,7 @@ describe('HexPlayerBoard - clear preview matches actual clear', () => {
     b.spawnPiece();
     // Move piece to drop position and get ghost
     var state = b.getState();
-    if (!state.ghost || !state.ghost.blocks) return; // skip if no ghost available
+    assert.ok(state.ghost && state.ghost.blocks, 'expected ghost to be available');
 
     // Simulate renderer's preview calculation (visible coordinates)
     var grid = state.grid;

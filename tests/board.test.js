@@ -726,13 +726,12 @@ describe('PlayerBoard - garbage and line clear interaction', () => {
     // Add pending garbage before the piece locks
     board.addPendingGarbage(2, 3);
     const result = board.hardDrop();
-    if (result.linesCleared > 0) {
-      // During clearing animation, garbage should still be pending
-      assert.ok(board.pendingGarbage.length > 0 || board.clearingRows === null,
-        'garbage not yet applied during clearing animation');
-      // Finish the clear
-      board._finishClearLines();
-    }
+    assert.ok(result.linesCleared > 0, 'should have cleared at least one line');
+    // During clearing animation, garbage should still be pending
+    assert.ok(board.pendingGarbage.length > 0,
+      'garbage not yet applied during clearing animation');
+    // Finish the clear
+    board._finishClearLines();
     // After finishing, garbage should have been applied
     assert.equal(board.pendingGarbage.length, 0, 'garbage applied after clear finishes');
   });
