@@ -120,7 +120,7 @@ class HexBoardRenderer {
     tctx.lineWidth = this._gridLineWidth;
     tctx.stroke();
     gc.globalAlpha = this._gridAlpha;
-    gc.drawImage(tc, 0, 0);
+    gc.drawImage(tc, 0, 0, w, h);
     gc.globalAlpha = 1;
 
     return oc;
