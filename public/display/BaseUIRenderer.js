@@ -4,6 +4,12 @@
 // player name, and panel backgrounds. Mode-specific subclasses override
 // drawMiniPiece() and the garbage/KO/overlay methods.
 
+// Disconnected-overlay fallback tints (used when a player color is not
+// provided). Derived once from the theme accent-cyan token so the canvas
+// renderer stays in sync with CSS.
+var _DISCONNECT_TEXT_FALLBACK = rgbaFromHex(THEME.color.accent.cyan, 0.7);
+var _DISCONNECT_QR_BORDER = rgbaFromHex(THEME.color.accent.cyan, 0.15);
+
 class BaseUIRenderer {
   constructor(ctx, boardX, boardY, cellSize, boardWidthPx, boardHeightPx, playerIndex) {
     this.ctx = ctx;
@@ -199,7 +205,7 @@ class BaseUIRenderer {
 
     this._fillBoardArea('rgba(0, 0, 0, ' + THEME.opacity.overlay + ')');
 
-    ctx.fillStyle = playerColor || 'rgba(0, 200, 255, 0.7)';
+    ctx.fillStyle = playerColor || _DISCONNECT_TEXT_FALLBACK;
     ctx.font = this._fontDisconnect;
     ctx.textAlign = 'center';
     ctx.letterSpacing = '0.1em';
@@ -226,7 +232,7 @@ class BaseUIRenderer {
     ctx.roundRect(outerX, groupY, outerSize, outerSize, qrRadius);
     ctx.fill();
 
-    ctx.strokeStyle = 'rgba(0, 200, 255, 0.15)';
+    ctx.strokeStyle = _DISCONNECT_QR_BORDER;
     ctx.lineWidth = 1;
     ctx.stroke();
 
@@ -237,7 +243,7 @@ class BaseUIRenderer {
     ctx.drawImage(qrImg, outerX + pad, groupY + pad, qrSize, qrSize);
     ctx.restore();
 
-    ctx.fillStyle = playerColor || 'rgba(0, 200, 255, 0.7)';
+    ctx.fillStyle = playerColor || _DISCONNECT_TEXT_FALLBACK;
     ctx.font = this._fontDisconnect;
     ctx.textBaseline = 'top';
     ctx.fillText(t('scan_to_rejoin'), bx + bw / 2, groupY + outerSize + labelGap, bw * 0.9);
