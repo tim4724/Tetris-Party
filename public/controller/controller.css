@@ -197,7 +197,7 @@ html, body {
 
 #name-input:focus {
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--accent-cyan) 10%, transparent);
+  box-shadow: 0 0 12px rgba(var(--accent-cyan-rgb), 0.1);
 }
 
 #name-join-btn,
@@ -297,7 +297,7 @@ html, body {
 }
 
 .mode-option.selected {
-  background: color-mix(in srgb, var(--accent-cyan) 12%, transparent);
+  background: rgba(var(--accent-cyan-rgb), 0.12);
   color: var(--text-primary);
   box-shadow: inset 0 0 16px rgba(0, 200, 255, 0.06);
 }
@@ -307,7 +307,7 @@ html, body {
 }
 
 .mode-option:not(.selected):active {
-  background: color-mix(in srgb, white 5%, transparent);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 #player-identity {
@@ -362,7 +362,7 @@ html, body {
   height: 2.6rem;
   border: none;
   border-radius: var(--radius-sm);
-  background: color-mix(in srgb, white 8%, transparent);
+  background: rgba(255, 255, 255, 0.08);
   color: var(--text-primary);
   padding: 0;
   cursor: pointer;
@@ -373,7 +373,7 @@ html, body {
 }
 
 #level-selector .level-btn:active:not(:disabled) {
-  background: color-mix(in srgb, white 20%, transparent);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 #level-selector .level-btn:disabled {
@@ -488,6 +488,7 @@ html, body {
   flex-direction: column;
   align-items: center;
   gap: 5px;
+  color: #c0c0c0; /* fallback for old browsers */
   color: color-mix(in srgb, var(--player-color, #888) 55%, white);
 }
 
@@ -507,6 +508,7 @@ html, body {
   font-size: clamp(0.6rem, 3.2vw, 0.75rem);
   font-weight: 700;
   letter-spacing: 0.1em;
+  color: #b0b0b0; /* fallback for old browsers */
   color: color-mix(in srgb, var(--player-color, #888) 65%, white);
   text-transform: uppercase;
 }
@@ -538,6 +540,15 @@ html, body {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-lg);
+  /* Fallbacks for old browsers (no color-mix support) — neutral white accents */
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.28),
+    inset 0 0 24px rgba(255, 255, 255, 0.09),
+    inset 0 2px 6px rgba(0, 0, 0, 0.5),
+    0 1px 0 rgba(255, 255, 255, 0.04);
+  background-color: var(--bg-board);
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.12) 1.2px, transparent 1.8px);
+  /* Modern browsers: player-tinted accents */
   box-shadow:
     inset 0 0 0 2px color-mix(in srgb, var(--player-color, white) 70%, transparent),
     inset 0 0 24px color-mix(in srgb, var(--player-color, white) 22%, transparent),
@@ -639,13 +650,19 @@ html, body {
 }
 
 .result-row.is-me {
+  /* Fallback for old browsers — neutral white highlight */
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.4),
+              0 0 12px rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--me-color, #888) 70%, transparent),
               0 0 12px color-mix(in srgb, var(--me-color, #888) 15%, transparent);
 }
 
 .result-row.is-me.rank-1 {
-  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--me-color, #888) 70%, transparent),
+  /* Fallback for old browsers — neutral white highlight + gold */
+  box-shadow: 0 0 0 1.5px rgba(255, 255, 255, 0.4),
               0 0 20px rgba(255, 215, 0, 0.08);
+  box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--me-color, #888) 70%, transparent),
+              0 0 20px rgba(var(--medal-gold-rgb), 0.08);
 }
 
 .result-rank {

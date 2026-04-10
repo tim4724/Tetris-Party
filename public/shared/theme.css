@@ -3,10 +3,21 @@
    ========================================================== */
 
 :root {
+  /*
+   * Color tokens
+   *
+   * Tokens that can appear inside rgba() (for translucent variants)
+   * are defined as -rgb comma tuples and the solid form is derived
+   * via rgb(var(--X-rgb)). This keeps a single source of truth — edit
+   * the -rgb tuple and both the solid and translucent uses update.
+   */
+
   /* Backgrounds */
-  --bg-primary: #06060f;
+  --bg-primary-rgb: 6, 6, 15;
+  --bg-primary: rgb(var(--bg-primary-rgb));
   --bg-secondary: #0c0c1a;
-  --bg-card: #12122a;
+  --bg-card-rgb: 18, 18, 42;
+  --bg-card: rgb(var(--bg-card-rgb));
   --bg-board: #0c0c12;
   --bg-glass: rgba(255, 255, 255, 0.06);
 
@@ -17,8 +28,10 @@
   --text-cyan: rgba(0, 200, 255, 0.9);
 
   /* Accents */
-  --accent-blue: #4444ff;
-  --accent-cyan: #00ccff;
+  --accent-blue-rgb: 68, 68, 255;
+  --accent-blue: rgb(var(--accent-blue-rgb));
+  --accent-cyan-rgb: 0, 204, 255;
+  --accent-cyan: rgb(var(--accent-cyan-rgb));
   --accent-green: #00ff88;
   --accent-green-dark: #00dd77;
 
@@ -29,9 +42,12 @@
   --border-glass: rgba(255, 255, 255, 0.15);
 
   /* Medals */
-  --medal-gold: #ffd700;
-  --medal-silver: #c0c0c0;
-  --medal-bronze: #cd7f32;
+  --medal-gold-rgb: 255, 215, 0;
+  --medal-gold: rgb(var(--medal-gold-rgb));
+  --medal-silver-rgb: 192, 192, 192;
+  --medal-silver: rgb(var(--medal-silver-rgb));
+  --medal-bronze-rgb: 205, 127, 50;
+  --medal-bronze: rgb(var(--medal-bronze-rgb));
 
   /* Button text */
   --btn-green-text: #003d1f;
@@ -42,12 +58,12 @@
   --ping-bad: #e74856;
 
   /* Overlay */
-  --overlay-bg: rgba(6, 6, 15, 0.88);
+  --overlay-bg: rgba(var(--bg-primary-rgb), 0.88);
 
   /* Glows */
   --glow-cyan: rgba(0, 200, 255, 0.15);
   --glow-green: rgba(0, 255, 136, 0.3);
-  --glow-blue: rgba(68, 68, 255, 0.06);
+  --glow-blue: rgba(var(--accent-blue-rgb), 0.06);
 
   /* Opacities */
   --opacity-faint: 0.04;
