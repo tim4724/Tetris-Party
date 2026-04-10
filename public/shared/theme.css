@@ -21,12 +21,6 @@
   --bg-card: rgb(var(--bg-card-rgb));
   --bg-glass: rgba(255, 255, 255, 0.06);
 
-  /* Text */
-  --text-primary: #e0e0ff;
-  --text-secondary: rgba(240, 244, 255, 0.6);
-  --color-white: #ffffff;
-  --text-cyan: rgba(var(--accent-cyan-rgb), 0.9);
-
   /* Accents */
   --accent-blue-rgb: 68, 68, 255;
   --accent-blue: rgb(var(--accent-blue-rgb));
@@ -35,6 +29,12 @@
   --accent-green-rgb: 0, 255, 136;
   --accent-green: rgb(var(--accent-green-rgb));
   --accent-green-dark: #00dd77;
+
+  /* Text */
+  --text-primary: #e0e0ff;
+  --text-secondary: rgba(240, 244, 255, 0.6);
+  --color-white: #ffffff;
+  --text-cyan: rgba(var(--accent-cyan-rgb), 0.9);
 
   /* Semantic */
   --danger: #ff4444;

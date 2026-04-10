@@ -65,11 +65,11 @@
 
     a:hover {
       color: var(--accent-cyan);
-      filter: drop-shadow(0 0 6px rgba(0, 200, 255, 0.3));
+      filter: drop-shadow(0 0 6px rgba(var(--accent-cyan-rgb), 0.3));
     }
 
     ::selection {
-      background: rgba(0, 204, 255, 0.2);
+      background: rgba(var(--accent-cyan-rgb), 0.2);
       color: var(--text-primary);
     }
 

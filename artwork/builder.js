@@ -177,7 +177,7 @@
     '#6b2fa0','#ff6b35','#0f2557','#081440',  // accent darks
   ];
   const GLOW_PALETTE = [
-    '#00ccff','#00ff88','#4444ff',             // game accents
+    '#00c8ff','#00ff88','#4444ff',             // game accents
     '#EE4444','#00CED1','#FFD700','#7FFF00',   // piece colors
     '#9B59F0','#FF1493','#FF8C00','#ffffff',
   ];
@@ -201,7 +201,7 @@
 
   buildSwatches('bgColor1Swatches', 'bgColor1', BG_PALETTE, '#0a2342');
   buildSwatches('bgColor2Swatches', 'bgColor2', BG_PALETTE, '#06060f');
-  buildSwatches('titleGlowSwatches', 'titleGlowColor', GLOW_PALETTE, '#00ccff');
+  buildSwatches('titleGlowSwatches', 'titleGlowColor', GLOW_PALETTE, '#00c8ff');
 
   const preview = document.getElementById('preview');
   const piecesLayer = document.getElementById('piecesLayer');
@@ -487,7 +487,7 @@
 
     // Gradient fill
     var tg = ectx.createLinearGradient(50, ty - fs, 460, ty + fs);
-    tg.addColorStop(0, '#4444ff'); tg.addColorStop(0.5, '#00ccff'); tg.addColorStop(1, '#00ff88');
+    tg.addColorStop(0, '#4444ff'); tg.addColorStop(0.5, '#00c8ff'); tg.addColorStop(1, '#00ff88');
     ectx.fillStyle = tg;
 
     ectx.letterSpacing = sLS;
