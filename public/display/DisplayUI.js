@@ -291,7 +291,7 @@ function renderResults(results) {
   if (winner) {
     var wInfo = players.get(winner.playerId);
     var winnerColor = wInfo?.playerColor || PLAYER_COLORS[wInfo?.playerIndex] || '#ffd700';
-    resultsScreen.style.setProperty('--winner-glow', 'color-mix(in srgb, ' + winnerColor + ' 8%, transparent)');
+    resultsScreen.style.setProperty('--winner-glow', rgbaFromHex(winnerColor, 0.08));
   }
 
   var solo = sorted.length === 1;

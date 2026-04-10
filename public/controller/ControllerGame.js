@@ -225,7 +225,7 @@ function renderGameResults(results) {
     var winner = results.find(function(r) { return r.rank === 1; });
     if (winner) {
       var wc = winner.playerColor || PLAYER_COLORS[0];
-      winnerColor = 'color-mix(in srgb, ' + wc + ' 8%, transparent)';
+      winnerColor = rgbaFromHex(wc, 0.08);
     }
   }
   gameoverScreen.style.setProperty('--winner-glow', winnerColor);

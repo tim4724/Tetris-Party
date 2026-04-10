@@ -164,6 +164,15 @@ const THEME = Object.freeze({
   }),
 });
 
+// Hex → "rgba(r, g, b, a)" string. Used by call sites that set CSS
+// variables to player-colored values where color-mix() cannot be
+// used (old browsers reject invalid custom-property substitutions).
+function rgbaFromHex(hex, alpha) {
+  var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
+  if (!m) return 'transparent';
+  return 'rgba(' + parseInt(m[1], 16) + ', ' + parseInt(m[2], 16) + ', ' + parseInt(m[3], 16) + ', ' + alpha + ')';
+}
+
 // Export for both Node.js and browser
 if (typeof module !== 'undefined' && module.exports) {
   // IMPORTANT: _gc must mirror ghostColor() in CanvasUtils.js — keep in sync!

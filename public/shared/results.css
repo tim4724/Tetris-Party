@@ -25,24 +25,24 @@
   display: flex;
   align-items: center;
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--bg-card) 95%, transparent);
+  background: rgba(var(--bg-card-rgb), 0.95);
   border: 1px solid var(--border);
   animation: resultRowIn 0.4s ease-out both;
   animation-delay: var(--row-delay, 0.2s);
 }
 
 .result-row.rank-1 {
-  border-color: color-mix(in srgb, var(--medal-gold) 40%, transparent);
-  background: linear-gradient(135deg, color-mix(in srgb, var(--bg-card) 95%, transparent), color-mix(in srgb, var(--medal-gold) 10%, transparent));
-  box-shadow: 0 0 16px color-mix(in srgb, var(--medal-gold) 8%, transparent);
+  border-color: rgba(var(--medal-gold-rgb), 0.4);
+  background: linear-gradient(135deg, rgba(var(--bg-card-rgb), 0.95), rgba(var(--medal-gold-rgb), 0.1));
+  box-shadow: 0 0 16px rgba(var(--medal-gold-rgb), 0.08);
 }
 
 .result-row.rank-2 {
-  border-color: color-mix(in srgb, var(--medal-silver) 30%, transparent);
+  border-color: rgba(var(--medal-silver-rgb), 0.3);
 }
 
 .result-row.rank-3 {
-  border-color: color-mix(in srgb, var(--medal-bronze) 30%, transparent);
+  border-color: rgba(var(--medal-bronze-rgb), 0.3);
 }
 
 /* --- Rank ordinal --- */
