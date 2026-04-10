@@ -107,12 +107,15 @@ class HexUIRenderer extends BaseUIRenderer {
         ctx.globalAlpha = (1 - elapsed / effect.duration) * (effect.maxAlpha || 0.9);
         ctx.fillStyle = getColor(effect);
 
-        // Batch all rows of this effect into one fill call
+        // Batch all rows of this effect into one fill call.
+        // `effect.rowStart` is already in top-down grid coords (row 0 = top of
+        // board) per DisplayGame.onGarbageCancelled, so use `row` directly —
+        // matching drawGarbageMeter, which positions cells via the same
+        // top-down row index.
         ctx.beginPath();
         for (var row = effect.rowStart; row < effect.rowStart + effect.lines; row++) {
           if (row < 0 || row >= HexConstants.HEX_VISIBLE_ROWS) continue;
-          var visRow = HexConstants.HEX_VISIBLE_ROWS - 1 - row;
-          var cy = baseY + hexH * visRow + hexH / 2;
+          var cy = baseY + hexH * row + hexH / 2;
           ctx.moveTo(mx + sCell * HEX_UNIT_VERTICES[0], cy + sCell * HEX_UNIT_VERTICES[1]);
           for (var vi = 2; vi < 12; vi += 2) {
             ctx.lineTo(mx + sCell * HEX_UNIT_VERTICES[vi], cy + sCell * HEX_UNIT_VERTICES[vi + 1]);
@@ -125,8 +128,7 @@ class HexUIRenderer extends BaseUIRenderer {
         ctx.fillStyle = 'rgba(255, 255, 255, ' + highlightAlpha + ')';
         for (var hRow = effect.rowStart; hRow < effect.rowStart + effect.lines; hRow++) {
           if (hRow < 0 || hRow >= HexConstants.HEX_VISIBLE_ROWS) continue;
-          var hVisRow = HexConstants.HEX_VISIBLE_ROWS - 1 - hRow;
-          var hCy = baseY + hexH * hVisRow + hexH / 2;
+          var hCy = baseY + hexH * hRow + hexH / 2;
           var topY = hCy - hexH / 2 + stripeInset;
           ctx.fillRect(mx - halfStripeW, topY, sCell, stripeH);
         }
