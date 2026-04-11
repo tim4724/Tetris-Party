@@ -93,11 +93,12 @@ var LOCALES = {
     privacy_objection: 'Right to object (Art. 21 GDPR)',
     privacy_objection_detail: 'You have the right at any time, on grounds relating to your particular situation, to object to the processing of personal data concerning you which is based on legitimate interest (Art. 6(1)(f) GDPR) — Art. 21(1) GDPR. An informal e-mail to the address stated in the imprint is sufficient to exercise this right.',
     privacy_contact: 'contact',
-    privacy_updated: 'last updated april 2026',
+    privacy_updated: 'Last updated April 2026',
 
     // Imprint page
     imprint_title: 'IMPRINT',
     imprint_notice: 'Information pursuant to § 5 DDG',
+    imprint_contact: 'contact',
     imprint_page_title: 'Imprint — Stacker Party',
     privacy_page_title: 'Privacy — Stacker Party',
 
@@ -150,6 +151,7 @@ var LOCALES = {
     imprint: 'Impressum',
     imprint_title: 'IMPRESSUM',
     imprint_notice: 'Angaben gemäß § 5 DDG',
+    imprint_contact: 'Kontakt',
     imprint_page_title: 'Impressum — Stacker Party',
     privacy_page_title: 'Datenschutz — Stacker Party',
     back_to_game: '← Zurück',
