@@ -205,7 +205,8 @@ class WelcomeBackground {
     // Larger shapes fall slower for parallax depth feel
     const speed = 15 + (48 - blockSize) / 32 * 25; // 15-40 px/s
     const drift = 0;
-    // Base opacity close to original; boost low-luminance colors so they stay visible
+    // Base opacity close to original; boost low-luminance colors so they stay visible.
+    // Note: 'T' still exists in classic mode (removed only from the hex set).
     const boost = key === 'J' ? 0.06 : (key === 'T' || key === 'L') ? 0.03 : 0;
     const opacity = 0.05 + Math.random() * 0.04 + boost; // base 0.05-0.09
 
