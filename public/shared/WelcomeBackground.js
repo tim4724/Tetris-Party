@@ -85,12 +85,14 @@ class WelcomeBackground {
 
   // Opacity boost derived from perceived luminance of the piece color.
   // Low-luminance colors get a boost so background pieces stay visible on
-  // the dark canvas. Auto-adjusts when the palette changes — see PR #71 for
-  // the historical incident where this logic went stale after a rebrand.
+  // the dark canvas. Derived at runtime so the logic auto-adjusts if the
+  // palette ever changes — an earlier hand-maintained per-key table
+  // (J → +0.06, T/L → +0.03) silently went stale when the color palette
+  // was replaced, leaving the boost pointing at the wrong pieces.
   //
   // Threshold rationale (ITU-R BT.601 luma weights: 0.299 R + 0.587 G + 0.114 B):
-  //   <115 → +0.06  hot pink / pure blue / royal blue (darkest pieces)
-  //   <135 → +0.03  red, violet, old dark-purple (medium-dark)
+  //   <115 → +0.06  hot pink / royal blue (darkest pieces)
+  //   <135 → +0.03  red, violet (medium-dark)
   //   ≥135 →   0    teal, amber, lime, gold (already bright enough)
   static _opacityBoost(hex) {
     const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
