@@ -98,6 +98,8 @@ var LOCALES = {
     // Imprint page
     imprint_title: 'IMPRINT',
     imprint_notice: 'Information pursuant to § 5 DDG',
+    imprint_page_title: 'Imprint — Stacker Party',
+    privacy_page_title: 'Privacy — Stacker Party',
 
     // Credits
     stacked_by: 'Stacked by Tim',
@@ -148,6 +150,8 @@ var LOCALES = {
     imprint: 'Impressum',
     imprint_title: 'IMPRESSUM',
     imprint_notice: 'Angaben gemäß § 5 DDG',
+    imprint_page_title: 'Impressum — Stacker Party',
+    privacy_page_title: 'Datenschutz — Stacker Party',
     back_to_game: '← Zurück',
     privacy_title: 'DATENSCHUTZERKLÄRUNG',
     privacy_controller: 'Verantwortlicher',
@@ -588,7 +592,8 @@ function tOrdinal(n) {
 }
 
 /**
- * Translate all static HTML elements with data-i18n or data-i18n-placeholder attributes.
+ * Translate all static HTML elements with data-i18n, data-i18n-placeholder,
+ * or data-i18n-title attributes.
  */
 function translatePage() {
   if (typeof document === 'undefined') return;
@@ -601,6 +606,11 @@ function translatePage() {
   var phs = document.querySelectorAll('[data-i18n-placeholder]');
   for (var j = 0; j < phs.length; j++) {
     phs[j].placeholder = t(phs[j].getAttribute('data-i18n-placeholder'));
+  }
+
+  var titleEl = document.querySelector('title[data-i18n-title]');
+  if (titleEl) {
+    titleEl.textContent = t(titleEl.getAttribute('data-i18n-title'));
   }
 
   document.documentElement.lang = _locale;
