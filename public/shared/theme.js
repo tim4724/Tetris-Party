@@ -15,7 +15,7 @@ const PIECE_COLORS = {
   6: '#FF1493',    // T - hot pink
   7: '#FF8C00',    // Z - amber
   8: '#33AAFF',    // classic garbage - sky blue
-  9: '#808080'     // hex garbage - gray (legacy; hex renderers use HEX_PIECE_COLORS)
+  9: '#808080'     // hex garbage - gray (kept for back-compat; hex renderers now read HEX_PIECE_COLORS instead — safe to remove if nothing reaches this via PIECE_COLORS)
 };
 
 // --- Hex piece colors (1=I, 2=O, 3=S, 4=Z, 5=q, 6=p, 7=L, 8=J, 9=garbage) ---

@@ -59,10 +59,12 @@ describe('HexPiece', () => {
     assert.equal(p.cells.length, 4);
   });
 
-  it('new L and J pieces have 6 unique rotations (4-chain with single bend)', () => {
-    // Unlike tripod pieces, 4-chains with a single bend are not rotationally
-    // symmetric — all 6 CW rotations should produce distinct cell sets.
-    for (var type of ['L', 'J']) {
+  it('L, J, q, p all have 6 unique rotations (non-symmetric 4-cell pieces)', () => {
+    // Unlike tripod pieces, these are not rotationally symmetric — all 6 CW
+    // rotations should produce distinct cell sets. L/J are 4-chains with a
+    // single bend; q/p are triangle-plus-pendant shapes. Both lack the
+    // 3-fold symmetry that made old T repeat every 120°.
+    for (var type of ['L', 'J', 'q', 'p']) {
       var p = new HexPiece(type);
       var seen = new Set();
       var cells = p.cells.map(c => ({ q: c.q, r: c.r }));

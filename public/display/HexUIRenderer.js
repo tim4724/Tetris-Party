@@ -184,7 +184,7 @@ class HexUIRenderer extends BaseUIRenderer {
     // tall in their default orientation, so we shrink any piece whose vertical
     // footprint (rows + 0.5 for odd-col stagger) exceeds the 2-row footprint of
     // 2.5. This keeps every preview inside its reserved slot.
-    var MAX_ROW_FOOTPRINT = 2.5;
+    var MAX_ROW_FOOTPRINT = 2.5;  // 2 offset rows + 0.5 odd-col stagger
     var rowFootprint = rows + 0.5;
     var heightScale = rowFootprint > MAX_ROW_FOOTPRINT
       ? MAX_ROW_FOOTPRINT / rowFootprint
