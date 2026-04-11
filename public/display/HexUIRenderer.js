@@ -176,12 +176,24 @@ class HexUIRenderer extends BaseUIRenderer {
     var isNeon = this._styleTier === STYLE_TIERS.NEON_FLAT;
     var color = (isNeon ? NEON_HEX_PIECE_COLORS[typeId] : HEX_PIECE_COLORS[typeId]) || '#ffffff';
 
-    var hexS = size * 0.45;
+    var cols = bounds.maxC - bounds.minC + 1;
+    var rows = bounds.maxR - bounds.minR + 1;
+
+    // BaseUIRenderer reserves `pieceSpacing = miniSize * 3` per next-slot —
+    // originally sized for 2-row mini pieces. The new L and J are 3 offset-rows
+    // tall in their default orientation, so we shrink any piece whose vertical
+    // footprint (rows + 0.5 for odd-col stagger) exceeds the 2-row footprint of
+    // 2.5. This keeps every preview inside its reserved slot.
+    var MAX_ROW_FOOTPRINT = 2.5;
+    var rowFootprint = rows + 0.5;
+    var heightScale = rowFootprint > MAX_ROW_FOOTPRINT
+      ? MAX_ROW_FOOTPRINT / rowFootprint
+      : 1;
+
+    var hexS = size * 0.45 * heightScale;
     var drawS = hexS * (1 - THEME.size.blockGap * 2);
     var hexH = _SQRT3 * hexS;   // height of flat-top hex (layout spacing)
     var colW = 1.5 * hexS;            // column spacing
-    var cols = bounds.maxC - bounds.minC + 1;
-    var rows = bounds.maxR - bounds.minR + 1;
     var totalW = colW * (cols - 1) + 2 * hexS;
     // Total height: row spacing * (rows-1) + hex height + half hex for odd col stagger
     var totalH = hexH * rows + hexH * 0.5;
