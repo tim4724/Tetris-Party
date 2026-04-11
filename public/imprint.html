@@ -23,11 +23,30 @@
     }
 
     .imprint-shell {
+      position: relative;
       width: 100%;
       max-width: 960px;
       padding: clamp(2rem, 6vh, 4rem) 1.5rem clamp(2rem, 4vh, 3rem);
       background:
         radial-gradient(ellipse at 50% 0%, var(--glow-blue) 0%, transparent 50%);
+    }
+
+    .back-link {
+      position: absolute;
+      top: clamp(1rem, 2.5vh, 1.5rem);
+      left: clamp(1rem, 2.5vw, 1.5rem);
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      opacity: var(--opacity-label);
+      transition: color var(--transition-fast), opacity var(--transition-fast);
+    }
+
+    .back-link:hover {
+      color: var(--accent-cyan);
+      opacity: 1;
     }
 
     h1 {
@@ -92,7 +111,8 @@
   </style>
 </head>
 <body>
-  <div class="imprint-shell">
+  <main class="imprint-shell">
+    <a href="/" class="back-link" data-i18n="back_to_game">← Back</a>
     <h1 class="gradient-title" data-i18n="imprint_title">IMPRINT</h1>
     <dl>
       <dt data-i18n="imprint_notice">Information pursuant to § 5 DDG</dt>
@@ -104,7 +124,7 @@
       <dd><a href="mailto:info@couch-games.com">info@couch-games.com</a></dd>
     </dl>
     <p class="footer"><a href="/privacy" data-i18n="privacy">Privacy</a></p>
-  </div>
+  </main>
   <script src="/shared/i18n.js"></script>
   <script src="/shared/i18n-fallback.js"></script>
 </body>

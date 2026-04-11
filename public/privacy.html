@@ -23,11 +23,30 @@
     }
 
     .privacy-shell {
+      position: relative;
       width: 100%;
       max-width: 960px;
       padding: clamp(2rem, 6vh, 4rem) 1.5rem clamp(2rem, 4vh, 3rem);
       background:
         radial-gradient(ellipse at 50% 0%, var(--glow-blue) 0%, transparent 50%);
+    }
+
+    .back-link {
+      position: absolute;
+      top: clamp(1rem, 2.5vh, 1.5rem);
+      left: clamp(1rem, 2.5vw, 1.5rem);
+      font-size: 14px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      opacity: var(--opacity-label);
+      transition: color var(--transition-fast), opacity var(--transition-fast);
+    }
+
+    .back-link:hover {
+      color: var(--accent-cyan);
+      opacity: 1;
     }
 
     h1 {
@@ -114,7 +133,8 @@
   </style>
 </head>
 <body>
-  <div class="privacy-shell">
+  <main class="privacy-shell">
+    <a href="/" class="back-link" data-i18n="back_to_game">← Back</a>
     <h1 class="gradient-title" data-i18n="privacy_title">PRIVACY NOTICE</h1>
     <dl>
       <dt data-i18n="privacy_controller">controller</dt>
@@ -131,18 +151,18 @@
       <dt data-i18n="privacy_hosting">hosting</dt>
       <dd data-i18n="privacy_hosting_detail">Processing takes place exclusively on servers operated by the controller within Germany. No processors within the meaning of Art. 28 GDPR are engaged. No personal data is transferred to third countries.</dd>
       <dt data-i18n="privacy_rights">your rights</dt>
-      <dd data-i18n="privacy_rights_detail">You have the right to access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17), restriction of processing (Art. 18), and data portability (Art. 20). To exercise these rights, contact the controller using the e-mail address above. Your separate right to object under Art. 21 GDPR is set out below.</dd>
+      <dd data-i18n="privacy_rights_detail">You have the right to access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17), and restriction of processing (Art. 18). To exercise these rights, contact the controller using the e-mail address above. Your separate right to object under Art. 21 GDPR is set out below.</dd>
       <dt data-i18n="privacy_authority">supervisory authority</dt>
       <dd data-i18n="privacy_authority_detail">You have the right to lodge a complaint with a data protection supervisory authority (Art. 77 GDPR). The competent authority is: Bayerisches Landesamt für Datenschutzaufsicht (BayLDA), Promenade 18, 91522 Ansbach — lda.bayern.de.</dd>
       <dt data-i18n="privacy_automated">automated decisions</dt>
       <dd data-i18n="privacy_automated_detail">No automated decision-making within the meaning of Art. 22 GDPR takes place.</dd>
     </dl>
     <section class="objection" aria-labelledby="objection-heading">
-      <h2 id="objection-heading" data-i18n="privacy_objection">Right to object</h2>
+      <h2 id="objection-heading" data-i18n="privacy_objection">Right to object (Art. 21 GDPR)</h2>
       <p data-i18n="privacy_objection_detail">You have the right at any time, on grounds relating to your particular situation, to object to the processing of your personal data which is based on legitimate interest (Art. 6(1)(f) GDPR) — Art. 21(1) GDPR. An informal e-mail to the address in the imprint is sufficient.</p>
     </section>
     <p class="footer" data-i18n="privacy_updated">last updated april 2026</p>
-  </div>
+  </main>
   <script src="/shared/i18n.js"></script>
   <script src="/shared/i18n-fallback.js"></script>
 </body>
