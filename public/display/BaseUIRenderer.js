@@ -105,11 +105,19 @@ class BaseUIRenderer {
     }
   }
 
+  // Per-slot vertical spacing in the next panel, in units of miniSize.
+  // Defaults to 3 (matches 2-row classic tetrominoes + a comfortable gap).
+  // Subclasses override when their pieces need more vertical room — e.g.
+  // HexUIRenderer bumps this to accommodate 3 offset-row pieces like the
+  // new L and J without shrinking them.
+  _nextPieceSpacingUnits() { return 3; }
+
   _nextPanelLayout(playerState) {
     var nextCount = playerState.nextPieces ? Math.min(playerState.nextPieces.length, 3) : 0;
     if (this._cachedNextLayout && this._cachedNextCount === nextCount) return this._cachedNextLayout;
-    var pieceSpacing = this.miniSize * 3;
+    var pieceSpacing = this.miniSize * this._nextPieceSpacingUnits();
     var startY = this.boardY + this._labelSize + this.cellSize * 0.2;
+    // 3 = minimum visible slot count (unrelated to _nextPieceSpacingUnits() above)
     var boxHeight = pieceSpacing * Math.max(nextCount, 3);
     this._cachedNextCount = nextCount;
     this._cachedNextLayout = { startY: startY, boxHeight: boxHeight, pieceSpacing: pieceSpacing };

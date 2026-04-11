@@ -168,13 +168,18 @@ class HexUIRenderer extends BaseUIRenderer {
     this.ctx.clip();
   }
 
+  // The new L and J pieces occupy 3 offset rows in default orientation, so
+  // each next-slot needs more vertical room than the classic 2-row footprint.
+  // 3.5 * miniSize gives a comfortable gap without shrinking the pieces.
+  _nextPieceSpacingUnits() { return 3.5; }
+
   // Draw a flat-top hex mini piece in hold/next panels
   drawMiniPiece(centerX, centerY, pieceType, size) {
     var bounds = HEX_MINI_BOUNDS[pieceType];
     if (!bounds) return;
     var typeId = HEX_TYPE_TO_ID[pieceType];
     var isNeon = this._styleTier === STYLE_TIERS.NEON_FLAT;
-    var color = (isNeon ? NEON_PIECE_COLORS[typeId] : PIECE_COLORS[typeId]) || '#ffffff';
+    var color = (isNeon ? NEON_HEX_PIECE_COLORS[typeId] : HEX_PIECE_COLORS[typeId]) || '#ffffff';
 
     var hexS = size * 0.45;
     var drawS = hexS * (1 - THEME.size.blockGap * 2);

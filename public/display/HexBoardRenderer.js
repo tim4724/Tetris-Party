@@ -179,8 +179,8 @@ class HexBoardRenderer {
     var newTier = getStyleTier(playerState.level || 1);
     this._styleTier = newTier;
     var isNeon = newTier === STYLE_TIERS.NEON_FLAT;
-    var colors = isNeon ? NEON_PIECE_COLORS : PIECE_COLORS;
-    var ghostColors = isNeon ? NEON_GHOST_COLORS : GHOST_COLORS;
+    var colors = isNeon ? NEON_HEX_PIECE_COLORS : HEX_PIECE_COLORS;
+    var ghostColors = isNeon ? NEON_HEX_GHOST_COLORS : HEX_GHOST_COLORS;
 
     var sCell = this._sCell;
 

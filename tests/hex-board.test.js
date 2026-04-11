@@ -11,14 +11,14 @@ const { Game } = require('../server/Game');
 
 describe('HexPiece', () => {
   it('creates a piece with correct type and cells', () => {
-    var p = new HexPiece('T');
-    assert.equal(p.type, 'T');
-    assert.equal(p.typeId, 6);
+    var p = new HexPiece('L');
+    assert.equal(p.type, 'L');
+    assert.equal(p.typeId, 7);
     assert.equal(p.cells.length, 4);
   });
 
   it('getAbsoluteBlocks returns valid offset coordinates', () => {
-    var p = new HexPiece('L');
+    var p = new HexPiece('q');
     var blocks = p.getAbsoluteBlocks();
     assert.equal(blocks.length, 4);
     for (var b of blocks) {
@@ -35,14 +35,14 @@ describe('HexPiece', () => {
   });
 
   it('rotateCW changes cell positions', () => {
-    var p = new HexPiece('T');
+    var p = new HexPiece('L');
     var before = JSON.stringify(p.cells);
     p.rotateCW();
     assert.notEqual(JSON.stringify(p.cells), before);
   });
 
-  it('all 7 piece types create valid pieces', () => {
-    var types = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
+  it('all 8 piece types create valid pieces', () => {
+    var types = ['I', 'O', 'S', 'Z', 'q', 'p', 'L', 'J'];
     for (var t of types) {
       var p = new HexPiece(t);
       var blocks = p.getAbsoluteBlocks();
@@ -59,17 +59,22 @@ describe('HexPiece', () => {
     assert.equal(p.cells.length, 4);
   });
 
-  it('T (tripod) has 4 cells and 2 unique rotations', () => {
-    var p = new HexPiece('T');
-    assert.equal(p.cells.length, 4);
-    var seen = new Set();
-    var cells = p.cells.map(c => ({ q: c.q, r: c.r }));
-    for (var i = 0; i < 6; i++) {
-      var key = cells.map(c => c.q + ',' + c.r).sort().join('|');
-      seen.add(key);
-      cells = cells.map(c => ({ q: -c.r, r: c.q + c.r }));
+  it('L, J, q, p all have 6 unique rotations (non-symmetric 4-cell pieces)', () => {
+    // Unlike tripod pieces, these are not rotationally symmetric — all 6 CW
+    // rotations should produce distinct cell sets. L/J are 4-chains with a
+    // single bend; q/p are triangle-plus-pendant shapes. Both lack the
+    // 3-fold symmetry that made old T repeat every 120°.
+    for (var type of ['L', 'J', 'q', 'p']) {
+      var p = new HexPiece(type);
+      var seen = new Set();
+      var cells = p.cells.map(c => ({ q: c.q, r: c.r }));
+      for (var i = 0; i < 6; i++) {
+        var key = cells.map(c => c.q + ',' + c.r).sort().join('|');
+        seen.add(key);
+        cells = cells.map(c => ({ q: -c.r, r: c.q + c.r }));
+      }
+      assert.equal(seen.size, 6, type + ' should have 6 unique rotations');
     }
-    assert.equal(seen.size, 2);
   });
 });
 
@@ -91,7 +96,7 @@ describe('HexPiece - coordinate math', () => {
   });
 
   it('rotateCCW changes cell positions', () => {
-    var p = new HexPiece('T');
+    var p = new HexPiece('L');
     var before = JSON.stringify(p.cells);
     p.rotateCCW();
     assert.notEqual(JSON.stringify(p.cells), before);

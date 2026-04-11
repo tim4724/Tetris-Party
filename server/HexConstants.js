@@ -11,10 +11,11 @@ var HEX_TOTAL_ROWS = 25;   // 4 buffer + 21 visible
 var HEX_BUFFER_ROWS = 4;
 var HEX_VISIBLE_ROWS = 21;
 
-// 7 hex piece types (1-indexed to match grid cell values)
-// All 4-hex pieces
-var HEX_PIECE_TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-var HEX_PIECE_TYPE_TO_ID = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7 };
+// 8 hex piece types (1-indexed to match grid cell values).
+// All 4-hex pieces. Post-redesign set: T removed, q/p are the old L/J,
+// and L/J are new true-L/J shaped pieces.
+var HEX_PIECE_TYPES = ['I', 'O', 'S', 'Z', 'q', 'p', 'L', 'J'];
+var HEX_PIECE_TYPE_TO_ID = { I: 1, O: 2, S: 3, Z: 4, q: 5, p: 6, L: 7, J: 8 };
 var HEX_GARBAGE_CELL = 9;
 
 // ===================== ZIGZAG CLEAR DETECTION =====================

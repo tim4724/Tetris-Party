@@ -21,15 +21,24 @@ function axialToOffset(q, r) {
 var _absBlocksScratch = [[0,0],[0,0],[0,0],[0,0]];
 
 // ===================== PIECE DEFINITIONS =====================
-// Same shapes as pointy-top hex — axial coords are orientation-independent.
+// Flat-top hex piece set (v2 — post-redesign).
+// - T (tripod) removed: every rotation leaves a hole between its legs.
+// - q and p are the old L and J pieces, renamed: in flat-top rendering their
+//   silhouettes (chevron ribbon + stem) read more like lowercase q and p.
+// - L and J are new 4-chain pieces with a single 60° bend, giving true L/J
+//   silhouettes. Default orientations were chosen for visual readability.
 var HEX_PIECES = {
   I:  [[-1,0],[0,0],[1,0],[2,0]],
-  J:  [[-1,1],[0,0],[1,-1],[-1,0]],
-  L:  [[-1,0],[0,0],[1,0],[1,-1]],
   O:  [[-1,0],[0,0],[0,-1],[1,-1]],
   S:  [[-2,1],[-1,1],[0,0],[1,0]],
-  T:  [[0,0],[1,0],[-1,1],[0,-1]],
   Z:  [[-1,1],[0,0],[1,0],[2,-1]],
+  q:  [[-1,0],[0,0],[1,0],[1,-1]],    // was L — chevron ribbon + right stem
+  p:  [[-1,1],[0,0],[1,-1],[-1,0]],   // was J — chevron ribbon + left stem
+  // L and J use different axial axes ((1,-1) and (-1,0) respectively) so that
+  // they render as true visual mirrors in flat-top odd-q — a pure axial q-flip
+  // would produce a steep zigzag instead of the gentle L/J silhouette.
+  L:  [[-1,1],[0,0],[1,-1],[1,-2]],   // new — 3-cell up-right diagonal + top-right vertical extension
+  J:  [[1,0],[0,0],[-1,0],[-1,-1]],   // new — 3-cell up-left diagonal + top-left vertical extension
 };
 
 var KICKS = [[0,0], [-1,0], [1,0], [0,-1], [0,1], [-1,-1], [1,-1], [-1,1], [1,1]];
