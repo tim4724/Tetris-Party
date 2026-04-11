@@ -7,7 +7,6 @@
 // adding a new history entry. Cross-origin or direct navigation falls
 // through to the static href on the link.
 (function () {
-  if (typeof document === 'undefined') return;
   var backEl = document.querySelector('.back-link');
   if (!backEl || !document.referrer) return;
   try {
