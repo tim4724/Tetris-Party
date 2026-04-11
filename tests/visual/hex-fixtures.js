@@ -36,7 +36,7 @@ function buildHexGameState(playerIds, options) {
       }
     }
 
-    var pieceTypes = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
+    var pieceTypes = ['I', 'O', 'S', 'Z', 'q', 'p', 'L', 'J'];
     var pieceType = pieceTypes[i % pieceTypes.length];
     var piece = new HexPiece(pieceType);
     piece.anchorCol = 5;
@@ -91,23 +91,24 @@ function buildHexStyleTierState(playerIds) {
   }), elapsed: 60000 };
 }
 
-// Build a state showing all 7 hex piece types with ghosts at a given style tier.
-// Each player board has all 7 pieces as solid blocks at top + all 7 ghost outlines below.
+// Build a state showing all 8 hex piece types with ghosts at a given style tier.
+// Each player board has 7 pieces as solid blocks at top + 7 ghost outlines below,
+// with J as the active piece (shown separately).
 function buildHexAllPiecesGhostState(playerIds, tierLevel) {
   var tierLevelMap = { 3: 'Normal', 8: 'Pillow', 13: 'Neon' };
   var tierName = tierLevelMap[tierLevel] || 'Normal';
-  var pieceTypes = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
 
-  // 6 pieces as solid blocks in rows 2-6 (T is the active piece, shown separately)
+  // 7 pieces as solid blocks in rows 2-6 (J is the active piece, shown separately)
   function createShowcaseGrid() {
     var grid = createHexGrid();
     var placements = [
-      { type: 'L',  col: 2, row: 2 },
+      { type: 'q',  col: 2, row: 2 },
       { type: 'O',  col: 6, row: 2 },
       { type: 'S',  col: 2, row: 4 },
       { type: 'Z',  col: 5, row: 4 },
       { type: 'I',  col: 5, row: 6 },
-      { type: 'J',  col: 9, row: 4 },
+      { type: 'p',  col: 9, row: 4 },
+      { type: 'L',  col: 8, row: 7 },
     ];
     for (var pi = 0; pi < placements.length; pi++) {
       var pl = placements[pi];
@@ -125,24 +126,25 @@ function buildHexAllPiecesGhostState(playerIds, tierLevel) {
     return grid;
   }
 
-  // Ghost positions: 6 extra ghosts + T as the active ghost
+  // Ghost positions: 7 extra ghosts (J is the active piece)
   var ghostPlacements = [
-    { type: 'L',  col: 2, row: 10 },
+    { type: 'q',  col: 2, row: 10 },
     { type: 'O',  col: 6, row: 10 },
     { type: 'S',  col: 2, row: 13 },
     { type: 'Z',  col: 5, row: 13 },
     { type: 'I',  col: 5, row: 16 },
-    { type: 'J',  col: 9, row: 13 },
+    { type: 'p',  col: 9, row: 13 },
+    { type: 'L',  col: 8, row: 17 },
   ];
 
-  // Active piece (same on all boards): T-piece falling, ghost at row 10
-  var activePiece = new HexPiece('T');
+  // Active piece (same on all boards): J-piece falling, ghost near bottom
+  var activePiece = new HexPiece('J');
   activePiece.anchorCol = 9;
   activePiece.anchorRow = 8;
   var activeBlocks = activePiece.getAbsoluteBlocks();
-  var ghostPiece = new HexPiece('T');
+  var ghostPiece = new HexPiece('J');
   ghostPiece.anchorCol = 9;
-  ghostPiece.anchorRow = 10;
+  ghostPiece.anchorRow = 14;
   var ghostBlocks = ghostPiece.getAbsoluteBlocks();
 
   // Extra ghosts: the other 6 piece types (same on all boards)

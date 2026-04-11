@@ -233,11 +233,12 @@ class WelcomeBackground {
     const cells = rotations[Math.floor(Math.random() * rotations.length)];
     const blockSize = 12 + Math.random() * 20; // 12-32px (hex radius)
     const speed = 15 + (32 - blockSize) / 20 * 25;
-    const boost = (key === 'T' || key === 'F') ? 0.03 : 0;
+    // Boost opacity for cooler/darker pieces so they stay visible on dark bg
+    const boost = (key === 'p' || key === 'J') ? 0.03 : 0;
     const opacity = 0.05 + Math.random() * 0.04 + boost;
 
     const colorIdx = WelcomeBackground.HEX_SHAPE_COLOR_INDEX[key];
-    const color = typeof PIECE_COLORS !== 'undefined' ? PIECE_COLORS[colorIdx] : '#4444ff';
+    const color = typeof HEX_PIECE_COLORS !== 'undefined' ? HEX_PIECE_COLORS[colorIdx] : '#4444ff';
 
     return {
       hex: true,

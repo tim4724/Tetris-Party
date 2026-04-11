@@ -181,12 +181,12 @@ const HEX_BANNER_GRIDS = [hexBannerGrid1, hexBannerGrid2, hexBannerGrid3, hexBan
 const HEX_BANNER_LEVELS = [13, 8, 6, 4];
 const HEX_BANNER_LINES = [115, 60, 35, 18];
 const HEX_BANNER_PIECE_TYPES = ['J', 'I', 'O', 'S'];
-const HEX_BANNER_HOLD = ['Z', 'L', 'T', 'O'];
+const HEX_BANNER_HOLD = ['Z', 'L', 'q', 'O'];
 const HEX_BANNER_NEXT = [
-  ['L', 'Z', 'I', 'T', 'O'],
+  ['L', 'Z', 'I', 'p', 'O'],
   ['J', 'S', 'O', 'L', 'Z'],
-  ['I', 'T', 'S', 'J', 'L'],
-  ['Z', 'J', 'L', 'I', 'T'],
+  ['I', 'q', 'S', 'J', 'L'],
+  ['Z', 'J', 'L', 'I', 'p'],
 ];
 
 function buildHexBannerGameState() {
