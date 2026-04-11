@@ -139,6 +139,12 @@ html, body {
   color: inherit;
   text-decoration: none;
   padding: 8px 4px;
+  transition: color var(--transition-fast);
+}
+
+.legal-links a:hover,
+.legal-links a:focus-visible {
+  color: var(--accent-cyan);
 }
 
 #lobby-screen.controller-shell {
