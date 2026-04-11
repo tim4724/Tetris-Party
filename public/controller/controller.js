@@ -119,7 +119,13 @@ function submitName() {
   var name = nameInput.value.trim();
 
   playerName = name || null;
-  try { if (name) localStorage.setItem('stacker_player_name', name); } catch (e) { /* iframe sandbox */ }
+  // Persist only what the user actually typed. Clear any stale entry on
+  // empty submit so the display's sanitized fallback (e.g. "P2") never
+  // ends up prefilled the next time the input is shown.
+  try {
+    if (name) localStorage.setItem('stacker_player_name', name);
+    else localStorage.removeItem('stacker_player_name');
+  } catch (e) { /* iframe sandbox */ }
   try { sessionStorage.setItem('clientId_' + roomCode, clientId); } catch (e) { /* iframe sandbox */ }
   nameJoinBtn.disabled = true;
   nameJoinBtn.textContent = t('connecting');

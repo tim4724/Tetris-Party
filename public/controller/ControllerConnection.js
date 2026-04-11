@@ -131,7 +131,12 @@ function performDisconnect() {
   rejoinId = null;
   playerColor = null;
   gameCancelled = false;
-  nameInput.value = playerName || '';
+  // Prefill from the persisted user-typed name (localStorage is the single
+  // source of truth) — not `playerName`, which may have been replaced by
+  // the display's sanitized fallback (e.g. "P2").
+  var storedName = '';
+  try { storedName = localStorage.getItem('stacker_player_name') || ''; } catch (e) { /* iframe sandbox */ }
+  nameInput.value = storedName;
   nameJoinBtn.disabled = false;
   nameJoinBtn.textContent = t('join');
   nameInput.disabled = false;
