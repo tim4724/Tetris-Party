@@ -96,6 +96,12 @@ a:focus-visible {
   filter: drop-shadow(0 0 6px rgba(var(--accent-cyan-rgb), 0.3));
 }
 
+a:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 ::selection {
   background: rgba(var(--accent-cyan-rgb), 0.2);
   color: var(--text-primary);
