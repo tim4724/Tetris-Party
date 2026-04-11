@@ -83,14 +83,23 @@ class HexUIRenderer extends BaseUIRenderer {
     ctx.fill();
   }
 
-  _drawGarbageEffects(effects, timestamp, getColor) {
+  _drawGarbageEffects(effects, timestamp, getColor, highlightAlpha) {
     if (!Array.isArray(effects) || effects.length === 0) return;
+    if (highlightAlpha == null) highlightAlpha = 0;
     var sCell = this._sCell;
     var ctx = this.ctx;
     var mx = this._meterX;
     var hexH = this._hexH;
     var baseY = this.boardY;
     var now = timestamp || performance.now();
+
+    // Highlight stripe sized/positioned to match square mode's top-edge bevel,
+    // anchored to the hex's flat-top vertex (hCy - sCell*√3/2) rather than the
+    // cell boundary so it stays inside the drawn hex if gap constants change.
+    var stripeInset = sCell * 0.05;
+    var stripeH = sCell * 0.06;
+    var halfStripeW = sCell / 2;
+    var topEdgeOffset = sCell * _SQRT3 / 2;
 
     try {
       for (var ei = 0; ei < effects.length; ei++) {
@@ -100,12 +109,15 @@ class HexUIRenderer extends BaseUIRenderer {
         ctx.globalAlpha = (1 - elapsed / effect.duration) * (effect.maxAlpha || 0.9);
         ctx.fillStyle = getColor(effect);
 
-        // Batch all rows of this effect into one fill call
+        // Batch all rows of this effect into one fill call.
+        // `effect.rowStart` is already in top-down grid coords (row 0 = top of
+        // board) per DisplayGame.onGarbageCancelled, so use `row` directly —
+        // matching drawGarbageMeter, which positions cells via the same
+        // top-down row index.
         ctx.beginPath();
         for (var row = effect.rowStart; row < effect.rowStart + effect.lines; row++) {
           if (row < 0 || row >= HexConstants.HEX_VISIBLE_ROWS) continue;
-          var visRow = HexConstants.HEX_VISIBLE_ROWS - 1 - row;
-          var cy = baseY + hexH * visRow + hexH / 2;
+          var cy = baseY + hexH * row + hexH / 2;
           ctx.moveTo(mx + sCell * HEX_UNIT_VERTICES[0], cy + sCell * HEX_UNIT_VERTICES[1]);
           for (var vi = 2; vi < 12; vi += 2) {
             ctx.lineTo(mx + sCell * HEX_UNIT_VERTICES[vi], cy + sCell * HEX_UNIT_VERTICES[vi + 1]);
@@ -113,6 +125,15 @@ class HexUIRenderer extends BaseUIRenderer {
           ctx.closePath();
         }
         ctx.fill();
+
+        // Batched highlight stripe along each hex's top flat edge
+        ctx.fillStyle = 'rgba(255, 255, 255, ' + highlightAlpha + ')';
+        for (var hRow = effect.rowStart; hRow < effect.rowStart + effect.lines; hRow++) {
+          if (hRow < 0 || hRow >= HexConstants.HEX_VISIBLE_ROWS) continue;
+          var hCy = baseY + hexH * hRow + hexH / 2;
+          var topY = hCy - topEdgeOffset + stripeInset;
+          ctx.fillRect(mx - halfStripeW, topY, sCell, stripeH);
+        }
       }
     } finally {
       ctx.globalAlpha = 1.0;
@@ -120,11 +141,11 @@ class HexUIRenderer extends BaseUIRenderer {
   }
 
   drawGarbageIndicatorEffects(effects, timestamp) {
-    this._drawGarbageEffects(effects, timestamp, _getIndicatorColor);
+    this._drawGarbageEffects(effects, timestamp, _getIndicatorColor, 0.2);
   }
 
   drawGarbageDefenceEffects(effects, timestamp) {
-    this._drawGarbageEffects(effects, timestamp, _getDefenceColor);
+    this._drawGarbageEffects(effects, timestamp, _getDefenceColor, 0.3);
   }
 
   // Trace the hex board outline as a closed path (matching the zigzag walls)
