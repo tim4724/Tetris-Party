@@ -92,7 +92,6 @@ var LOCALES = {
     privacy_automated_detail: 'No automated decision-making within the meaning of Art. 22 GDPR takes place.',
     privacy_objection: 'Right to object (Art. 21 GDPR)',
     privacy_objection_detail: 'You have the right at any time, on grounds relating to your particular situation, to object to the processing of personal data concerning you which is based on legitimate interest (Art. 6(1)(f) GDPR) — Art. 21(1) GDPR. An informal e-mail to the address stated in the imprint is sufficient to exercise this right.',
-    privacy_contact: 'contact',
     privacy_updated: 'Last updated April 2026',
 
     // Imprint page
@@ -176,7 +175,6 @@ var LOCALES = {
     privacy_automated_detail: 'Eine automatisierte Entscheidungsfindung im Sinne des Art. 22 DSGVO findet nicht statt.',
     privacy_objection: 'Widerspruchsrecht (Art. 21 DSGVO)',
     privacy_objection_detail: 'Sie haben das Recht, aus Gründen, die sich aus Ihrer besonderen Situation ergeben, jederzeit gegen die Verarbeitung Sie betreffender personenbezogener Daten, die auf Grundlage des berechtigten Interesses (Art. 6 Abs. 1 lit. f DSGVO) erfolgt, Widerspruch einzulegen (Art. 21 Abs. 1 DSGVO). Zur Ausübung Ihres Widerspruchsrechts genügt eine formlose E-Mail an die im Impressum angegebene Adresse.',
-    privacy_contact: 'Kontakt',
     privacy_updated: 'Zuletzt aktualisiert April 2026',
     stacked_by: 'Entwickelt von Tim', music_by: 'Musik von FoxSynergy',
     hex_lines_level: 'Zeilen {lines}  Level {level}',
