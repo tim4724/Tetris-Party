@@ -174,7 +174,7 @@ class HexUIRenderer extends BaseUIRenderer {
     if (!bounds) return;
     var typeId = HEX_TYPE_TO_ID[pieceType];
     var isNeon = this._styleTier === STYLE_TIERS.NEON_FLAT;
-    var color = (isNeon ? NEON_PIECE_COLORS[typeId] : PIECE_COLORS[typeId]) || '#ffffff';
+    var color = (isNeon ? NEON_HEX_PIECE_COLORS[typeId] : HEX_PIECE_COLORS[typeId]) || '#ffffff';
 
     var hexS = size * 0.45;
     var drawS = hexS * (1 - THEME.size.blockGap * 2);
