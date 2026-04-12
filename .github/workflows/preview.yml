@@ -59,6 +59,22 @@ jobs:
 
           kubectl get ns "$NS" >/dev/null 2>&1 || kubectl create ns "$NS"
 
+          # Grant deployer SA permissions in this namespace (scoped RBAC)
+          cat <<RBAC | kubectl apply -n "$NS" -f -
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: RoleBinding
+          metadata:
+            name: stacker-deployer
+          roleRef:
+            apiGroup: rbac.authorization.k8s.io
+            kind: ClusterRole
+            name: stacker-preview-resources
+          subjects:
+          - kind: ServiceAccount
+            name: stacker-deployer
+            namespace: github-runner
+          RBAC
+
           TLS_CRT=$(kubectl get secret couch-games-wildcard-tls -n default -o jsonpath='{.data.tls\.crt}')
           TLS_KEY=$(kubectl get secret couch-games-wildcard-tls -n default -o jsonpath='{.data.tls\.key}')
 
