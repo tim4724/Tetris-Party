@@ -841,9 +841,13 @@ html, body {
   background-color: var(--bg-board);
 }
 
-/* Paused state — disable touch input */
+/* Paused state — disable touch input.
+   Opacity/filter on #touch-pad only so landscape ::after name stays visible. */
 #game-screen.paused #touch-area {
   pointer-events: none;
+}
+
+#game-screen.paused #touch-pad {
   opacity: 0.3;
   filter: grayscale(0.5);
 }
