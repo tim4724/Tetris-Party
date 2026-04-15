@@ -150,6 +150,7 @@ function performDisconnect() {
 }
 
 function showRoomGone(heading) {
+  try { localStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
   gameCancelled = true;
   if (party) party.close();
   nameForm.classList.add('hidden');

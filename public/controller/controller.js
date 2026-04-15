@@ -275,6 +275,10 @@ window.addEventListener('popstate', function () {
 
 window.addEventListener('pagehide', function () {
   try { localStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
+  if (party) {
+    try { party.sendTo('display', { type: MSG.LEAVE }); } catch (_) {}
+    party.close();
+  }
 });
 
 // =====================================================================
