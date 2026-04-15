@@ -69,8 +69,8 @@ function syncViewportLayout() {
     }
     // Detect soft keyboard in landscape — viewport height shrinks significantly
     var isLandscape = metrics.width > metrics.height;
-    // iPhone 14 landscape = 390px; soft keyboard leaves ~140-190px visible
-    var keyboardOpen = isLandscape && metrics.height < 250;
+    // iPhone 14 landscape = 390px, SE = 259px; keyboard leaves ~140-190px
+    var keyboardOpen = isLandscape && metrics.height < 220;
     document.documentElement.classList.toggle('keyboard-compact', keyboardOpen);
   });
 }
