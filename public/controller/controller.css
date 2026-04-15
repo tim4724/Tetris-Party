@@ -1076,13 +1076,20 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
   }
 }
 
-/* Landscape keyboard open — show only the input field */
+/* Landscape keyboard open — collapse everything except the input field.
+   Uses visibility+height instead of display:none to avoid replaying
+   CSS entrance animations when the keyboard closes. */
 .keyboard-compact .controller-shell__brand,
 .keyboard-compact .controller-shell__actions,
 .keyboard-compact .legal-links,
 .keyboard-compact #room-gone-message,
 .keyboard-compact .controller-shell__copy {
-  display: none !important;
+  visibility: hidden;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
 }
 
 .keyboard-compact .controller-shell {
