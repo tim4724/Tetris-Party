@@ -126,7 +126,7 @@ html, body {
 
 .legal-links {
   position: absolute;
-  bottom: max(env(safe-area-inset-bottom), 8px);
+  bottom: calc(max(env(safe-area-inset-bottom), 0px) + 16px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
