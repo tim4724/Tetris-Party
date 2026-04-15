@@ -100,7 +100,7 @@ if (!roomCode) {
 
 // Check for stored clientId BEFORE generating a new one (used for auto-reconnect)
 var hadStoredId = null;
-try { hadStoredId = sessionStorage.getItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
+try { hadStoredId = localStorage.getItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
 
 if (rejoinId) {
   clientId = rejoinId;
@@ -126,7 +126,7 @@ function submitName() {
     if (name) localStorage.setItem('stacker_player_name', name);
     else localStorage.removeItem('stacker_player_name');
   } catch (e) { /* iframe sandbox */ }
-  try { sessionStorage.setItem('clientId_' + roomCode, clientId); } catch (e) { /* iframe sandbox */ }
+  try { localStorage.setItem('clientId_' + roomCode, clientId); } catch (e) { /* iframe sandbox */ }
   nameJoinBtn.disabled = true;
   nameJoinBtn.textContent = t('connecting');
   nameInput.disabled = true;

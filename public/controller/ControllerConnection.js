@@ -129,6 +129,7 @@ function performDisconnect() {
   var qs = params.toString();
   history.replaceState(null, '', location.pathname + (qs ? '?' + qs : ''));
   rejoinId = null;
+  try { localStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
   playerColor = null;
   gameCancelled = false;
   // Prefill from the persisted user-typed name (localStorage is the single
@@ -149,7 +150,6 @@ function performDisconnect() {
 }
 
 function showRoomGone(heading) {
-  try { if (roomCode) sessionStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
   gameCancelled = true;
   if (party) party.close();
   nameForm.classList.add('hidden');
@@ -163,7 +163,6 @@ function showRoomGone(heading) {
 }
 
 function showErrorState(heading, detail) {
-  try { sessionStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
   gameCancelled = true;
   stopPing();
 
