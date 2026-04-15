@@ -28,6 +28,15 @@ test.describe('Controller Landscape', () => {
     await expect(page).toHaveScreenshot('01-name-entry.png');
   });
 
+  test('name entry - keyboard open', async ({ page }) => {
+    await gotoController(page);
+    await page.evaluate(() => {
+      document.documentElement.classList.add('keyboard-compact');
+    });
+    await page.waitForTimeout(100);
+    await expect(page).toHaveScreenshot('01b-name-entry-keyboard.png');
+  });
+
   test('lobby screen', async ({ page }) => {
     await gotoController(page);
     await showScreen(page, 'lobby');

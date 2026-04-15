@@ -976,8 +976,8 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
     justify-content: center;
   }
 
-  /* Game screen: symmetric 3-column grid.
-     All safe-area on the grid itself — children use plain padding only.
+  /* Game screen: 3-column grid — left column grows for long translations,
+     right column is fixed to button width. Safe-area on the grid itself.
      Background fills behind the notch; only content is inset. */
   #game-screen {
     --side-col: max(56px, 10vw);
