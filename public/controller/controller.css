@@ -939,7 +939,7 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
   }
 
   /* Results: list left, buttons right.
-     .screen already applies safe-area padding, so just use regular padding here. */
+     .controller-shell already applies safe-area padding, so just use regular padding here. */
   .controller-shell__frame--results {
     flex-direction: row;
     align-items: stretch;
