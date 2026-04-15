@@ -142,6 +142,7 @@ function onGameStart() {
   pauseOverlay.classList.add('hidden');
   pauseBtn.disabled = false;
   pauseBtn.classList.remove('hidden');
+  touchArea.setAttribute('data-player-name', playerName);
   showScreen('game');
   initTouchInput();
 }

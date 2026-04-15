@@ -30,9 +30,8 @@ test.describe('Controller Landscape', () => {
 
   test('name entry - keyboard open', async ({ page }) => {
     await gotoController(page);
-    await page.evaluate(() => {
-      document.documentElement.classList.add('keyboard-compact');
-    });
+    // Simulate keyboard by shrinking viewport below 220px threshold
+    await page.setViewportSize({ width: 844, height: 180 });
     await page.waitForTimeout(100);
     await expect(page).toHaveScreenshot('01b-name-entry-keyboard.png');
   });

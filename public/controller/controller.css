@@ -1030,6 +1030,9 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
     letter-spacing: 0.05em;
     color: var(--player-color, var(--text-primary));
     white-space: nowrap;
+    max-width: calc(100% - 32px);
+    overflow: hidden;
+    text-overflow: ellipsis;
     z-index: 1;
     pointer-events: none;
   }
@@ -1077,27 +1080,32 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
 }
 
 /* Landscape keyboard open — collapse everything except the input field.
+   Triggered by interactive-widget=resizes-content in the viewport meta,
+   which makes the layout viewport shrink when the keyboard opens.
    Uses visibility+height instead of display:none to avoid replaying
-   CSS entrance animations when the keyboard closes. */
-.keyboard-compact .controller-shell__brand,
-.keyboard-compact .controller-shell__actions,
-.keyboard-compact .legal-links,
-.keyboard-compact #room-gone-message,
-.keyboard-compact .controller-shell__copy {
-  visibility: hidden;
-  height: 0;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  border: 0;
-}
+   CSS entrance animations when the keyboard closes.
+   iPhone 14 landscape = 390px, SE = 259px; keyboard leaves ~140-190px. */
+@media (orientation: landscape) and (max-height: 220px) {
+  .controller-shell__brand,
+  .controller-shell__actions,
+  .legal-links,
+  #room-gone-message,
+  .controller-shell__copy {
+    visibility: hidden;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+  }
 
-.keyboard-compact .controller-shell {
-  padding: 4px 12px;
-  justify-content: center;
-}
+  .controller-shell {
+    padding: 4px 12px;
+    justify-content: center;
+  }
 
-.keyboard-compact .controller-shell__body {
-  margin-top: 0;
-  gap: 0;
+  .controller-shell__body {
+    margin-top: 0;
+    gap: 0;
+  }
 }
