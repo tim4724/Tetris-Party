@@ -134,9 +134,9 @@ class HexPlayerBoard extends BaseBoard {
   // We bias up: from the anchor y, the first press goes up by one half-hex; the
   // next press returns down to the anchor. Measuring in half-hex units with
   //   currentY = 2 * anchorRow + (anchorCol & 1)
-  // the piece invariant is currentY ∈ { _anchorY, _anchorY - 1 }. If the primary
-  // diagonal is blocked, we try the other one — which may leave currentY outside
-  // that range, but subsequent presses naturally pull back toward it.
+  // under normal movement currentY ∈ { _anchorY, _anchorY - 1 }. The fallback
+  // (when the primary diagonal is blocked) can push currentY outside that
+  // range, but subsequent presses naturally pull it back toward the invariant.
   _move(dir) {
     const piece = this.currentPiece;
     const newCol = piece.anchorCol + dir;
@@ -159,18 +159,13 @@ class HexPlayerBoard extends BaseBoard {
     const test = piece.clone();
     test.anchorCol = newCol;
     test.anchorRow = primaryRow;
-    if (this.isValidPosition(test)) {
-      this.currentPiece = test;
-      this._resetLockTimerIfOnSurface();
-      return true;
+    if (!this.isValidPosition(test)) {
+      test.anchorRow = fallbackRow;
+      if (!this.isValidPosition(test)) return false;
     }
-    test.anchorRow = fallbackRow;
-    if (this.isValidPosition(test)) {
-      this.currentPiece = test;
-      this._resetLockTimerIfOnSurface();
-      return true;
-    }
-    return false;
+    this.currentPiece = test;
+    this._resetLockTimerIfOnSurface();
+    return true;
   }
 
   // ===================== ROTATION =====================
@@ -195,7 +190,7 @@ class HexPlayerBoard extends BaseBoard {
       kicked.anchorRow += KICKS[i][1];
       if (!this.isValidPosition(kicked)) continue;
       // Rotation (and any kick displacement) re-baselines the lateral up-bias.
-      kicked._anchorY = 2 * kicked.anchorRow + (kicked.anchorCol & 1);
+      kicked._resetAnchorY();
       this.currentPiece = kicked;
       this._resetLockTimerIfOnSurface();
       return true;
