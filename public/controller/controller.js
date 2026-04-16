@@ -290,9 +290,12 @@ window.addEventListener('pagehide', function () {
 });
 
 // Share couch-games.com via the Web Share API when the end-screen link is tapped.
-var endStepLink = document.getElementById('end-step-1-link');
-if (endStepLink && navigator.share) {
-  endStepLink.addEventListener('click', function(e) {
+// Delegated on document because i18n translatePage re-sets innerHTML and would
+// discard a direct listener.
+if (navigator.share) {
+  document.addEventListener('click', function(e) {
+    var link = e.target.closest && e.target.closest('#end-step-1-link');
+    if (!link) return;
     e.preventDefault();
     navigator.share({
       title: 'Stacker Party',
