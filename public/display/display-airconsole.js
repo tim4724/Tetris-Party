@@ -39,7 +39,7 @@ airconsole.onPause = function() {
   _acPaused = true;
   if (paused) return;
   paused = true;
-  autoPaused = true;
+  setAutoPaused(true);
   if (roomState === ROOM_STATE.COUNTDOWN) clearCountdownTimers();
   if (displayGame) displayGame.pause();
   if (music) music.pause();
@@ -50,7 +50,7 @@ airconsole.onResume = function() {
   if (!_acPaused) return;
   _acPaused = false;
   if (_adPaused) return;
-  if (autoPaused) { autoPaused = false; resumeGame(); }
+  if (autoPaused) { setAutoPaused(false); resumeGame(); }
 };
 
 // Wire ad events — pause and mute during ads, resume after.
@@ -60,7 +60,7 @@ airconsole.onAdShow = function() {
     _adPaused = true;
     if (!paused) {
       paused = true;
-      autoPaused = true;
+      setAutoPaused(true);
       if (roomState === ROOM_STATE.COUNTDOWN) clearCountdownTimers();
       if (displayGame) displayGame.pause();
     }
@@ -77,7 +77,7 @@ airconsole.onAdComplete = function() {
   if (_acPaused) return;
   var canResume = autoPaused && !allPlayersDisconnected();
   if (adWasMuted && (canResume || !paused)) { if (music) music.resume(); }
-  if (canResume) { autoPaused = false; resumeGame(); }
+  if (canResume) { setAutoPaused(false); resumeGame(); }
 };
 
 // Guard checkAutoResume — don't resume while ad or platform pause is active.

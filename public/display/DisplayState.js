@@ -84,7 +84,7 @@ function resetRoomData() {
   players.clear();
   playerOrder = [];
   paused = false;
-  autoPaused = false;
+  setAutoPaused(false);
   gameState = null;
   boardRenderers = [];
   uiRenderers = [];
