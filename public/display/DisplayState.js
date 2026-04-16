@@ -41,7 +41,8 @@ function setRoomState(newState) {
   return true;
 }
 
-// Clear all room-local state — used when entering a fresh room or returning to welcome
+// Clear all room-local state — used when entering a fresh room or returning to welcome.
+// Calls clearCountdownTimers() (defined in DisplayGame.js) — only safe after all scripts load.
 function resetRoomData() {
   if (music) music.stop();
   clearCountdownTimers();

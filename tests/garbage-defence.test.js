@@ -188,7 +188,7 @@ describe('Game - board-pending garbage cancellation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Game.logicTick — garbage not delivered during line clear animation
+// Game.update — garbage not delivered during line clear animation
 // ---------------------------------------------------------------------------
 describe('Game - garbage delivery during line clear animation', () => {
   test('garbage is added to pendingGarbage when board is clearing lines', () => {
