@@ -28,7 +28,9 @@ cp "$PROJECT_DIR/public/favicon.svg" "$BUILD_DIR/favicon.svg" 2>/dev/null || tru
 cp "$PROJECT_DIR/public/favicon.ico" "$BUILD_DIR/favicon.ico" 2>/dev/null || true
 
 # Copy engine modules (from server/ to engine/ for browser access).
-# Skips index.js (the Node static server entry point, not used in AC).
+# Every server/*.js except index.js is assumed to be a browser-compatible
+# UMD engine module and gets bundled into the AC ZIP — if a Node-only
+# utility is ever added to server/, exclude it here.
 mkdir -p "$BUILD_DIR/engine"
 for f in "$PROJECT_DIR"/server/*.js; do
   name="$(basename "$f")"
