@@ -364,11 +364,9 @@ describe('HexPlayerBoard - lateral up-bias', () => {
     var b = new HexPlayerBoard('p1', 42, 1);
     b.spawnPiece();
     b.moveLeft();  // piece is above anchor
-    var preY = y(b.currentPiece);
-    if (b.rotateCW()) {
-      var postY = y(b.currentPiece);
-      assert.equal(b.currentPiece._anchorY, postY, 'anchor matches current y after rotation');
-    }
+    assert.equal(b.rotateCW(), true, 'rotation should succeed at spawn');
+    var postY = y(b.currentPiece);
+    assert.equal(b.currentPiece._anchorY, postY, 'anchor matches current y after rotation');
   });
 
   it('fallback takes opposite diagonal when primary is blocked', () => {
