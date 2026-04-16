@@ -7,7 +7,7 @@ var HEX_VIS_ROWS = GameConstants.VISIBLE_ROWS;
 var HEX_COLS_N = GameConstants.COLS;
 var _hexScratch = { x: 0, y: 0 };
 var _hexLocalScratch = { x: 0, y: 0 };
-var _GHOST_KEY_STRIDE = 32; // must exceed max row index (VISIBLE_ROWS - 1) for collision-free key = col * stride + row
+var _GHOST_KEY_STRIDE = 32; // key = col * stride + row; stride must exceed max visible row index (VISIBLE_ROWS - 1 = 20)
 
 
 class BoardRenderer {

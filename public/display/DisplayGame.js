@@ -349,7 +349,7 @@ function onGarbageCancelled(msg) {
   var cancelledLines = Math.min(msg.lines, oldPending);
   if (cancelledLines > 0) {
     // Top-down coords (row 0 = top of board). The meter occupies
-    // rows (HEX_VISIBLE_ROWS - oldPending) through HEX_VISIBLE_ROWS-1. The meter shrinks from the top,
+    // rows (VISIBLE_ROWS - oldPending) through VISIBLE_ROWS-1. The meter shrinks from the top,
     // so flash the rows that disappear at the top of the old meter.
     var rowStart = GameConstants.VISIBLE_ROWS - oldPending;
     var existing = garbageDefenceEffects.get(msg.playerId) || [];
