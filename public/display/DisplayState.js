@@ -41,27 +41,6 @@ function setRoomState(newState) {
   return true;
 }
 
-// Clear all room-local state — used when entering a fresh room or returning to welcome.
-// Calls clearCountdownTimers() (defined in DisplayGame.js) — only safe after all scripts load.
-function resetRoomData() {
-  if (music) music.stop();
-  clearCountdownTimers();
-  countdown.callback = null;
-  countdown.remaining = 0;
-  players.clear();
-  playerOrder = [];
-  paused = false;
-  autoPaused = false;
-  gameState = null;
-  boardRenderers = [];
-  uiRenderers = [];
-  disconnectedQRs.clear();
-  garbageIndicatorEffects.clear();
-  garbageDefenceEffects.clear();
-  lastAliveState = {};
-  lastResults = null;
-}
-
 var paused = false;
 var autoPaused = false;
 var boardRenderers = [];
@@ -93,6 +72,28 @@ var lastAliveState = {};
 
 // Last results (for reconnect)
 var lastResults = null;
+
+// Clear all room-local state — used when entering a fresh room or returning to welcome.
+// Note: does not touch _lastBroadcastedHostId (module-private to DisplayConnection) or roomCode.
+// Calls clearCountdownTimers() (defined in DisplayGame.js) — only safe after all scripts load.
+function resetRoomData() {
+  if (music) music.stop();
+  clearCountdownTimers();
+  countdown.callback = null;
+  countdown.remaining = 0;
+  players.clear();
+  playerOrder = [];
+  paused = false;
+  autoPaused = false;
+  gameState = null;
+  boardRenderers = [];
+  uiRenderers = [];
+  disconnectedQRs.clear();
+  garbageIndicatorEffects.clear();
+  garbageDefenceEffects.clear();
+  lastAliveState = {};
+  lastResults = null;
+}
 
 // Browser history navigation state
 var popstateNavigating = false;
