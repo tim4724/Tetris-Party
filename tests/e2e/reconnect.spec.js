@@ -15,7 +15,7 @@ const {
 async function joinMidGame(context, roomCode, name) {
   const page = await context.newPage();
   await page.addInitScript((rc) => {
-    var key = '_cleared_' + rc;
+    var key = '_stacker_cleared_' + rc;
     if (!sessionStorage.getItem(key)) {
       localStorage.removeItem('clientId_' + rc);
       sessionStorage.setItem(key, '1');

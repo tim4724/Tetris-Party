@@ -348,8 +348,8 @@ async function generate() {
   await roomPage.goto(BASE_URL);
   await waitForFont(roomPage);
 
-  const mobileHint = roomPage.locator('#mobile-hint button');
-  if (await mobileHint.isVisible()) await mobileHint.click();
+  const continueAnyway = roomPage.locator('#end-continue-btn');
+  if (await continueAnyway.isVisible()) await continueAnyway.click();
 
   await roomPage.click('#new-game-btn');
   await roomPage.waitForSelector('#lobby-screen:not(.hidden)', { timeout: 10000 });
