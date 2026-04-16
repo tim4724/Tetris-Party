@@ -3,11 +3,6 @@
 // UMD: works in Node.js (require) and browser (window.GameConstants)
 (function(exports) {
 
-const BOARD_WIDTH = 10;
-const BOARD_HEIGHT = 26; // 22 visible + 4 buffer
-const VISIBLE_HEIGHT = 22;
-const BUFFER_ROWS = 4;
-
 const MAX_SPEED_LEVEL = 15;    // Gravity and music speed cap at this level
 const SOFT_DROP_MULTIPLIER = 20;
 const LOCK_DELAY_MS = 500;
@@ -38,15 +33,6 @@ const COUNTDOWN_SECONDS = 3;
 const SOFT_DROP_TIMEOUT_MS = 300;   // Auto-end soft drop if no message received within this window
 const LIVENESS_TIMEOUT_MS = 3000;   // Controller considered disconnected after this silence
 
-// Piece types (1-indexed to match grid cell values)
-const PIECE_TYPES = ['I', 'J', 'L', 'O', 'S', 'T', 'Z'];
-const PIECE_TYPE_TO_ID = { I: 1, J: 2, L: 3, O: 4, S: 5, T: 6, Z: 7 };
-const GARBAGE_CELL = 8;
-
-exports.BOARD_WIDTH = BOARD_WIDTH;
-exports.BOARD_HEIGHT = BOARD_HEIGHT;
-exports.VISIBLE_HEIGHT = VISIBLE_HEIGHT;
-exports.BUFFER_ROWS = BUFFER_ROWS;
 exports.MAX_SPEED_LEVEL = MAX_SPEED_LEVEL;
 exports.SOFT_DROP_MULTIPLIER = SOFT_DROP_MULTIPLIER;
 exports.LOCK_DELAY_MS = LOCK_DELAY_MS;
@@ -59,11 +45,7 @@ exports.GARBAGE_DELAY_MS = GARBAGE_DELAY_MS;
 exports.MAX_PLAYERS = MAX_PLAYERS;
 exports.ROOM_CODE_LENGTH = ROOM_CODE_LENGTH;
 exports.COUNTDOWN_SECONDS = COUNTDOWN_SECONDS;
-exports.PIECE_TYPES = PIECE_TYPES;
-exports.PIECE_TYPE_TO_ID = PIECE_TYPE_TO_ID;
-exports.GARBAGE_CELL = GARBAGE_CELL;
 exports.SOFT_DROP_TIMEOUT_MS = SOFT_DROP_TIMEOUT_MS;
 exports.LIVENESS_TIMEOUT_MS = LIVENESS_TIMEOUT_MS;
-exports.GAME_MODES = { CLASSIC: 'classic', HEX: 'hex' };
 
 })(typeof module !== 'undefined' ? module.exports : (window.GameConstants = {}));

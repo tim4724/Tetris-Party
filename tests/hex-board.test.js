@@ -937,21 +937,13 @@ describe('HexPlayerBoard - garbage and zigzag clear interaction', () => {
   });
 });
 
-describe('Game with hex mode', () => {
-  it('creates hex boards when gameMode is hex', () => {
+describe('Game', () => {
+  it('creates hex boards for all players', () => {
     var players = new Map([['p1', {}], ['p2', {}]]);
-    var g = new Game(players, { onEvent: () => {}, onGameEnd: () => {} }, 42, 'hex');
+    var g = new Game(players, { onEvent: () => {}, onGameEnd: () => {} }, 42);
     g.init();
     var snap = g.getSnapshot();
     assert.equal(snap.players.length, 2);
     assert.equal(snap.players[0].grid[0].length, HEX_COLS);
-  });
-
-  it('creates classic boards by default', () => {
-    var players = new Map([['p1', {}]]);
-    var g = new Game(players, { onEvent: () => {}, onGameEnd: () => {} }, 42);
-    g.init();
-    var snap = g.getSnapshot();
-    assert.equal(snap.players[0].grid[0].length, 10); // classic BOARD_WIDTH
   });
 });

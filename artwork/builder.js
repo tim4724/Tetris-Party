@@ -512,7 +512,7 @@
     expCanvas.toBlob(function(blob) {
       var url = URL.createObjectURL(blob);
       var a = document.createElement('a');
-      a.href = url; a.download = 'stacker-party-cover-1024.png';
+      a.href = url; a.download = 'hexstacker-party-cover-1024.png';
       a.click();
       URL.revokeObjectURL(url);
       exportBtn.textContent = 'Export 1024x1024';

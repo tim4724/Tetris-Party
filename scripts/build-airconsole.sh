@@ -24,12 +24,11 @@ mkdir -p "$BUILD_DIR"
 cp -r "$PROJECT_DIR/public/shared" "$BUILD_DIR/shared"
 cp -r "$PROJECT_DIR/public/display" "$BUILD_DIR/display"
 cp -r "$PROJECT_DIR/public/controller" "$BUILD_DIR/controller"
-cp "$PROJECT_DIR/public/favicon-classic.svg" "$BUILD_DIR/favicon-classic.svg" 2>/dev/null || true
 cp "$PROJECT_DIR/public/favicon-hex.svg" "$BUILD_DIR/favicon-hex.svg" 2>/dev/null || true
 
 # Copy engine modules (from server/ to engine/ for browser access)
 mkdir -p "$BUILD_DIR/engine"
-for f in constants.js Piece.js Randomizer.js GarbageManager.js BaseBoard.js PlayerBoard.js HexConstants.js HexPiece.js HexPlayerBoard.js Game.js; do
+for f in constants.js Randomizer.js GarbageManager.js BaseBoard.js HexConstants.js HexPiece.js HexPlayerBoard.js Game.js; do
   cp "$PROJECT_DIR/server/$f" "$BUILD_DIR/engine/$f"
 done
 

@@ -3,9 +3,6 @@
 // UMD: works in Node.js (require) and browser (window.GameRandomizer)
 (function(exports) {
 
-var constants = (typeof require !== 'undefined') ? require('./constants') : window.GameConstants;
-var PIECE_TYPES = constants.PIECE_TYPES;
-
 // Mulberry32: simple, fast 32-bit seeded PRNG
 function mulberry32(seed) {
   let s = seed | 0;
@@ -24,7 +21,11 @@ class Randomizer {
     } else {
       this.rng = Math.random;
     }
-    this.pieceTypes = pieceTypes || PIECE_TYPES;
+    if (!pieceTypes) {
+      var HexConstants = (typeof require !== 'undefined') ? require('./HexConstants') : window.HexConstants;
+      pieceTypes = HexConstants.HEX_PIECE_TYPES;
+    }
+    this.pieceTypes = pieceTypes;
     this.bag = [];
   }
 

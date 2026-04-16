@@ -325,7 +325,6 @@ async function generate() {
   // Build hex state and inject
   const hexGameState = buildHexBannerGameState();
   await hexPage.evaluate((s) => {
-    window.__TEST__.setGameMode('hex');
     window.__TEST__.injectGameState(s);
     startRenderLoop();
   }, hexGameState);
