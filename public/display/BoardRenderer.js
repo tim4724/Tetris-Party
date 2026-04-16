@@ -7,7 +7,7 @@ var HEX_VIS_ROWS = GameConstants.VISIBLE_ROWS;
 var HEX_COLS_N = GameConstants.COLS;
 var _hexScratch = { x: 0, y: 0 };
 var _hexLocalScratch = { x: 0, y: 0 };
-var _GHOST_KEY_STRIDE = 32; // must exceed max(HEX_VIS_ROWS, HEX_COLS) for collision-free keys
+var _GHOST_KEY_STRIDE = 32; // must exceed max row index (VISIBLE_ROWS - 1) for collision-free key = col * stride + row
 
 
 class BoardRenderer {
@@ -185,8 +185,16 @@ class BoardRenderer {
 
     var sCell = this._sCell;
 
-    // 1. Board background + grid lines (cached, single blit)
-    if (!this._boardBgCache) this._boardBgCache = this._buildBoardBgCache();
+    // 1. Board background + grid lines (cached, single blit).
+    // Rebuild if missing or if DPR/board dimensions changed (monitor move).
+    var _dpr = window.devicePixelRatio || 1;
+    var _bgPw = Math.ceil(Math.ceil(this.boardWidth) * _dpr);
+    var _bgPh = Math.ceil(Math.ceil(this.boardHeight) * _dpr);
+    if (!this._boardBgCache ||
+        this._boardBgCache.width !== _bgPw ||
+        this._boardBgCache.height !== _bgPh) {
+      this._boardBgCache = this._buildBoardBgCache();
+    }
     var bgc = this._boardBgCache;
     ctx.drawImage(bgc, 0, 0, bgc.width, bgc.height,
       this.x, this.y, Math.ceil(this.boardWidth), Math.ceil(this.boardHeight));
