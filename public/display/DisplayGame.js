@@ -34,10 +34,15 @@ function playAgain() {
   startNewGame();
 }
 
+function setAutoPaused(value) {
+  autoPaused = value;
+  if (pauseBtn) pauseBtn.disabled = value;
+}
+
 function startNewGame() {
   stopDisplayGame();
   paused = false;
-  autoPaused = false;
+  setAutoPaused(false);
   lastResults = null;
   lastAliveState = {};
   // Add late joiners to playerOrder (preserving existing order)
@@ -122,7 +127,7 @@ function checkAllPlayersDisconnected() {
   if (!allPlayersDisconnected()) return;
   // Silent pause — no overlay, no broadcast (all controllers are gone)
   paused = true;
-  autoPaused = true;
+  setAutoPaused(true);
   if (roomState === ROOM_STATE.COUNTDOWN) clearCountdownTimers();
   if (displayGame) displayGame.pause();
   if (music) music.pause();
@@ -130,7 +135,7 @@ function checkAllPlayersDisconnected() {
 
 function checkAutoResume() {
   if (!autoPaused) return;
-  autoPaused = false;
+  setAutoPaused(false);
   resumeGame();
 }
 
@@ -162,7 +167,7 @@ function returnToLobby() {
   countdown.callback = null;
   countdown.remaining = 0;
   paused = false;
-  autoPaused = false;
+  setAutoPaused(false);
   releaseWakeLock();
 
   if (music) music.stop();
