@@ -25,6 +25,8 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
@@ -32,13 +34,6 @@ jobs:
           node-version: 20
           cache: 'npm'
       - run: npm ci
-      - name: Cache Playwright browsers
-        uses: actions/cache@v5
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ hashFiles('package-lock.json') }}
-      - name: Install Playwright browsers
-        run: npx playwright install --with-deps chromium
       - name: Run E2E tests
         run: npm run test:e2e
       - name: Run AirConsole E2E tests
