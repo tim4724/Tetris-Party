@@ -53,7 +53,7 @@ function connect() {
     stopPing();
     if (gameCancelled) return;
     if (meta && meta.replaced) {
-      showEndScreen();
+      showEndScreen(undefined, true);
       return;
     }
     if (currentScreen !== 'game') return;
@@ -158,8 +158,12 @@ function performDisconnect() {
   nameInput.focus();
 }
 
-function showEndScreen(toastKey) {
-  try { localStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
+function showEndScreen(toastKey, keepClientId) {
+  // Tab-replacement path (keepClientId=true) must preserve localStorage —
+  // the evicting tab now owns that identity.
+  if (!keepClientId) {
+    try { localStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
+  }
   gameCancelled = true;
   stopPing();
   if (party) { party.close(); party = null; }

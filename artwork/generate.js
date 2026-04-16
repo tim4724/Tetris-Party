@@ -4,6 +4,7 @@
 
 const { chromium } = require('playwright');
 const path = require('path');
+const fs = require('fs');
 // fixtures no longer needed — banner uses its own buildBannerGameState()
 const { PLAYER_COLORS } = require('../public/shared/theme.js');
 const { HexPiece } = require('../server/HexPiece.js');
@@ -478,6 +479,16 @@ async function generate() {
   for (const v of GAMEPLAY_VARIANTS) {
     await renderBanner(v.width, v.height, v.name, v);
   }
+
+  // Mirror the 16:9 gameplay banner into public/artwork/ so the end screen
+  // can serve it via HTTP.
+  const publicDir = path.resolve(BANNER_DIR, '..', 'public', 'artwork');
+  fs.mkdirSync(publicDir, { recursive: true });
+  fs.copyFileSync(
+    path.resolve(BANNER_DIR, 'gameplay-16x9.png'),
+    path.resolve(publicDir, 'gameplay-16x9.png')
+  );
+  console.log(`  ${path.resolve(publicDir, 'gameplay-16x9.png')} (copied for end screen)`);
 
   // --- Phase 4: Name banner (title + falling pieces, no screenshots needed) ---
   console.log('Generating name banner...');

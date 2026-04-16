@@ -52,7 +52,7 @@ var LOCALES = {
     paused: 'PAUSED',
     room_not_found: 'Room Not Found',
     game_full: 'Room is Full',
-    end_step_1: 'Open couch-games.com on a larger screen',
+    end_step_1: 'Open <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> on a larger screen',
     end_step_2: 'Scan the QR code to use your phone as controller',
     game_in_progress: 'Game in progress. Please wait for New Game.',
 
@@ -139,7 +139,7 @@ var LOCALES = {
     display_reconnecting: 'Display verbindet sich neu...',
     bad_connection: 'Schlechte Verbindung',
     paused: 'PAUSIERT', room_not_found: 'Raum nicht gefunden', game_full: 'Raum ist voll',
-    end_step_1: 'Öffne couch-games.com auf einem größeren Bildschirm',
+    end_step_1: 'Öffne <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> auf einem größeren Bildschirm',
     end_step_2: 'Scanne den QR-Code, um dein Handy als Controller zu nutzen',
     game_in_progress: 'Spiel läuft. Bitte auf neues Spiel warten.',
     n_lines: { one: '{count} Zeile', other: '{count} Zeilen' },
@@ -201,7 +201,7 @@ var LOCALES = {
     display_reconnecting: 'Écran en reconnexion...',
     bad_connection: 'Mauvaise connexion',
     paused: 'EN PAUSE', room_not_found: 'Salle introuvable', game_full: 'Salle pleine',
-    end_step_1: 'Ouvre couch-games.com sur un plus grand écran',
+    end_step_1: 'Ouvre <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> sur un plus grand écran',
     end_step_2: 'Scanne le QR code pour utiliser ton téléphone comme manette',
     game_in_progress: 'Partie en cours. Veuillez attendre une nouvelle partie.',
     n_lines: { one: '{count} ligne', other: '{count} lignes' },
@@ -235,7 +235,7 @@ var LOCALES = {
     display_reconnecting: 'Tela reconectando...',
     bad_connection: 'Conexão ruim',
     paused: 'PAUSADO', room_not_found: 'Sala não encontrada', game_full: 'Sala cheia',
-    end_step_1: 'Abra couch-games.com em uma tela maior',
+    end_step_1: 'Abra <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> em uma tela maior',
     end_step_2: 'Escaneie o QR code para usar seu celular como controle',
     game_in_progress: 'Jogo em andamento. Aguarde um novo jogo.',
     n_lines: { one: '{count} linha', other: '{count} linhas' },
@@ -269,7 +269,7 @@ var LOCALES = {
     display_reconnecting: 'Pantalla reconectando...',
     bad_connection: 'Mala conexión',
     paused: 'PAUSA', room_not_found: 'Sala no encontrada', game_full: 'Sala llena',
-    end_step_1: 'Abre couch-games.com en una pantalla más grande',
+    end_step_1: 'Abre <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> en una pantalla más grande',
     end_step_2: 'Escanea el código QR para usar tu teléfono como control',
     game_in_progress: 'Partida en curso. Espera a una nueva partida.',
     n_lines: { one: '{count} línea', other: '{count} líneas' },
@@ -303,7 +303,7 @@ var LOCALES = {
     display_reconnecting: '显示屏正在重连...',
     bad_connection: '连接不佳',
     paused: '已暂停', room_not_found: '房间未找到', game_full: '房间已满',
-    end_step_1: '在更大的屏幕上打开 couch-games.com',
+    end_step_1: '在更大的屏幕上打开 <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a>',
     end_step_2: '扫描二维码，将手机用作控制器',
     game_in_progress: '游戏进行中，请等待新游戏开始。',
     n_lines: { other: '{count} 行' },
@@ -336,7 +336,7 @@ var LOCALES = {
     display_reconnecting: 'ディスプレイ再接続中...',
     bad_connection: '接続不良',
     paused: '一時停止', room_not_found: 'ルームが見つかりません', game_full: 'ルームが満員です',
-    end_step_1: 'より大きな画面で couch-games.com を開く',
+    end_step_1: 'より大きな画面で <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> を開く',
     end_step_2: 'QRコードをスキャンして、スマートフォンをコントローラーとして使用',
     game_in_progress: 'ゲーム進行中です。新しいゲームをお待ちください。',
     n_lines: { other: '{count}ライン' },
@@ -370,7 +370,7 @@ var LOCALES = {
     display_reconnecting: '디스플레이 재연결 중...',
     bad_connection: '연결 불량',
     paused: '일시정지', room_not_found: '방을 찾을 수 없습니다', game_full: '방이 가득 찼습니다',
-    end_step_1: '더 큰 화면에서 couch-games.com 열기',
+    end_step_1: '더 큰 화면에서 <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> 열기',
     end_step_2: 'QR 코드를 스캔하여 휴대폰을 컨트롤러로 사용하세요',
     game_in_progress: '게임 진행 중입니다. 새 게임을 기다려주세요.',
     n_lines: { other: '{count}줄' },
@@ -406,7 +406,7 @@ var LOCALES = {
     display_reconnecting: 'Дисплей переподключается...',
     bad_connection: 'Плохое соединение',
     paused: 'ПАУЗА', room_not_found: 'Комната не найдена', game_full: 'Комната заполнена',
-    end_step_1: 'Откройте couch-games.com на большом экране',
+    end_step_1: 'Откройте <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> на большом экране',
     end_step_2: 'Отсканируйте QR-код, чтобы использовать телефон как контроллер',
     game_in_progress: 'Игра идёт. Дождитесь новой игры.',
     n_lines: {
@@ -443,7 +443,7 @@ var LOCALES = {
     display_reconnecting: 'Display in riconnessione...',
     bad_connection: 'Connessione scarsa',
     paused: 'IN PAUSA', room_not_found: 'Stanza non trovata', game_full: 'Stanza piena',
-    end_step_1: 'Apri couch-games.com su uno schermo più grande',
+    end_step_1: 'Apri <a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> su uno schermo più grande',
     end_step_2: 'Scansiona il QR code per usare il telefono come controller',
     game_in_progress: 'Partita in corso. Attendi una nuova partita.',
     n_lines: { one: '{count} linea', other: '{count} linee' },
@@ -477,7 +477,7 @@ var LOCALES = {
     display_reconnecting: 'Ekran yeniden bağlanıyor...',
     bad_connection: 'Kötü bağlantı',
     paused: 'DURAKLATILDI', room_not_found: 'Oda bulunamadı', game_full: 'Oda dolu',
-    end_step_1: 'couch-games.com adresini daha büyük bir ekranda aç',
+    end_step_1: '<a href="https://couch-games.com" id="end-step-1-link" class="end-link">couch-games.com</a> adresini daha büyük bir ekranda aç',
     end_step_2: 'Telefonunu kumanda olarak kullanmak için QR kodu tara',
     game_in_progress: 'Oyun devam ediyor. Yeni oyunu bekle.',
     n_lines: { one: '{count} satır', other: '{count} satır' },
@@ -595,6 +595,11 @@ function translatePage() {
   var phs = document.querySelectorAll('[data-i18n-placeholder]');
   for (var j = 0; j < phs.length; j++) {
     phs[j].placeholder = t(phs[j].getAttribute('data-i18n-placeholder'));
+  }
+
+  var htmlEls = document.querySelectorAll('[data-i18n-html]');
+  for (var h = 0; h < htmlEls.length; h++) {
+    htmlEls[h].innerHTML = t(htmlEls[h].getAttribute('data-i18n-html'));
   }
 
   var titleEl = document.querySelector('title[data-i18n-title]');

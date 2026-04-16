@@ -86,6 +86,19 @@ if (endContinueBtn) {
   });
 }
 
+// Share couch-games.com via the Web Share API when the link is tapped on mobile.
+var endStepLink = document.getElementById('end-step-1-link');
+if (endStepLink && navigator.share) {
+  endStepLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    navigator.share({
+      title: 'Stacker Party',
+      text: 'Play Stacker Party with your friends',
+      url: 'https://couch-games.com'
+    }).catch(function() { /* user cancelled or share failed */ });
+  });
+}
+
 // --- Button Event Listeners ---
 newGameBtn.addEventListener('click', function() {
   initMusic();
