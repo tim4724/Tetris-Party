@@ -106,10 +106,8 @@ class BaseUIRenderer {
   }
 
   // Per-slot vertical spacing in the next panel, in units of miniSize.
-  // Defaults to 3 (matches 2-row classic tetrominoes + a comfortable gap).
   // Subclasses override when their pieces need more vertical room — e.g.
-  // HexUIRenderer bumps this to accommodate 3 offset-row pieces like the
-  // new L and J without shrinking them.
+  // HexUIRenderer bumps this to accommodate the 3-row L/J pieces.
   _nextPieceSpacingUnits() { return 3; }
 
   _nextPanelLayout(playerState) {

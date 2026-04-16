@@ -1,31 +1,6 @@
 (function() {
-  // --- Square piece definitions (relative cells) ---
-  const COLORS = {
-    I: '#EE4444',  // Red
-    T: '#9B59F0',  // Violet
-    O: '#FFD700',  // Gold
-    S: '#7FFF00',  // Lime
-    Z: '#FF1493',  // Pink
-    L: '#FF8C00',  // Amber
-    J: '#00CED1',  // Teal
-  };
-
-  // Each piece: array of [col, row] offsets
-  const SHAPES = {
-    I: [[0,0],[1,0],[2,0],[3,0]],
-    T: [[0,0],[1,0],[2,0],[1,1]],
-    O: [[0,0],[1,0],[0,1],[1,1]],
-    S: [[1,0],[2,0],[0,1],[1,1]],
-    Z: [[0,0],[1,0],[1,1],[2,1]],
-    L: [[0,0],[0,1],[0,2],[1,2]],
-    J: [[1,0],[1,1],[1,2],[0,2]],
-  };
-
-  const PIECE_TYPES = ['Z','I','S','T','L','O','J'];
-
-  // Hex piece definitions (axial coords) — multi-cell pieces, not just singles.
-  // Mirrors the v2 game set in server/HexPiece.js (T removed; L and J are the
-  // new 4-chain pieces; q and p are the renamed old L and J).
+  // Hex piece definitions (axial coords) — mirrors the game set in
+  // server/HexPiece.js (8 pieces: I O S Z q p L J).
   const HEX_PIECES = {
     hI: [[-1,0],[0,0],[1,0],[2,0]],       // I — straight
     hO: [[-1,0],[0,0],[0,-1],[1,-1]],     // O — rhombus
@@ -286,26 +261,6 @@
     if (!visible) return;
     pctx.globalAlpha = opacity;
 
-    // Draw classic square pieces using game's getBlockStamp at 2x resolution
-    // Generate stamp at 2x cell size, then draw at half size so the canvas 2x scale
-    // doesn't upscale a low-res bitmap.
-    PIECE_TYPES.forEach((type, i) => {
-      const pos = preset.pieces[i];
-      if (!pos) return;
-      const color = COLORS[type];
-      const shape = SHAPES[type];
-      const stamp = getBlockStamp(tier, color, size * 2);
-      shape.forEach(([col, row]) => {
-        const bx = pos.x + col * (size + gap);
-        const by = pos.y + row * (size + gap);
-        pctx.save();
-        pctx.translate(bx + size / 2, by + size / 2);
-        pctx.rotate(pos.rot * Math.PI / 180);
-        pctx.drawImage(stamp, -size / 2, -size / 2, size, size);
-        pctx.restore();
-      });
-    });
-
     // Draw hex pieces using the game's HexBoardRenderer._drawFilledHex
     _renderHexPieces(pctx, preset, size, tier);
 
@@ -324,7 +279,7 @@
     hpDefs.forEach(function(hp, i) {
       var cells = HEX_PIECES[hp.type];
       var color = HEX_PIECE_COLORS[hp.type];
-      var matchedRot = preset.pieces[i] ? preset.pieces[i].rot : 0;
+      var matchedRot = hp.rot != null ? hp.rot : (preset.pieces && preset.pieces[i] ? preset.pieces[i].rot : 0);
       var ox = hp.x + size * 2;
       var oy = hp.y + size * 1.5;
       cells.forEach(function(cell) {
@@ -503,7 +458,7 @@
     ectx.fillStyle = tg;
 
     ectx.letterSpacing = sLS;
-    ectx.fillText('STACKER', 256, ty - fs * 0.55);
+    ectx.fillText('HEX STACKER', 256, ty - fs * 0.55);
     ectx.letterSpacing = pLS;
     ectx.fillText('PARTY', 256, ty + fs * 0.55);
     ectx.restore();

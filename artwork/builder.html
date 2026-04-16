@@ -216,7 +216,7 @@ body {
       <canvas id="piecesCanvas" width="1024" height="1024" style="position:absolute;inset:0;width:512px;height:512px;z-index:2"></canvas>
       <div class="pieces-layer" id="piecesLayer" style="display:none"></div>
       <div class="title-wrap" id="titleWrap">
-        <span class="word-stacker">STACKER</span>
+        <span class="word-stacker">HEX STACKER</span>
         <span class="word-party">PARTY</span>
       </div>
       <div class="vignette" id="vignette"></div>
@@ -257,8 +257,8 @@ body {
       <h3>Title</h3>
       <div class="field">
         <label>Font size</label>
-        <input type="range" id="titleSize" min="60" max="120" value="75">
-        <span class="val" id="titleSizeVal">75</span>
+        <input type="range" id="titleSize" min="40" max="120" value="58">
+        <span class="val" id="titleSizeVal">58</span>
       </div>
       <div class="field">
         <label>Vertical pos</label>
@@ -349,12 +349,11 @@ body {
   </div>
 </div>
 
-<script src="/engine/constants.js"></script>
-<script src="/engine/HexConstants.js"></script>
-<script src="/shared/CanvasUtils.js"></script>
-<script src="/shared/theme.js"></script>
-<script src="/display/HexBoardRenderer.js"></script>
-<script src="/artwork/builder.js">
-</script>
+<script src="../server/constants.js"></script>
+<script src="../server/HexConstants.js"></script>
+<script src="../public/shared/CanvasUtils.js"></script>
+<script src="../public/shared/theme.js"></script>
+<script src="../public/display/HexBoardRenderer.js"></script>
+<script src="builder.js"></script>
 </body>
 </html>

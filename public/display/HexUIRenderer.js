@@ -168,9 +168,9 @@ class HexUIRenderer extends BaseUIRenderer {
     this.ctx.clip();
   }
 
-  // The new L and J pieces occupy 3 offset rows in default orientation, so
-  // each next-slot needs more vertical room than the classic 2-row footprint.
-  // 3.5 * miniSize gives a comfortable gap without shrinking the pieces.
+  // L and J pieces occupy 3 offset rows in default orientation, so each
+  // next-slot needs extra vertical room. 3.5 * miniSize gives a comfortable
+  // gap without shrinking the pieces.
   _nextPieceSpacingUnits() { return 3.5; }
 
   // Draw a flat-top hex mini piece in hold/next panels

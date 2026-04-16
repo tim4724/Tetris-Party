@@ -1,4 +1,4 @@
-// Generate SVG favicon (hex mode)
+// Generate SVG favicon — "d"-silhouette hex piece (chevron ribbon + right stem).
 // Usage: node artwork/generate-favicon-svg.js
 
 const fs = require('fs');
@@ -6,13 +6,21 @@ const path = require('path');
 
 const GOLD = '#FFD700';
 
-// --- Hex: T-piece with flat-top hexagons ---
-function generateHexSVG() {
-  // Flat-top hex: pointy sides on left/right, flat on top/bottom
-  const R = 10; // outer radius
-  const hexH = Math.sqrt(3) * R; // ~17.32
+// Four hex cells forming a "d"-silhouette in flat-top layout:
+//   bowl-ish row going down-left + stem going up on the right.
+// Cells are in axial (q, r). This is the q piece from HEX_PIECES mirrored
+// horizontally — visually reads as lowercase "d".
+const CELLS = [
+  [1,  0],  // lower-right (base of stem)
+  [0,  0],  // middle
+  [-1, 0],  // upper-left
+  [1, -1],  // upper-right (top of stem)
+];
 
-  // Generate hex polygon points centered at (0,0)
+function generateHexSVG() {
+  const R = 10; // outer radius
+  const hexH = Math.sqrt(3) * R;
+
   const hexPoints = [];
   for (let i = 0; i < 6; i++) {
     const angle = Math.PI / 3 * i;
@@ -20,23 +28,12 @@ function generateHexSVG() {
   }
   const hexPointsStr = hexPoints.join(' ');
 
-  // T-piece on flat-top odd-q hex grid
-  // Col spacing = 1.5 * R, odd columns shift down by hexH/2
-  const gap = 1.5;
-  const colSpacing = 1.5 * R + gap;
-
-  // Offset grid cells: [col, row]
-  const gridCells = [[0,1], [1,0], [2,1], [1,-1]];
-
-  const centers = gridCells.map(([col, row]) => {
-    const cx = col * colSpacing;
-    const rowH = hexH + gap;
-    const cy = row * rowH + (col & 1 ? rowH / 2 : 0);
-    return [cx, cy];
-  });
+  // Flat-top layout: cx = 1.5 * R * q, cy = hexH * (r + q/2)
+  // (No gap — cells touch, matching the game's renderer.)
+  const centers = CELLS.map(([q, r]) => [1.5 * R * q, hexH * (r + q / 2)]);
 
   const allX = centers.flatMap(([cx]) => [cx - R, cx + R]);
-  const allY = centers.flatMap(([, cy]) => [cy - hexH/2, cy + hexH/2]);
+  const allY = centers.flatMap(([, cy]) => [cy - hexH / 2, cy + hexH / 2]);
   const minX = Math.min(...allX);
   const minY = Math.min(...allY);
   const maxX = Math.max(...allX);

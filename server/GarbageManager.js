@@ -4,15 +4,14 @@
 (function(exports) {
 
 var constants = (typeof require !== 'undefined') ? require('./constants') : window.GameConstants;
+var hexConstants = (typeof require !== 'undefined') ? require('./HexConstants') : window.HexConstants;
 var GARBAGE_TABLE = constants.GARBAGE_TABLE;
 var GARBAGE_DELAY_MS = constants.GARBAGE_DELAY_MS;
+var DEFAULT_BOARD_WIDTH = hexConstants.HEX_COLS;
 
 class GarbageManager {
   constructor(rng, boardWidth) {
-    if (boardWidth == null) {
-      var HexConstants = (typeof require !== 'undefined') ? require('./HexConstants') : window.HexConstants;
-      boardWidth = HexConstants.HEX_COLS;
-    }
+    if (boardWidth == null) boardWidth = DEFAULT_BOARD_WIDTH;
     this.queues = new Map(); // playerId -> array of { lines, gapColumn, senderId, msLeft }
     this._pendingTotals = new Map(); // playerId -> total pending lines
     this._readyGarbage = [];
