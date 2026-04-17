@@ -111,5 +111,8 @@ button.card-btn { padding: 2px 6px; min-height: 20px; font-size: 11px; line-heig
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   color: #444; font-size: 11px; letter-spacing: 0.1em;
+  /* Above the iframe's own black background (which has no z-index but
+     wins by painting order otherwise). */
+  z-index: 1;
 }
 
