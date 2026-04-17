@@ -120,8 +120,17 @@ var Gallery = (function() {
   var MAX_CONCURRENT = 6;
   var active = 0;
   var queue = [];
+  // Paused while the user is interacting with header controls. Chrome closes
+  // open <select> popups whenever an iframe load completes in the same
+  // document, so we hold off starting new loads until focus leaves the header.
+  var paused = false;
+  function setLoadingPaused(p) {
+    if (paused === p) return;
+    paused = p;
+    if (!paused) _drain();
+  }
   function _drain() {
-    while (active < MAX_CONCURRENT && queue.length) {
+    while (!paused && active < MAX_CONCURRENT && queue.length) {
       // Use `let` so each iteration closes over its own task/done/iframe.
       // With `var` (function-scoped), every concurrent `finish` would share
       // the same `done` and the first completion would silently no-op the rest.
@@ -150,6 +159,23 @@ var Gallery = (function() {
   // Drop pending work but let in-flight loads finish naturally — zeroing
   // `active` here would push it negative as their `finish` callbacks fire.
   function resetQueue() { queue = []; }
+
+  // Auto-pause loading while focus is inside the header. Selects/inputs grab
+  // focus on click, so this catches both keyboard and pointer interaction.
+  // pointerdown is also wired because Chrome may open a select popup before
+  // dispatching focusin, and we want the queue paused before any new load
+  // starts that could close the popup.
+  function autoPauseOnHeaderFocus() {
+    var hdr = document.querySelector('header');
+    if (!hdr) return;
+    hdr.addEventListener('pointerdown', function(e) {
+      if (e.target.closest('select, input, button')) setLoadingPaused(true);
+    });
+    hdr.addEventListener('focusin', function() { setLoadingPaused(true); });
+    hdr.addEventListener('focusout', function(e) {
+      if (!hdr.contains(e.relatedTarget)) setLoadingPaused(false);
+    });
+  }
 
   // --- Card factory ---
   function makeCard(opts) {
@@ -303,6 +329,8 @@ var Gallery = (function() {
     makeCard: makeCard,
     lazyMount: lazyMount,
     resetQueue: resetQueue,
+    setLoadingPaused: setLoadingPaused,
+    autoPauseOnHeaderFocus: autoPauseOnHeaderFocus,
     bindSelect: bindSelect,
     bindNumber: bindNumber,
     bindCheckbox: bindCheckbox

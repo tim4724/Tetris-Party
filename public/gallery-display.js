@@ -1,9 +1,12 @@
 'use strict';
 
 // Scenarios that don't vary by style tier or player color.
+// Includes legal pages so welcome/countdown/privacy/imprint share one row.
 var SCREENS = [
   { key: 'welcome',          title: 'Welcome' },
-  { key: 'countdown',        title: 'Countdown (3)' }
+  { key: 'countdown',        title: 'Countdown (3)' },
+  { key: 'privacy',          title: 'Privacy', staticPath: '/privacy' },
+  { key: 'imprint',          title: 'Imprint', staticPath: '/imprint' }
 ];
 
 // Lobby-style scenarios: rendered once per host index so the Start button's
@@ -42,11 +45,6 @@ var TIERS = [
 // Plain overlays — shown once each (no host-tinted CTA to vary).
 var OVERLAYS = [
   { key: 'reconnecting', title: 'Reconnecting' }
-];
-
-var LEGAL = [
-  { key: 'privacy', title: 'Privacy', staticPath: '/privacy' },
-  { key: 'imprint', title: 'Imprint', staticPath: '/imprint' }
 ];
 
 var state = Gallery.loadState();
@@ -166,7 +164,6 @@ function render() {
     add(buildHostVariantRow(HOST_VARIANT_OVERLAYS[o]));
   }
   add(buildRow('Overlays', OVERLAYS));
-  add(buildRow('Legal', LEGAL));
 
   Gallery.lazyMount(allCards);
 }
@@ -198,4 +195,5 @@ state.players = parseInt(state.players, 10) || 4;
 state.level = parseInt(state.level, 10) || 1;
 state.displayCardsPerRow = parseInt(state.displayCardsPerRow, 10) || 5;
 
+Gallery.autoPauseOnHeaderFocus();
 render();

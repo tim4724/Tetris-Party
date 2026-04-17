@@ -360,6 +360,7 @@ function broadcastLobbyUpdate() {
   var hostName = hostPlayer ? hostPlayer.playerName : null;
   var hostColor = hostPlayer ? hostPlayer.playerColor : null;
   _lastBroadcastedHostId = hostId;
+  applyHostTint();
   for (const entry of players) {
     const id = entry[0];
     party.sendTo(id, {

@@ -706,13 +706,12 @@ body.airconsole #qr-container,
 @media (max-width: 950px) and (pointer: coarse) and (hover: none),
        (max-height: 500px) and (pointer: coarse) and (hover: none) {
   #end-screen { display: flex; }
-  /* Hide the underlying DOM screens while the mobile end-screen hint is
-     overlaid — the translucent end-screen would otherwise leak their
-     content through. #bg-canvas is a separate element (not a .screen)
-     so falling pieces still show through. "Continue Anyway" removes
-     #end-screen from the DOM, so :has stops matching and the screens
-     reappear via their normal display logic. */
-  body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
+  /* No .screen suppression needed here: the display page always keeps
+     .hidden on #end-screen (visibility is driven by the ID rule above
+     overriding the class selector), so :has(#end-screen:not(.hidden))
+     never matches. The end-screen's opaque background in end-screen.css
+     prevents any bleed-through. Controller suppression lives in
+     end-screen.css (where .hidden IS removed by JS). */
 }
 
 /* --- AirConsole overrides --- */

@@ -22,6 +22,7 @@
   align-items: center;
   /* `safe center` falls back to flex-start if content overflows, so the
      top stays reachable via scroll instead of being clipped off-screen. */
+  justify-content: center; /* fallback for iOS < 16 */
   justify-content: safe center;
   gap: clamp(18px, 3.5vh, 32px);
   /* Fully opaque so the end-screen matches the other controller screens

@@ -819,6 +819,7 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
    The extra brand padding gives the title a little breathing room from
    the top edge in both cases. */
 .controller-shell__frame--results {
+  justify-content: center; /* fallback for iOS < 16 */
   justify-content: safe center;
 }
 
@@ -992,7 +993,7 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
     display: grid;
     grid-auto-flow: column;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    grid-template-rows: repeat(4, auto);
+    grid-template-rows: repeat(4, auto); /* 4 = MAX_PLAYERS(8) / 2 columns */
     column-gap: 8px;
     row-gap: 6px;
     align-content: start;

@@ -170,4 +170,5 @@ state.players = parseInt(state.players, 10) || 4;
 state.level = parseInt(state.level, 10) || 1;
 state.controllerCardsPerRow = parseInt(state.controllerCardsPerRow, 10) || 8;
 
+Gallery.autoPauseOnHeaderFocus();
 render();
