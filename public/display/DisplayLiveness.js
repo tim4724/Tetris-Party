@@ -55,7 +55,15 @@ function startLivenessCheck() {
         }
       }
     }
-    if (newDisconnect) checkAllPlayersDisconnected();
+    if (newDisconnect) {
+      checkAllPlayersDisconnected();
+      // A silent heartbeat timeout can take out the host — refresh isHost
+      // flags so the handoff reaches the remaining controllers. Skip when
+      // everyone is gone: getHostClientId() would return null and the
+      // broadcast would reach no one. No-op when the lost player wasn't
+      // the host.
+      if (!allPlayersDisconnected()) maybeBroadcastHostChange();
+    }
   }, 1000);
 }
 
