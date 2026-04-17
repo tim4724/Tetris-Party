@@ -122,8 +122,8 @@ class WelcomeBackground {
     const dpr = window.devicePixelRatio || 1;
     this.w = w;
     this.h = h;
-    this.canvas.width = w * dpr;
-    this.canvas.height = h * dpr;
+    this.canvas.width = Math.round(w * dpr);
+    this.canvas.height = Math.round(h * dpr);
     this.canvas.style.width = w + 'px';
     this.canvas.style.height = h + 'px';
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -291,6 +291,8 @@ class WelcomeBackground {
         const dR8 = (brow[px & 7] - 31.5) / 32;
         const dG8 = (brow[(px + 3) & 7] - 31.5) / 32;
         const dB8 = (brow[(px + 5) & 7] - 31.5) / 32;
+        // `| 0` truncates but doesn't clamp; values can land in [-1, 256]
+        // at edges. Safe because `data` is Uint8ClampedArray (auto-clamps).
         data[idx]     = (bR + dR * a + dR8 + 0.5) | 0;
         data[idx + 1] = (bG + dG * a + dG8 + 0.5) | 0;
         data[idx + 2] = (bB + dB * a + dB8 + 0.5) | 0;
