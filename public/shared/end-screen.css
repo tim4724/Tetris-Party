@@ -36,7 +36,7 @@
   padding:
     clamp(20px, 4vh, 40px)
     0.75rem
-    calc(56px + env(safe-area-inset-bottom)); /* reserve space for absolute .end-legal */
+    calc(48px + env(safe-area-inset-bottom)); /* reserve space for absolute .end-legal */
   padding-top: calc(clamp(20px, 4vh, 40px) + env(safe-area-inset-top));
   overflow-y: auto;
 }
@@ -77,7 +77,7 @@ body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
 /* --- Footer: anchored to screen bottom like .legal-links on name screen --- */
 .end-legal {
   position: absolute;
-  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  bottom: calc(env(safe-area-inset-bottom) + 8px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;

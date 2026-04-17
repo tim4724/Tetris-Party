@@ -89,10 +89,12 @@ function buildPerColorRow(s) {
   var row = document.createElement('div');
   row.className = 'scenario-row';
 
+  var count = Math.max(1, Math.min(parseInt(state.players, 10) || 8, 8));
+
   var h = document.createElement('h3');
   var title = document.createElement('span'); title.textContent = s.title;
   var meta = document.createElement('span'); meta.className = 'row-meta';
-  meta.textContent = '8 player colors';
+  meta.textContent = count + ' player color' + (count === 1 ? '' : 's');
   h.appendChild(title); h.appendChild(meta);
   row.appendChild(h);
 
@@ -102,7 +104,7 @@ function buildPerColorRow(s) {
 
   var cards = [];
   var d = dims();
-  for (var c = 0; c < 8; c++) {
+  for (var c = 0; c < count; c++) {
     var card = Gallery.makeCard({
       title: 'P' + (c + 1),
       tag: Gallery.PLAYER_COLOR_NAMES[c],

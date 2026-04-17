@@ -67,15 +67,6 @@ html, body {
   justify-content: center;
 }
 
-/* Optical-centering bump: the filled primary button is visually heavier
-   than the gradient title, so a geometric center reads slightly bottom-
-   heavy. Bias the name/lobby stacks upward so the content looks centered. */
-.controller-shell__frame--name,
-.controller-shell__frame--lobby {
-  padding-bottom: clamp(24px, 6%, 48px);
-}
-
-
 .controller-shell__brand {
   width: 100%;
   display: flex;
