@@ -318,7 +318,7 @@ function onCountdownDisplay(value) {
   document.body.classList.add('cursor-hidden');
   gameToolbar.classList.add('toolbar-autohide');
   countdownOverlay.classList.remove('hidden');
-  countdownOverlay.textContent = value;
+  countdownNumber.textContent = value;
   playCountdownBeep(value === 'GO');
   if (value === 'GO') {
     if (music && !music.playing) {
@@ -328,7 +328,7 @@ function onCountdownDisplay(value) {
     countdown.overlayTimer = setTimeout(function() {
       countdown.overlayTimer = null;
       countdownOverlay.classList.add('hidden');
-      countdownOverlay.textContent = '';
+      countdownNumber.textContent = '';
     }, 400);
   }
 }
@@ -461,7 +461,7 @@ function onGameResumed() {
   if (currentScreen === SCREEN.GAME) {
     gameToolbar.classList.remove('hidden');
   }
-  if (countdownOverlay.textContent) {
+  if (countdownNumber.textContent) {
     countdownOverlay.classList.remove('hidden');
   } else if (music) {
     music.resume();

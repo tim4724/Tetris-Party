@@ -107,7 +107,8 @@ body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
   transition: color var(--transition-fast, 0.15s);
 }
 .end-legal a:hover,
-.end-legal a:focus-visible { color: var(--accent-secondary); }
+.end-legal a:focus-visible,
+.end-legal a:active { color: var(--accent-secondary); }
 
 /* --- Screenshot --- */
 /* The hero is wrapped in <picture> so the portrait variant can be swapped
@@ -209,7 +210,8 @@ body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
   white-space: nowrap;
 }
 .end-link:hover,
-.end-link:focus-visible { text-decoration: underline; }
+.end-link:focus-visible,
+.end-link:active { text-decoration: underline; }
 
 /* --- Toast (error message in the .end-action slot) ---
    Soft card surface — conveys trouble without a harsh red pill. --- */
