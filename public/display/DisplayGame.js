@@ -43,6 +43,7 @@ function startNewGame() {
   stopDisplayGame();
   paused = false;
   setAutoPaused(false);
+  clearLateJoinerGraceTimer();
   lastResults = null;
   lastAliveState = {};
   // Clear stale disconnected-QR flags from the previous game so they don't
@@ -127,6 +128,24 @@ function allPlayersDisconnected() {
   return playerOrder.length > 0;
 }
 
+function hasLateJoiners() {
+  for (const id of players.keys()) {
+    if (playerOrder.indexOf(id) < 0) return true;
+  }
+  return false;
+}
+
+function clearLateJoinerGraceTimer() {
+  if (lateJoinerGraceTimer) {
+    clearTimeout(lateJoinerGraceTimer);
+    lateJoinerGraceTimer = null;
+  }
+}
+
+// 5s grace before ending the game so a reconnecting host doesn't trigger it.
+// Cancelled in DisplayInput when any active player reconnects.
+var LATE_JOINER_GRACE_MS = 5000;
+
 function checkAllPlayersDisconnected() {
   // Don't auto-pause during COUNTDOWN — let it finish so disconnect QRs become visible.
   if (roomState !== ROOM_STATE.PLAYING) return;
@@ -137,6 +156,17 @@ function checkAllPlayersDisconnected() {
   setAutoPaused(true);
   if (displayGame) displayGame.pause();
   if (music) music.pause();
+
+  // Without this, a late joiner sits on a frozen waiting screen with no exit
+  // path (they can't control the paused game, and returnToLobby is host-gated).
+  if (hasLateJoiners() && !lateJoinerGraceTimer) {
+    lateJoinerGraceTimer = setTimeout(function() {
+      lateJoinerGraceTimer = null;
+      if (roomState === ROOM_STATE.PLAYING && allPlayersDisconnected() && hasLateJoiners()) {
+        returnToLobby();
+      }
+    }, LATE_JOINER_GRACE_MS);
+  }
 }
 
 function checkAutoResume() {
@@ -174,6 +204,7 @@ function returnToLobby() {
   countdown.remaining = 0;
   paused = false;
   setAutoPaused(false);
+  clearLateJoinerGraceTimer();
   releaseWakeLock();
 
   if (music) music.stop();

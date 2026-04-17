@@ -43,6 +43,7 @@ function setRoomState(newState) {
 
 var paused = false;
 var autoPaused = false;
+var lateJoinerGraceTimer = null;
 var boardRenderers = [];
 var uiRenderers = [];
 var animations = null;
@@ -85,6 +86,7 @@ function resetRoomData() {
   playerOrder = [];
   paused = false;
   setAutoPaused(false);
+  clearLateJoinerGraceTimer();
   gameState = null;
   boardRenderers = [];
   uiRenderers = [];
