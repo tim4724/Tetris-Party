@@ -282,7 +282,11 @@
   justify-content: center;
   flex-shrink: 0;
   box-shadow: var(--shadow-sm);
-  transition: transform var(--transition-fast);
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+
+.icon-btn:hover:not(:disabled) {
+  background: var(--bg-card-soft);
 }
 
 .icon-btn:active {

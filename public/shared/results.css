@@ -17,6 +17,22 @@
   to { opacity: 1; pointer-events: auto; }
 }
 
+/* If the user prefers reduced motion (OS setting, user stylesheet, some
+   browser extensions), the animation may be stripped and the base
+   `pointer-events: none` on the wrapper would strand the buttons
+   unclickable forever. Force the gate open in that case — the anti-misclick
+   concern is about fast accidental taps after the round ends, which matters
+   less when the user has already opted out of motion. */
+@media (prefers-reduced-motion: reduce) {
+  #gameover-buttons,
+  #pause-buttons,
+  #results-buttons {
+    animation: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
 /* --- Result rows — neutral card treatment; rank color is set via inline
    style from the player's palette in JS (no medal podium). --- */
 

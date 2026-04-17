@@ -150,6 +150,7 @@ function applyRoomCreated(partyRoomCode, newJoinUrl) {
     joinUrlEl.dataset.copyBound = '1';
     joinUrlEl.setAttribute('role', 'button');
     joinUrlEl.setAttribute('tabindex', '0');
+    joinUrlEl.setAttribute('aria-label', 'Copy join URL');
     var showCopiedToast = function() {
       joinUrlEl.setAttribute('data-copied-label', t('copied') || 'Copied');
       joinUrlEl.setAttribute('data-copied', '1');
