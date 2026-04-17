@@ -239,6 +239,22 @@ body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
   letter-spacing: 0.1em;
 }
 
+/* --- Short portrait (iPhone SE with browser chrome ≈ 375×553):
+       once the hero, steps card, and reserved toast slot stack up, there's
+       no slack. Shrink the hero cap, trim the card's padding, and drop the
+       toast-slot reservation. A toast appearing here causes a small layout
+       shift — acceptable because it only happens on session-end events. --- */
+@media (orientation: portrait) and (max-height: 640px) {
+  .end-screen {
+    gap: clamp(12px, 2.5vh, 22px);
+    padding-top: calc(clamp(12px, 2vh, 24px) + env(safe-area-inset-top));
+  }
+  .end-screenshot { max-height: 30vh; }
+  .end-steps-card { padding: 14px; }
+  .end-steps { --step-gap: 10px; }
+  .end-action { min-height: 0; }
+}
+
 /* --- Landscape / wide viewports: screenshot and card side by side.
        Vertical space is tight, so the .end-action slot does NOT reserve
        height when empty — the layout shifts when a toast appears. --- */
