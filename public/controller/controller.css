@@ -662,6 +662,7 @@ html, body {
   align-items: center;
   gap: 12px;
   width: 100%;
+  pointer-events: none;
   animation: resultsButtonsEnter 0.4s ease 1.5s both;
 }
 
@@ -713,6 +714,7 @@ html, body {
   gap: 12px;
   width: 100%;
   max-width: 280px;
+  pointer-events: none;
   animation: resultsButtonsEnter 0.4s ease 1.5s both;
 }
 
@@ -720,6 +722,7 @@ html, body {
    misclick risk — show buttons immediately without the 1.5s gate. */
 #pause-overlay.pause-overlay--self #pause-buttons {
   animation: none;
+  pointer-events: auto;
 }
 
 /* Countdown state — neutral touch area, no player color */

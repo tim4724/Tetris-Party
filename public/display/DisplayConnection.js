@@ -114,6 +114,28 @@ function onRoomCreated(partyRoomCode) {
 
 var _copyTimer = null;
 
+// Render the join URL into the two-span pill (small host + big room code).
+// Called from both applyRoomCreated and onDisplayRejoined so the structure
+// is preserved after a reconnect.
+function renderJoinUrl(url) {
+  var hostEl = joinUrlEl.querySelector('.join-url__host');
+  var codeEl = joinUrlEl.querySelector('.join-url__code');
+  if (hostEl && codeEl) {
+    try {
+      var u = new URL(url);
+      // Trailing slash kept on the host span so it never wraps away from
+      // the hostname onto the code line.
+      hostEl.textContent = u.host + '/';
+      codeEl.textContent = u.pathname.replace(/^\//, '') || url;
+    } catch (e) {
+      hostEl.textContent = '';
+      codeEl.textContent = url;
+    }
+  } else {
+    joinUrlEl.textContent = url;
+  }
+}
+
 function applyRoomCreated(partyRoomCode, newJoinUrl) {
   roomCode = partyRoomCode;
   lastRoomCode = partyRoomCode;
@@ -121,24 +143,7 @@ function applyRoomCreated(partyRoomCode, newJoinUrl) {
   if (roomState !== ROOM_STATE.LOBBY) setRoomState(ROOM_STATE.LOBBY);
 
   joinUrl = newJoinUrl;
-  // Render the join URL as two parts: small host + big room code. Keeps
-  // the code readable inside the QR card; avoids wide URLs clipping out.
-  var hostEl = joinUrlEl.querySelector('.join-url__host');
-  var codeEl = joinUrlEl.querySelector('.join-url__code');
-  if (hostEl && codeEl) {
-    try {
-      var u = new URL(joinUrl);
-      // Trailing slash kept on the host span so it never wraps away from
-      // the hostname onto the code line.
-      hostEl.textContent = u.host + '/';
-      codeEl.textContent = u.pathname.replace(/^\//, '') || partyRoomCode;
-    } catch (e) {
-      hostEl.textContent = '';
-      codeEl.textContent = joinUrl;
-    }
-  } else {
-    joinUrlEl.textContent = joinUrl;
-  }
+  renderJoinUrl(joinUrl);
   // Click to copy the full join URL — handler is idempotent, attached
   // once on the first room creation.
   if (!joinUrlEl.dataset.copyBound) {
@@ -202,7 +207,7 @@ function onDisplayRejoined(partyRoomCode, clients) {
   lastRoomCode = partyRoomCode;
 
   joinUrl = getBaseUrl() + '/' + roomCode;
-  joinUrlEl.textContent = joinUrl;
+  renderJoinUrl(joinUrl);
 
   // Reset the master_changed dedup sentinel — on rejoin we re-push WELCOME
   // to everyone below, and any subsequent LOBBY_UPDATE / master_changed

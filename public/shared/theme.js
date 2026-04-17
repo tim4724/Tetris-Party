@@ -44,7 +44,7 @@ if (typeof ghostColor === 'function') {
 }
 
 // Player accent colors — direct 1:1 mapping with palette slots.
-const PLAYER_COLORS = PARTY_PALETTE.slice();
+const PLAYER_COLORS = Object.freeze(PARTY_PALETTE.slice());
 
 const PLAYER_NAMES = ['Player 1', 'Player 2', 'Player 3', 'Player 4', 'Player 5', 'Player 6', 'Player 7', 'Player 8'];
 

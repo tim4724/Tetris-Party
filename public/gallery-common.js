@@ -6,7 +6,7 @@
 // =====================================================================
 
 var Gallery = (function() {
-  var PLAYER_COLOR_NAMES = ['red', 'teal', 'yellow', 'purple', 'green', 'magenta', 'indigo', 'coral'];
+  var PLAYER_COLOR_NAMES = ['red', 'teal', 'honey', 'violet', 'mint', 'pink', 'indigo', 'tangerine'];
 
   var DISPLAY_AR_DIMS = {
     '16x9': { w: 1920, h: 1080 },

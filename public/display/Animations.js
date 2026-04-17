@@ -99,7 +99,7 @@ class Animations {
           var fadeAlpha = 0.5 * (1 - (progress - 0.25) / 0.75);
           if (fadeAlpha <= 0) { ctx.globalAlpha = 1; return; }
           ctx.globalAlpha = fadeAlpha;
-          var shrink = hexSize * (1 - (progress - 0.25));
+          var shrink = Math.max(0, hexSize * (1 - (progress - 0.25)));
           for (var ci = 0; ci < cellPositions.length; ci++) {
             hexPath(ctx, cellPositions[ci].x, cellPositions[ci].y, shrink);
             ctx.fill();

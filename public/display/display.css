@@ -568,6 +568,8 @@ body.airconsole #qr-container,
 #pause-buttons {
   display: flex;
   gap: clamp(0.8rem, 1.5vw, 1.5rem);
+  pointer-events: none; /* defensive: ensures gate holds even in engines where
+                           pointer-events isn't treated as a discrete keyframe prop */
   animation: resultsButtonsEnter 0.4s ease 1.5s both;
 }
 
@@ -575,6 +577,7 @@ body.airconsole #qr-container,
    misclick risk. Remote-triggered pause keeps the full 1.5s gate. */
 #pause-overlay.pause-overlay--self #pause-buttons {
   animation: none;
+  pointer-events: auto;
 }
 
 /* Overlay action buttons — pause/reconnect/results share one sizing scale. */
@@ -675,6 +678,7 @@ body.airconsole #qr-container,
   display: flex;
   gap: clamp(0.8rem, 1.5vw, 1.5rem);
   margin-top: clamp(1.5rem, 3vh, 3rem);
+  pointer-events: none;
   animation: resultsButtonsEnter 0.4s ease 1.5s both;
 }
 
