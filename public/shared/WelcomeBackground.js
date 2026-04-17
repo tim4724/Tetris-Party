@@ -276,7 +276,11 @@ class WelcomeBackground {
     for (let py = 0; py < ph; py++) {
       const dy = py - cyPx;
       const dy2 = dy * dy;
-      const brow = bayer[py & 7];
+      // Pre-select per-channel rows so R/G/B are decorrelated on both axes
+      // (not just columns) — prevents residual hue banding.
+      const rrow = bayer[py & 7];
+      const grow = bayer[(py + 3) & 7];
+      const brrow = bayer[(py + 5) & 7];
       for (let px = 0; px < pw; px++) {
         const dx = px - cxPx;
         const d = Math.sqrt(dx * dx + dy2);
@@ -286,11 +290,10 @@ class WelcomeBackground {
           t = u * u * (3 - 2 * u);           // smoothstep
         }
         const a = peak * t;
-        // ±1 LSB Bayer dither, offset per channel so the three channels are
-        // not correlated — correlated dither shifts hue subtly.
-        const dR8 = (brow[px & 7] - 31.5) / 32;
-        const dG8 = (brow[(px + 3) & 7] - 31.5) / 32;
-        const dB8 = (brow[(px + 5) & 7] - 31.5) / 32;
+        // ±1 LSB Bayer dither, offset per channel on both axes.
+        const dR8 = (rrow[px & 7] - 31.5) / 32;
+        const dG8 = (grow[(px + 3) & 7] - 31.5) / 32;
+        const dB8 = (brrow[(px + 5) & 7] - 31.5) / 32;
         // `| 0` truncates but doesn't clamp; values can land in [-1, 256]
         // at edges. Safe because `data` is Uint8ClampedArray (auto-clamps).
         data[idx]     = (bR + dR * a + dR8 + 0.5) | 0;
