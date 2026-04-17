@@ -214,7 +214,7 @@ function _stampHexNormal(c, cx, cy, cr, size, color) {
 
 function _stampHexPillow(c, cx, cy, cr, size, color) {
   var cornerR = cr * 0.15;
-  var lineInset = cornerR / _SQRT3;  // pull highlight/shadow lines inside the rounded corner
+  var lineInset = cornerR / _SQRT3;  // pull shadow line inside the rounded corner
   hexPathRounded(c, cx, cy, cr, cornerR);
   c.fillStyle = color;
   c.fill();
@@ -227,12 +227,7 @@ function _stampHexPillow(c, cx, cy, cr, size, color) {
   c.fillStyle = g;
   c.fill();
   c.restore();
-  c.strokeStyle = 'rgba(255,255,255,0.3)';
   c.lineWidth = Math.max(0.5, size * 0.04);
-  c.beginPath();
-  c.moveTo(cx + cr * HEX_UNIT_VERTICES[8] + lineInset, cy + cr * HEX_UNIT_VERTICES[9]);
-  c.lineTo(cx + cr * HEX_UNIT_VERTICES[10] - lineInset, cy + cr * HEX_UNIT_VERTICES[11]);
-  c.stroke();
   c.strokeStyle = 'rgba(0,0,0,0.25)';
   c.beginPath();
   c.moveTo(cx + cr * HEX_UNIT_VERTICES[2] - lineInset, cy + cr * HEX_UNIT_VERTICES[3]);
