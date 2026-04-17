@@ -20,7 +20,8 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- Result rows — card + circular rank chip (Cocoa) --- */
+/* --- Result rows — neutral card treatment; rank colors come from the
+   player's own palette via --row-rank-color (no medal podium). --- */
 
 .result-row {
   display: flex;
@@ -33,37 +34,17 @@
   animation-delay: var(--row-delay, 0.2s);
 }
 
-.result-row.rank-1 {
-  border-color: rgba(var(--medal-gold-rgb), 0.6);
-  box-shadow: var(--shadow-md), var(--bevel-top), 0 0 0 1px rgba(var(--medal-gold-rgb), 0.35);
-}
-
-.result-row.rank-2 {
-  border-color: rgba(var(--medal-silver-rgb), 0.4);
-}
-
-.result-row.rank-3 {
-  border-color: rgba(var(--medal-bronze-rgb), 0.4);
-}
-
-/* --- Rank ordinal — round filled chip --- */
+/* --- Rank ordinal — plain text tinted by the player's color.
+   Per-surface rules set font-size, margin, and alignment. --- */
 
 .result-rank {
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
-  text-align: center;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  color: var(--bg-primary);
-  background: var(--text-secondary);
-  box-shadow: inset 0 2px 0 rgba(255,255,255,0.3), inset 0 -2px 0 rgba(0,0,0,0.22);
+  letter-spacing: -0.02em;
+  flex-shrink: 0;
+  min-width: 2.4em;
+  color: var(--row-rank-color, var(--text-secondary));
 }
-
-.rank-1 .result-rank { background: var(--medal-gold); }
-.rank-2 .result-rank { background: var(--medal-silver); }
-.rank-3 .result-rank { background: var(--medal-bronze); }
 
 /* --- Name --- */
 

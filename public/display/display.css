@@ -45,7 +45,8 @@ html, body {
   position: relative;
 }
 
-#welcome-version-label {
+#welcome-version-label,
+#lobby-version-label {
   position: absolute;
   top: clamp(1rem, 2.5vh, 1.5rem);
   right: clamp(1rem, 2vw, 2rem);
@@ -58,6 +59,9 @@ html, body {
   text-transform: uppercase;
   animation: fadeIn 0.6s 0.3s ease-out both;
 }
+
+#lobby-version-label { display: none; }
+body.airconsole #lobby-version-label { display: block; }
 
 #welcome-screen h1 {
   font-size: clamp(2.5rem, 7vh, 6rem);
@@ -129,23 +133,6 @@ html, body {
   letter-spacing: 0.06em;
   opacity: 0.6;
 }
-
-#lobby-version-label {
-  position: absolute;
-  top: clamp(1rem, 2.5vh, 1.5rem);
-  right: clamp(1rem, 2vw, 2rem);
-  font-family: 'Orbitron', sans-serif;
-  font-size: clamp(11px, 1.3vw, 14px);
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  color: var(--text-secondary);
-  opacity: 0.55;
-  text-transform: uppercase;
-  display: none;
-  animation: fadeIn 0.6s 0.3s ease-out both;
-}
-
-body.airconsole #lobby-version-label { display: block; }
 
 #lobby-footer {
   position: absolute;
@@ -286,7 +273,7 @@ body.airconsole #lobby-version-label { display: block; }
   transform: translateX(-50%) translateY(4px);
   padding: 4px 10px;
   background: var(--accent-secondary);
-  color: #1E1A2B;
+  color: var(--bg-primary);
   font-family: 'Orbitron', sans-serif;
   font-size: 11px;
   font-weight: 700;
@@ -649,31 +636,7 @@ body.airconsole #player-list,
 
 .result-rank {
   font-size: clamp(1rem, 2vh, 1.8rem);
-  font-weight: 900;
-  flex-shrink: 0;
   margin-right: clamp(0.8rem, 1.2vw, 1.2rem);
-  letter-spacing: -0.02em;
-  width: auto;
-  height: auto;
-  min-width: 2.4em;
-  justify-content: flex-start;
-  background: transparent;
-  border-radius: 0;
-  box-shadow: none;
-  color: var(--row-rank-color, var(--text-secondary));
-}
-
-.rank-1 .result-rank,
-.rank-2 .result-rank,
-.rank-3 .result-rank {
-  background: transparent;
-}
-
-.result-row.rank-1,
-.result-row.rank-2,
-.result-row.rank-3 {
-  border-color: var(--border);
-  box-shadow: var(--shadow-sm), var(--bevel-top);
 }
 
 .result-info {
@@ -705,7 +668,6 @@ body.airconsole #player-list,
 .result-stats span {
   white-space: nowrap;
   text-align: right;
-  font-variant-numeric: tabular-nums;
 }
 
 #results-buttons {

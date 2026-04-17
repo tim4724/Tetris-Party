@@ -57,10 +57,6 @@ h1 {
 
 h1.gradient-title {
   display: inline-block;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary), var(--accent-secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
 }
 
 dl {
@@ -87,7 +83,7 @@ dd {
 a {
   color: var(--text-secondary);
   text-decoration: none;
-  transition: filter var(--transition-fast);
+  transition: color var(--transition-fast);
 }
 
 a:hover,

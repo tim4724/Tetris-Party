@@ -84,7 +84,7 @@
   max-width: 100%;
   width: 100%;
   height: auto;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
 }
 
@@ -187,7 +187,7 @@
   min-height: 1.2em;
   line-height: 1.2;
   padding: 8px 16px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 68, 68, 0.15);
   color: var(--danger);
   font-family: 'Orbitron', sans-serif;
