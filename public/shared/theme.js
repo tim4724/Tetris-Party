@@ -104,7 +104,7 @@ const THEME = Object.freeze({
       glow: 'rgba(255, 50, 50, 0.6)',
     }),
     btn: Object.freeze({
-      primaryText: '#ffffff',
+      primaryText: '#1E1A2B',  // mirrors --btn-primary-text in theme.css
     }),
     // Animation-specific named colors (palette-aligned)
     quad:    '#FF6B6B',        // palette slot 1 Red
@@ -115,6 +115,7 @@ const THEME = Object.freeze({
   opacity: Object.freeze({
     faint:     0.04,  // noise textures, barely-there tints
     tint:      0.06,  // player color surface tints
+    boardTint: 0.12,  // board-card player tint (bolder than generic tint)
     subtle:    0.08,  // ghost fills, inner shines, scanlines
     muted:     0.10,  // dot patterns
     grid:      0.18,  // grid lines

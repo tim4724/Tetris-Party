@@ -55,11 +55,11 @@ class BoardRenderer {
     );
 
     // Cached rgba strings (stable between layout recalculations).
-    // Board tint uses a stronger alpha than THEME.opacity.tint so the
-    // player's color reads boldly against the card surface rather than
-    // blending into generic plum.
+    // Board tint uses THEME.opacity.boardTint (stronger than generic
+    // THEME.opacity.tint) so the player color reads boldly against the
+    // card surface rather than blending into generic plum.
     var rgb = this._accentRgb;
-    this._tintFill = rgb ? 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.12)' : null;
+    this._tintFill = rgb ? 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + THEME.opacity.boardTint + ')' : null;
     var gridAlpha = THEME.opacity.grid + (rgb ? (1 - (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114) / 255) * 0.08 : 0);
     this._gridAlpha = gridAlpha;
     this._gridStrokeOpaque = rgb ? 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')' : 'rgb(255,255,255)';
@@ -207,13 +207,7 @@ class BoardRenderer {
 
     var sCell = this._sCell;
 
-    // 1. Outer cushion shadow — cast behind the hex outline so the board
-    //    reads as a raised card on the table. Filled per-frame (shadowBlur
-    //    on a cached image is hard; the path is cheap).
-    ctx.save();
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
-    ctx.shadowBlur = this.cellSize * 0.6;
-    ctx.shadowOffsetY = this.cellSize * 0.18;
+    // 1. Flat board background fill behind the hex outline.
     ctx.fillStyle = THEME.color.bg.card;
     ctx.beginPath();
     var bgVerts = this._bgOutlineVerts;
@@ -221,7 +215,6 @@ class BoardRenderer {
     for (var vi = 1; vi < bgVerts.length; vi++) ctx.lineTo(bgVerts[vi][0], bgVerts[vi][1]);
     ctx.closePath();
     ctx.fill();
-    ctx.restore();
 
     // 2. Board background + grid lines (cached, single blit).
     // Rebuild if missing or if DPR/board dimensions changed (monitor move).
