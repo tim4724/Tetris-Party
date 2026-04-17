@@ -182,8 +182,10 @@ function rgbaFromHex(hex, alpha) {
 }
 
 // Pick a legible text color for a hex background using WCAG relative
-// luminance. Returns the Cocoa plum-dark bg for bright slots (Honey,
-// Mint, Teal) and white for everything else.
+// luminance. Threshold 0.22 is the equal-contrast crossover between
+// #1E1A2B and #ffffff — above it, the Cocoa plum-dark reads with better
+// contrast; below it, white does. Every slot in PARTY_PALETTE is above
+// 0.22, so all player-tinted CTAs use dark text and pass WCAG AA (4.5:1).
 function onColor(hex) {
   var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
   if (!m) return '#ffffff';
@@ -191,7 +193,7 @@ function onColor(hex) {
   var L = 0.2126 * lin(parseInt(m[1], 16))
         + 0.7152 * lin(parseInt(m[2], 16))
         + 0.0722 * lin(parseInt(m[3], 16));
-  return L > 0.45 ? '#1E1A2B' : '#ffffff';
+  return L > 0.22 ? '#1E1A2B' : '#ffffff';
 }
 
 // Export for both Node.js and browser
