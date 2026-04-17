@@ -75,7 +75,7 @@ body.airconsole #lobby-version-label { display: block; }
   font-size: clamp(1rem, 2.2vh, 1.8rem);
   letter-spacing: 0.08em;
   text-align: center;
-  animation: fadeUp 0.6s 0.3s ease-out both, btnPulse 2.5s 1s ease-in-out infinite;
+  animation: fadeUp 0.6s 0.3s ease-out backwards;
 }
 
 #welcome-footer {
@@ -145,10 +145,10 @@ body.airconsole #lobby-version-label { display: block; }
 
 
 /* ============================================
-   Lobby Screen — three concrete layout tiers.
-   Base (Medium, 600–1099px): vertical stack, QR on top, players below.
-   Wide (≥1100px) overrides: QR left, players right.
-   Narrow (<600px)  overrides: compact single column.
+   Lobby Screen — orientation-driven layout.
+   Portrait: vertical stack, QR on top, players below (full-width cards).
+   Landscape: QR left, players right.
+   Narrow (<600px) overrides: compact single column for player list sizing.
    ============================================ */
 
 /* --- Base (Medium tier) --- */
@@ -157,7 +157,7 @@ body.airconsole #lobby-version-label { display: block; }
     radial-gradient(ellipse at 50% 20%, rgba(var(--accent-primary-rgb), 0.05) 0%, transparent 55%);
   justify-content: space-around;
   gap: 1.5rem;
-  padding: clamp(1rem, 3vh, 2rem) 1.5rem clamp(3rem, 6vh, 5rem);
+  padding: clamp(2rem, 5vh, 3.5rem) 1.5rem clamp(4rem, 8vh, 6.5rem);
   position: relative;
 }
 
@@ -303,19 +303,31 @@ body.airconsole #lobby-version-label { display: block; }
 .join-url__code {
   font-size: 1.4rem;
   font-weight: 900;
-  color: var(--accent-tertiary);
+  color: var(--accent-secondary);
   letter-spacing: 0.18em;
   padding-left: 0.18em;
 }
 
 #player-list {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(10px, 1.5vw, 18px);
-  width: 100%;
-  max-width: 880px;
+  --card-w: clamp(180px, 22vw, 230px);
+  --card-gap: clamp(10px, 1.5vw, 18px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--card-gap);
+  /* No width:100% and no auto side-margins — in row-direction lobby-body
+     either would expand the list's flex slot past its max-width and shove
+     it away from the QR card. Let the parent's justify-content:center
+     position the list, and the .pl--sm/--lg max-widths cap its size. */
   animation: fadeIn 0.4s 0.3s ease-out both;
 }
+/* Player-count buckets: ≤4 → 2×2, ≥5 → 2×4. Container is capped to
+   exactly N card widths so flex-wrap produces the intended row/col grid. */
+#player-list.pl--sm { max-width: calc(var(--card-w) * 2 + var(--card-gap)); }
+#player-list.pl--lg { max-width: calc(var(--card-w) * 4 + var(--card-gap) * 3); }
+/* 5+ players: row 1 always fills 4 cards; left-align so the wrapped row
+   aligns with the first column instead of centering independently. */
+#player-list.pl--lg { justify-content: flex-start; }
 
 .player-card {
   display: flex;
@@ -329,8 +341,10 @@ body.airconsole #lobby-version-label { display: block; }
   min-width: 0;
 }
 
-/* --- Wide tier (≥1100px): side-by-side, roomier --- */
-@media (min-width: 1100px) {
+/* --- Landscape (width ≥ height): side-by-side, roomier.
+   Portrait viewports keep the vertical stack so the player list gets the
+   full width for its cards. --- */
+@media (orientation: landscape) {
   #lobby-body {
     flex-direction: row;
     align-items: center;
@@ -338,29 +352,21 @@ body.airconsole #lobby-version-label { display: block; }
     max-width: 1400px;
     gap: clamp(2rem, 3vw, 3.5rem);
   }
-  #player-list { flex: 1; max-width: 1000px; }
   .join-url__host { font-size: 1.2rem; }
   .join-url__code { font-size: 1.5rem; }
 }
 
-/* --- Narrow tier (<600px): compact single column for QR, 2-col players --- */
+/* --- Narrow tier (<600px): force 2-col layout even with 5+ players (becomes 4×2) --- */
 @media (max-width: 599px) {
-  #player-list { grid-template-columns: repeat(2, minmax(0, 1fr)); max-width: 360px; }
+  #player-list.pl--lg { max-width: calc(var(--card-w) * 2 + var(--card-gap)); }
   .join-url__host { font-size: 0.95rem; }
   .join-url__code { font-size: 1.2rem; }
 }
 
-/* --- AirConsole / no-QR overrides: hide QR, widen players --- */
+/* --- AirConsole / no-QR overrides: just hide QR; player list sizing is class-driven --- */
 body.airconsole #qr-container,
 #lobby-screen.no-qr #qr-container {
   display: none;
-}
-
-body.airconsole #player-list,
-#lobby-screen.no-qr #player-list {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  max-width: 1000px;
-  gap: 16px;
 }
 
 .player-card.empty {
@@ -391,7 +397,11 @@ body.airconsole #player-list,
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  flex: 0 0 var(--card-w, 200px);
+  /* Override default min-width:auto on flex items — otherwise the slot
+     expands to card min-content width (level controls) and breaks the
+     2×2 / 2×4 grid by forcing items to wrap one per row. */
+  min-width: 0;
 }
 
 .level-controls {
@@ -451,17 +461,13 @@ body.airconsole #player-list,
   padding: clamp(0.7rem, 1.4vh, 1.3rem) clamp(2rem, 4vw, 6rem);
   font-size: clamp(1rem, 2vh, 1.6rem);
   letter-spacing: 0.08em;
-  animation: fadeUp 0.5s 0.45s ease-out both;
+  animation: fadeUp 0.5s 0.45s ease-out backwards;
 }
 
 #start-btn:disabled {
   background: var(--bg-card);
   color: var(--text-secondary);
   cursor: not-allowed;
-}
-
-#start-btn:not(:disabled) {
-  animation: fadeUp 0.5s 0.45s ease-out both, btnPulse 2.5s 1.2s ease-in-out infinite;
 }
 
 /* ============================================
@@ -577,9 +583,12 @@ body.airconsole #player-list,
   gap: clamp(0.8rem, 1.5vw, 1.5rem);
 }
 
+/* Overlay action buttons — pause/reconnect/results share one sizing scale. */
 #pause-continue-btn,
 #pause-newgame-btn,
-#reconnect-btn {
+#reconnect-btn,
+#play-again-btn,
+#new-game-results-btn {
   min-width: clamp(180px, 22vh, 280px);
   padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(1rem, 2vw, 2rem);
   font-size: clamp(0.85rem, 1.6vh, 1.2rem);
@@ -636,7 +645,6 @@ body.airconsole #player-list,
 
 .result-rank {
   font-size: clamp(1rem, 2vh, 1.8rem);
-  margin-right: clamp(0.8rem, 1.2vw, 1.2rem);
 }
 
 .result-info {
@@ -676,21 +684,12 @@ body.airconsole #player-list,
   margin-top: clamp(1.5rem, 3vh, 3rem);
 }
 
-#play-again-btn,
-#new-game-results-btn {
-  min-width: clamp(180px, 22vh, 280px);
-  padding: clamp(0.6rem, 1.2vh, 1.2rem) clamp(1rem, 2vw, 2rem);
-  font-size: clamp(0.85rem, 1.6vh, 1.2rem);
-  letter-spacing: 0.06em;
-  text-align: center;
-}
-
 #play-again-btn {
-  animation: resultsBtnIn 0.5s 0.6s ease-out both, btnPulse 2.5s 1.5s infinite;
+  animation: resultsBtnIn 0.5s 0.6s ease-out backwards;
 }
 
 #new-game-results-btn {
-  animation: resultsBtnIn 0.5s 0.7s ease-out both;
+  animation: resultsBtnIn 0.5s 0.7s ease-out backwards;
 }
 
 /* ============================================
@@ -708,6 +707,13 @@ body.airconsole #player-list,
 @media (max-width: 950px) and (pointer: coarse) and (hover: none),
        (max-height: 500px) and (pointer: coarse) and (hover: none) {
   #end-screen { display: flex; }
+  /* Hide the underlying DOM screens while the mobile end-screen hint is
+     overlaid — the translucent end-screen would otherwise leak their
+     content through. #bg-canvas is a separate element (not a .screen)
+     so falling pieces still show through. "Continue Anyway" removes
+     #end-screen from the DOM, so :has stops matching and the screens
+     reappear via their normal display logic. */
+  body:has(#end-screen) .screen { display: none !important; }
 }
 
 /* --- AirConsole overrides --- */
@@ -719,9 +725,3 @@ body.airconsole #welcome-screen { display: none !important; }
 body.airconsole #end-screen { display: none !important; }
 body.airconsole #fullscreen-btn { display: none !important; }
 body.airconsole .player-slot:has(.player-card.empty) { display: none !important; }
-body.airconsole #player-list {
-  /* Fixed 4-col grid so 8 players lay out as 2 rows of 4 — Cocoa lobby
-     treats the grid-template-columns rule above; we only override the
-     alignment here. */
-  align-content: center;
-}

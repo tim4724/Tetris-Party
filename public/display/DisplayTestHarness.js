@@ -156,6 +156,15 @@ function initScenario(opts) {
   var playerCount = Math.max(1, Math.min(opts.players || 1, 8));
   var level = opts.level || 1;
 
+  // Host override for gallery previews. getHostClientId() consults
+  // party.getMasterClientId() first, so stubbing it lets us render the
+  // same scenario with different players designated as host (Start button
+  // tint follows the host's player color).
+  if (opts.host !== null && opts.host !== undefined && !isNaN(opts.host)) {
+    var hostIdx = Math.max(0, Math.min(opts.host, 7));
+    party = { getMasterClientId: function() { return 'debug' + hostIdx; } };
+  }
+
   // Welcome: no players, stay on welcome screen.
   if (scenario === 'welcome') {
     showScreen(SCREEN.WELCOME);

@@ -4,12 +4,6 @@
 
 /* --- Keyframes --- */
 
-@keyframes btnPulse {
-  /* Cushion-breathe: shadow depth pulses without a neon glow. */
-  0%, 100% { box-shadow: var(--shadow-md), var(--bevel-btn); }
-  50%      { box-shadow: var(--shadow-lg), var(--bevel-btn); }
-}
-
 @keyframes resultRowIn {
   from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
@@ -42,7 +36,6 @@
   font-weight: 900;
   letter-spacing: -0.02em;
   flex-shrink: 0;
-  min-width: 2.4em;
   color: var(--row-rank-color, var(--text-secondary));
 }
 

@@ -32,9 +32,13 @@
       <h1 class="gradient-title">HEX STACKER<span class="gradient-title__sub">party</span></h1>
     </div>
     <div class="end-content">
-      <img src="/artwork/gameplay-16x9.png" alt="" class="end-screenshot">
+      <picture>
+        <source media="(orientation: portrait)" type="image/webp" srcset="/artwork/gameplay-2p-1x1.webp">
+        <source media="(orientation: portrait)" type="image/jpeg" srcset="/artwork/gameplay-2p-1x1.jpg">
+        <source type="image/webp" srcset="/artwork/gameplay-16x9.webp">
+        <img src="/artwork/gameplay-16x9.jpg" alt="" class="end-screenshot">
+      </picture>
       <div class="end-steps-card">
-        <p class="end-steps-card__title" data-i18n="end_how_to_play">How to play</p>
         <ol class="end-steps">
           <li><span class="end-step-text" data-i18n-html="end_step_1">Open <a href="https://hexstackerparty.com" id="end-step-1-link" class="end-link">hexstackerparty.com</a> on a larger screen</span></li>
           <li><span class="end-step-text" data-i18n="end_step_2">Scan the QR code to use your phone as controller</span></li>

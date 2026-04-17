@@ -67,6 +67,14 @@ html, body {
   justify-content: center;
 }
 
+/* Optical-centering bump: the filled primary button is visually heavier
+   than the gradient title, so a geometric center reads slightly bottom-
+   heavy. Bias the name/lobby stacks upward so the content looks centered. */
+.controller-shell__frame--name,
+.controller-shell__frame--lobby {
+  padding-bottom: clamp(24px, 6%, 48px);
+}
+
 
 .controller-shell__brand {
   width: 100%;
@@ -251,23 +259,9 @@ html, body {
   text-align: center;
 }
 
-/* Primary action buttons — tinted with the player's identity color so
-   the CTA matches their pad, name, and score row. --player-color and
-   --player-text are set on <body> from onWelcome (and the test harness).
-   Text color flips to dark on high-luminance slots (Honey/Mint/Teal); see
-   onColor() in theme.js. The color-mix darkening at 82% mirrors the shape
-   of --accent-primary → --accent-primary-dark. */
-#start-btn:not(:disabled),
-#pause-continue-btn,
-#play-again-btn,
-#reconnect-rejoin-btn {
-  background: linear-gradient(
-    180deg,
-    var(--player-color, var(--accent-primary)) 0%,
-    color-mix(in srgb, var(--player-color, var(--accent-primary)) 82%, black) 100%
-  );
-  color: var(--player-text, var(--btn-primary-text));
-}
+/* Player-tinted CTA rule lives in theme.css so the display lobby can
+   reuse it. --player-color / --player-text are set on <body> by the
+   controller (see ControllerGame.js). */
 
 #name-join-btn:disabled,
 #start-btn:disabled {
@@ -276,13 +270,9 @@ html, body {
   cursor: default;
 }
 
-#name-join-btn {
-  animation: fadeUp 0.5s 0.4s ease-out both;
-}
-
-#name-join-btn:not(:disabled),
-#start-btn:not(:disabled) {
-  animation: fadeUp 0.5s 0.4s ease-out both, btnPulse 2.5s 1s ease-in-out infinite;
+#name-join-btn,
+#start-btn {
+  animation: fadeUp 0.5s 0.4s ease-out backwards;
 }
 
 
@@ -652,13 +642,15 @@ html, body {
 }
 
 .result-row {
+  align-self: center;
+  width: 100%;
+  max-width: 320px;
   gap: 18px;
   padding: 14px 16px;
 }
 
 .result-rank {
   font-size: clamp(0.9rem, 4.5vw, 1.2rem);
-  margin-right: 6px;
 }
 
 /* "This is you" highlight */
@@ -701,32 +693,29 @@ html, body {
 }
 
 #gameover-actions {
-  max-width: 280px;
   margin-top: 24px;
 }
 
 #gameover-buttons {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 12px;
   width: 100%;
   transition: opacity 0.4s ease;
 }
 
 #play-again-btn {
-  animation: resultsBtnIn 0.5s 0.6s ease-out both, btnPulse 2.5s 1.5s ease-in-out infinite;
+  animation: resultsBtnIn 0.5s 0.6s ease-out backwards;
 }
 
 #new-game-btn {
-  animation: resultsBtnIn 0.5s 0.7s ease-out both;
-}
-
-#new-game-btn:active {
-  border-color: var(--text-primary);
-  color: var(--text-primary);
+  animation: resultsBtnIn 0.5s 0.7s ease-out backwards;
 }
 
 #gameover-status {
+  min-height: 0;
+  padding: 0.3rem 0.8rem;
   animation: resultsBtnIn 0.5s 0.6s ease-out both;
 }
 
@@ -774,6 +763,7 @@ html, body {
   max-width: 280px;
 }
 
+#new-game-btn:active,
 #pause-newgame-btn:active {
   border-color: var(--text-primary);
   color: var(--text-primary);
@@ -831,6 +821,25 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
   padding: 4px;
 }
 
+/* Results portrait: with 8 players the stacked brand + list + actions can
+   exceed the frame height. `safe center` keeps the content centered when
+   it fits but anchors to the top when it overflows, so the title stays
+   visible below the safe-area inset instead of being clipped above it.
+   The extra brand padding gives the title a little breathing room from
+   the top edge in both cases. */
+.controller-shell__frame--results {
+  justify-content: safe center;
+}
+
+.controller-shell__frame--results .controller-shell__brand {
+  padding-top: 16px;
+}
+
+/* Keep "HEX STACKER" on one line on narrow phones rather than wrapping. */
+.controller-shell__frame--results .controller-shell__title {
+  white-space: nowrap;
+}
+
 /* --- Landscape layout ---
    min-aspect-ratio guards against false-landscape when a portrait device
    opens the soft keyboard: interactive-widget=resizes-content shrinks the
@@ -843,20 +852,36 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
     width: min(100%, 520px);
   }
 
+  /* Unified title size across all landscape shell screens (name, lobby,
+     results). The 5+ players results case overrides this with a smaller
+     value to fit its narrower right column. */
   .controller-shell__title {
-    display: none;
+    font-size: clamp(1rem, 3.4vw, 1.35rem);
   }
 
   .controller-shell__body {
     gap: 10px;
-    margin-top: 0;
   }
 
+  /* Actions keeps tighter cap but centers its button (width:100% capped at
+     280px) inside; name form matches the button width so input and JOIN
+     button line up. */
   .controller-shell__actions,
   #name-form {
-    max-width: 360px;
     margin-top: 8px;
     gap: 8px;
+  }
+
+  .controller-shell__actions {
+    max-width: 360px;
+  }
+
+  #name-form {
+    max-width: 280px;
+  }
+
+  .controller-shell__actions {
+    align-items: center;
   }
 
   /* Status banners need breathing room for longer messages like
@@ -887,27 +912,34 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
     max-width: none;
   }
 
-  #lobby-join-url {
-    display: none;
-  }
-
-  /* Results: list left, buttons right.
-     .controller-shell already applies safe-area padding, so just use regular padding here. */
+  /* Results: list on the left half, title + buttons on the right half.
+     Each half gets 1fr so each column fills its side of the frame; the items
+     inside (rows/buttons) are centered within their half by their own
+     max-width + flex alignment. `.controller-shell` already applies safe-area
+     padding. */
   .controller-shell__frame--results {
-    flex-direction: row;
-    align-items: stretch;
-    width: 100%;
-    max-width: 100%;
-    gap: 16px;
+    width: min(100%, 620px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    align-content: center;
+    column-gap: 16px;
+    row-gap: 12px;
     padding: 12px;
   }
 
   .controller-shell__frame--results .controller-shell__brand {
-    display: none;
+    grid-column: 2;
+    grid-row: 1;
+    padding-top: 0;
+    align-self: end;
+    max-width: 280px;
+    margin: 0 auto;
   }
 
   .controller-shell__body--results {
-    flex: 1;
+    grid-column: 1;
+    grid-row: 1 / 3;
     min-width: 0;
     justify-content: center;
   }
@@ -918,15 +950,91 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
 
   .result-row {
     gap: 10px;
-    padding: 10px 12px;
+    padding: 6px 12px;
+  }
+
+  /* Pack name + stats close together so all rows fit on short
+     landscape phones (e.g. iPhone SE 568×320). */
+  .result-info {
+    gap: 0;
+  }
+
+  .result-name {
+    font-size: clamp(0.95rem, 4.2vw, 1.15rem);
+    line-height: 1.15;
+  }
+
+  .result-stats {
+    font-size: clamp(0.78rem, 3.2vw, 0.95rem);
+    gap: 0.6rem;
+    line-height: 1.2;
   }
 
   #gameover-actions {
+    grid-column: 2;
+    grid-row: 2;
     max-width: none;
-    width: min(40vw, 220px);
+    width: 100%;
     margin-top: 0;
-    flex-shrink: 0;
     justify-content: center;
+    align-self: start;
+  }
+
+  /* 5+ players: widen the list column to hold two sub-columns of ranks, and
+     widen the frame so the three visible columns (ranks A + ranks B + actions)
+     fit packed together in the center (override the half-split from the 2-col
+     case). */
+  .controller-shell__frame--results:has(.result-row:nth-child(5)) {
+    width: min(100%, 920px);
+    grid-template-columns: minmax(0, 640px) minmax(0, 220px);
+    justify-content: center;
+  }
+
+  /* 5+ players: right column narrows to 220px — match the title to that
+     button width so it doesn't brush the column gap or screen edge. */
+  .controller-shell__frame--results:has(.result-row:nth-child(5)) .controller-shell__brand {
+    max-width: 220px;
+  }
+
+  .controller-shell__frame--results:has(.result-row:nth-child(5)) .controller-shell__title {
+    font-size: clamp(0.85rem, 2.6vw, 1.05rem);
+  }
+
+  #results-list:has(.result-row:nth-child(5)) {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: repeat(4, auto);
+    column-gap: 8px;
+    row-gap: 6px;
+    align-content: start;
+  }
+
+  /* 5+ players on narrow landscape: each sub-column is ~130px, so stats
+     must stay on one line or the row doubles in height. Shrink rank,
+     tighten gaps, and clip rather than wrap. */
+  #results-list:has(.result-row:nth-child(5)) .result-row {
+    gap: 6px;
+    padding: 5px 8px;
+  }
+
+  #results-list:has(.result-row:nth-child(5)) .result-rank {
+    font-size: clamp(0.75rem, 3.2vw, 1rem);
+  }
+
+  #results-list:has(.result-row:nth-child(5)) .result-name {
+    font-size: clamp(0.85rem, 3.6vw, 1rem);
+  }
+
+  #results-list:has(.result-row:nth-child(5)) .result-stats {
+    font-size: clamp(0.7rem, 2.8vw, 0.85rem);
+    gap: 0.4rem;
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  #results-list:has(.result-row:nth-child(5)) .result-stats > span {
+    white-space: nowrap;
   }
 
   /* Game screen: 3-column grid — left column grows for long translations,
@@ -1029,6 +1137,47 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
     grid-row: 1;
     min-height: 0;
     padding: 6px 0;
+  }
+}
+
+/* Short landscape (phones) — drop the title + lobby URL so the name
+   input, player card, and primary button fit above the fold. Taller
+   landscape (tablets, desktop windows) keeps the full chrome. */
+@media (orientation: landscape) and (min-aspect-ratio: 5/4) and (max-height: 499px) {
+  .controller-shell__title {
+    display: none;
+  }
+
+  /* Results screen keeps the title — it sits in the right column above the
+     buttons (grid layout in the main landscape rule), so there's room. */
+  .controller-shell__frame--results .controller-shell__title {
+    display: block;
+  }
+
+  .controller-shell__body {
+    margin-top: 0;
+  }
+
+  #lobby-join-url {
+    display: none;
+  }
+}
+
+/* Short landscape with enough vertical room (iPhone SE 568×320 and up):
+   bring the title back on Name + Lobby, compacted so it doesn't crowd the
+   input/card. The h ≤ 220 rule below still hides the whole brand when the
+   soft keyboard collapses the viewport. */
+@media (orientation: landscape) and (min-aspect-ratio: 5/4) and (max-height: 499px) and (min-height: 320px) {
+  .controller-shell__frame--name .controller-shell__title,
+  .controller-shell__frame--lobby .controller-shell__title {
+    display: block;
+    animation: none;
+  }
+
+  /* Restore portrait-style gap between title and input/card. */
+  .controller-shell__frame--name .controller-shell__body,
+  .controller-shell__frame--lobby .controller-shell__body {
+    margin-top: 24px;
   }
 }
 

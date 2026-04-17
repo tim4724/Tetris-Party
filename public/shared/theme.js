@@ -8,14 +8,14 @@
 // and UI accents. Garbage (#808080) is intentionally off-palette to keep
 // its "not yours / threatening" read.
 const PARTY_PALETTE = Object.freeze([
-  '#FF6B6B', // 1 Red
-  '#4ECDC4', // 2 Teal       ← UI accent (secondary)
-  '#FFD166', // 3 Honey
+  '#FF6B6B', // 1 Red        ← UI accent (primary)
+  '#4ECDC4', // 2 Teal
+  '#FFD166', // 3 Honey      ← UI accent (tertiary)
   '#A78BFA', // 4 Violet
   '#7BED6F', // 5 Mint
-  '#FF6F9A', // 6 Pink       ← UI accent (primary)
+  '#FF6F9A', // 6 Pink
   '#5B7FFF', // 7 Indigo
-  '#FF8C42'  // 8 Tangerine
+  '#FF8C42'  // 8 Tangerine  ← UI accent (secondary)
 ]);
 
 // --- Piece colors (1=I, 2=O, 3=S, 4=Z, 5=q, 6=p, 7=L, 8=J, 9=garbage) ---
@@ -91,11 +91,11 @@ const THEME = Object.freeze({
       white:     '#ffffff',
     }),
     accent: Object.freeze({
-      primary:      '#FF6F9A', // palette slot 6 Pink — UI primary
-      primaryDark:  '#E85C7C',
-      secondary:    '#4ECDC4', // palette slot 2 Teal — UI secondary
-      secondaryDark:'#3AB3AB',
-      tertiary:     '#FFD166', // palette slot 3 Honey
+      primary:      '#FF6B6B', // palette slot 1 Red — UI primary
+      primaryDark:  '#E55A5A',
+      secondary:    '#FF8C42', // palette slot 8 Tangerine — UI secondary
+      secondaryDark:'#E67A33',
+      tertiary:     '#FFD166', // palette slot 3 Honey — toast/low-priority accent
     }),
     danger:  '#ff4444',
     garbage: '#3A2F4A',         // plum-gray, in-palette
@@ -183,8 +183,7 @@ function rgbaFromHex(hex, alpha) {
 
 // Pick a legible text color for a hex background using WCAG relative
 // luminance. Returns the Cocoa plum-dark bg for bright slots (Honey,
-// Mint, Teal) and white for everything else — preserves the existing
-// white-on-pink .btn-primary look while fixing white-on-honey/mint.
+// Mint, Teal) and white for everything else.
 function onColor(hex) {
   var m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex || '');
   if (!m) return '#ffffff';

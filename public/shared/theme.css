@@ -25,14 +25,21 @@
   --bg-glass: rgba(255, 248, 236, 0.06);
 
   /* Accents — drawn from the party palette */
-  --accent-primary-rgb: 255, 111, 154;    /* Slot 6 Pink */
+  --accent-primary-rgb: 255, 107, 107;    /* Slot 1 Red */
   --accent-primary: rgb(var(--accent-primary-rgb));
-  --accent-primary-dark: #E85C7C;
-  --accent-secondary-rgb: 78, 205, 196;   /* Slot 2 Teal */
+  --accent-primary-dark: #E55A5A;
+  --accent-secondary-rgb: 255, 140, 66;   /* Slot 8 Tangerine */
   --accent-secondary: rgb(var(--accent-secondary-rgb));
-  --accent-secondary-dark: #3AB3AB;
-  --accent-tertiary-rgb: 255, 209, 102;   /* Slot 3 Honey — for tertiary highlights */
+  --accent-secondary-dark: #E67A33;
+  --accent-tertiary-rgb: 255, 209, 102;   /* Slot 3 Honey — toast/low-priority accent */
   --accent-tertiary: rgb(var(--accent-tertiary-rgb));
+
+  /* HEX STACKER wordmark gradient — independent of the UI accents so
+     the title reads red → honey → teal while buttons/links use their
+     own palette slots. */
+  --title-from: #FF6B6B;   /* Slot 1 Red */
+  --title-mid:  #FFD166;   /* Slot 3 Honey */
+  --title-to:   #4ECDC4;   /* Slot 2 Teal */
 
   /* Text — warm cream */
   --text-primary: #F7F1E8;
@@ -130,6 +137,26 @@
   cursor: not-allowed;
   transform: none;
   box-shadow: var(--shadow-sm);
+}
+
+/* Player-tinted CTAs — match the lobby host (display) or the local player
+   (controller) so the primary action visually ties to their identity color.
+   --player-color / --player-text are set on #start-btn (display lobby) or
+   <body> (controller) by JS; when unset, these fall back to the default
+   .btn-primary palette. Text color flips to dark on high-luminance slots
+   (Honey/Mint/Teal) — see onColor() in theme.js. The color-mix(82%, black)
+   darkening mirrors the shape of --accent-primary → --accent-primary-dark. */
+#start-btn:not(:disabled),
+#pause-continue-btn,
+#play-again-btn,
+#reconnect-btn,
+#reconnect-rejoin-btn {
+  background: linear-gradient(
+    180deg,
+    var(--player-color, var(--accent-primary)) 0%,
+    color-mix(in srgb, var(--player-color, var(--accent-primary)) 82%, black) 100%
+  );
+  color: var(--player-text, var(--btn-primary-text));
 }
 
 .btn-secondary {
@@ -308,7 +335,7 @@
   font-family: 'Orbitron', sans-serif;
   font-weight: 900;
   letter-spacing: 0.08em;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-tertiary), var(--accent-secondary));
+  background: linear-gradient(135deg, var(--title-from), var(--title-mid), var(--title-to));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

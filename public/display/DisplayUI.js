@@ -136,6 +136,13 @@ function updatePlayerList() {
   }
   var visibleSlots = Math.max(placeholderSlots, highestOccupied + 1);
 
+  // In AirConsole empty slots are hidden, so the layout bucket is driven by
+  // actual player count; elsewhere use the visible-slot count (incl. placeholders).
+  var isAirConsole = document.body.classList.contains('airconsole');
+  var bucketCount = isAirConsole ? players.size : visibleSlots;
+  playerListEl.classList.toggle('pl--sm', bucketCount <= 4);
+  playerListEl.classList.toggle('pl--lg', bucketCount > 4);
+
   for (var j = 0; j < totalSlots; j++) {
     var slot = playerListEl.children[j];
     var card = slot.querySelector('.player-card');
@@ -206,6 +213,24 @@ function updateStartButton() {
   startBtn.textContent = hasPlayers
     ? t('start_n_players', { count: players.size })
     : t('waiting_for_players');
+
+  // Tint primary CTAs (lobby start + pause/reconnect/results overlays) with
+  // the current host's identity color. Setting on <body> lets every tinted
+  // button in theme.css inherit without per-button wiring. Shared rule reads
+  // --player-color / --player-text, falling back to --accent-primary /
+  // --btn-primary-text when unset.
+  var hostId = getHostClientId();
+  var hostPlayer = hostId ? players.get(hostId) : null;
+  var hostColor = hostPlayer
+    ? (hostPlayer.playerColor || PLAYER_COLORS[hostPlayer.playerIndex])
+    : null;
+  if (hostColor) {
+    document.body.style.setProperty('--player-color', hostColor);
+    document.body.style.setProperty('--player-text', onColor(hostColor));
+  } else {
+    document.body.style.removeProperty('--player-color');
+    document.body.style.removeProperty('--player-text');
+  }
 }
 
 // Delegated click handler for level +/- buttons on display player cards

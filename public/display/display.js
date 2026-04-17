@@ -242,10 +242,12 @@ if (bgCanvas && (urlParams.get('test') !== '1' || urlParams.get('bg') === '1')) 
 // --- Debug or normal init ---
 var _scenarioParam = urlParams.get('scenario');
 if (window.__TEST__ && (debugCount > 0 || _scenarioParam)) {
+  var _hostParam = urlParams.get('host');
   initScenario({
     scenario: _scenarioParam || 'playing',
     players: debugCount || parseInt(urlParams.get('players'), 10) || 1,
-    level: parseInt(urlParams.get('level'), 10) || 1
+    level: parseInt(urlParams.get('level'), 10) || 1,
+    host: _hostParam === null ? null : parseInt(_hostParam, 10)
   });
 } else if (urlParams.get('test') === '1') {
   // Test mode: skip relay connection — tests inject state directly
