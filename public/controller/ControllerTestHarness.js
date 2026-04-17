@@ -2,8 +2,9 @@
 
 // =====================================================================
 // Controller Test Harness — scenario-driven state injection for the
-// gallery page. Active only when ?test=1. Loaded last so controller.js
-// has already run its default init (which shows the name screen).
+// gallery page. Active only when ?scenario= is present (visual tests use
+// ?test=1 alone and rely on the real connect() flow — don't stomp them).
+// Loaded last so controller.js has already run its default init.
 // =====================================================================
 
 (function() {
