@@ -384,6 +384,11 @@ html, body {
   border-radius: 1px;
 }
 
+#pause-btn:hover:not(:disabled) .pause-icon::before,
+#pause-btn:hover:not(:disabled) .pause-icon::after {
+  background: var(--color-white);
+}
+
 #pause-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
