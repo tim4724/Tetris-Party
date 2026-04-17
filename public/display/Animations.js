@@ -3,6 +3,9 @@
 var _NO_SHAKE = Object.freeze({ x: 0, y: 0 });
 var _shakeResult = { x: 0, y: 0 };
 
+// Piece IDs 1..8 (skip 0=empty, 9=garbage) — palette hexes for confetti.
+var CONFETTI_IDS = Object.freeze([1, 2, 3, 4, 5, 6, 7, 8]);
+
 class Animations {
   constructor(ctx) {
     this.ctx = ctx;
@@ -120,8 +123,6 @@ class Animations {
     }
 
     // Confetti particles — palette-colored hexes on quad, white on smaller clears.
-    // PIECE_COLORS is 1..8 (skip 0=empty, 9=garbage) for the party palette.
-    var CONFETTI_IDS = [1, 2, 3, 4, 5, 6, 7, 8];
     for (var si = 0; si < cells.length; si++) {
       var sc = cells[si][0], sr = cells[si][1];
       if (sr < 0) continue;

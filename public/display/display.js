@@ -226,7 +226,10 @@ fetch('/api/version').then(function(r) { return r.json(); }).then(function(data)
   if (!data.isProduction && data.commit) {
     label += ' (#' + data.commit + ')';
   }
-  document.getElementById('version-label').textContent = label;
+  var welcomeVersion = document.getElementById('welcome-version-label');
+  if (welcomeVersion) welcomeVersion.textContent = 'v' + label;
+  var lobbyVersion = document.getElementById('lobby-version-label');
+  if (lobbyVersion) lobbyVersion.textContent = label;
 }).catch(function() {});
 
 var bgCanvas = document.getElementById('bg-canvas');

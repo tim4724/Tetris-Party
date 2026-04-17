@@ -487,32 +487,38 @@ html, body {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-lg);
-  /* Cushion-press recipe: player-colored rim + sunken inner surface.
-     The top inset shadow gives the depressed-into-a-pillow feel; the dot
-     pattern is player-tinted for identity. No outer glow. */
+  /* Cushion-press surface — player-tinted background + deep inset shadow +
+     top bevel highlight. The dot pattern is player-tinted so the pad reads
+     as the player's material. */
   /* Fallbacks for old browsers (no color-mix support) — neutral accents */
   box-shadow:
-    inset 0 0 0 2px rgba(255, 255, 255, 0.22),
-    inset 0 4px 10px rgba(0, 0, 0, 0.55),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
-  background-color: var(--bg-board);
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.22),
+    inset 0 3px 14px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background-color: var(--bg-card);
   background-image: radial-gradient(circle, rgba(255, 255, 255, 0.10) 1.2px, transparent 1.8px);
-  /* Modern browsers: player-tinted rim + dots */
+  /* Modern browsers: player-color identity without brightening too much —
+     the base is the deeper board color so the tint adds hue, not lightness. */
   box-shadow:
-    inset 0 0 0 2px color-mix(in srgb, var(--player-color, white) 60%, transparent),
-    inset 0 4px 10px rgba(0, 0, 0, 0.55),
-    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
-  background-color: color-mix(in srgb, var(--player-color, transparent) 6%, var(--bg-board));
-  background-image: radial-gradient(circle, color-mix(in srgb, var(--player-color, white) 24%, transparent) 1.2px, transparent 1.8px);
+    inset 0 0 0 2px color-mix(in srgb, var(--player-color, white) 70%, transparent),
+    inset 0 3px 14px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  background-color: color-mix(in srgb, var(--player-color, transparent) 20%, var(--bg-board));
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--player-color, white) 32%, transparent) 1.2px, transparent 1.8px);
   background-size: 22px 22px;
   cursor: crosshair;
   transition: box-shadow var(--transition-fast);
 }
 
 #touch-pad:active {
-  /* Deeper inset shadow on active press — the pad sinks further. */
+  /* Deeper inset shadow on active press — the pad sinks further.
+     Fallback for old browsers without color-mix, then the modern variant. */
   box-shadow:
-    inset 0 0 0 2px color-mix(in srgb, var(--player-color, white) 70%, transparent),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.35),
+    inset 0 6px 16px rgba(0, 0, 0, 0.7),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 0 0 2px color-mix(in srgb, var(--player-color, white) 90%, transparent),
     inset 0 6px 16px rgba(0, 0, 0, 0.7),
     inset 0 -1px 0 rgba(255, 255, 255, 0.04);
   cursor: grabbing;
@@ -629,11 +635,13 @@ html, body {
 }
 
 .result-rank {
-  font-size: clamp(1rem, 5vw, 1.4rem);
+  font-size: clamp(0.9rem, 4.5vw, 1.2rem);
   font-weight: 900;
-  width: 2.4rem;
+  width: clamp(2rem, 8vw, 2.4rem);
+  height: clamp(2rem, 8vw, 2.4rem);
   flex-shrink: 0;
   letter-spacing: -0.02em;
+  margin-right: 6px;
 }
 
 .result-info {

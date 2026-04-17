@@ -121,7 +121,6 @@
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-lg), var(--bevel-btn);
 }
 
@@ -146,7 +145,6 @@
 
 .btn-secondary:hover {
   background: var(--bg-card-soft);
-  transform: translateY(-1px);
   box-shadow: var(--shadow-md), var(--bevel-top);
 }
 
@@ -289,7 +287,6 @@
 }
 
 .icon-btn:hover {
-  transform: translateY(-2px);
   box-shadow: var(--shadow-md), var(--bevel-top);
 }
 

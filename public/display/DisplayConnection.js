@@ -119,7 +119,59 @@ function applyRoomCreated(partyRoomCode, newJoinUrl) {
   if (roomState !== ROOM_STATE.LOBBY) setRoomState(ROOM_STATE.LOBBY);
 
   joinUrl = newJoinUrl;
-  joinUrlEl.textContent = joinUrl;
+  // Render the join URL as two parts: small host + big room code. Keeps
+  // the code readable inside the QR card; avoids wide URLs clipping out.
+  var hostEl = joinUrlEl.querySelector('.join-url__host');
+  var codeEl = joinUrlEl.querySelector('.join-url__code');
+  if (hostEl && codeEl) {
+    try {
+      var u = new URL(joinUrl);
+      // Trailing slash kept on the host span so it never wraps away from
+      // the hostname onto the code line.
+      hostEl.textContent = u.host + '/';
+      codeEl.textContent = u.pathname.replace(/^\//, '') || partyRoomCode;
+    } catch (e) {
+      hostEl.textContent = '';
+      codeEl.textContent = joinUrl;
+    }
+  } else {
+    joinUrlEl.textContent = joinUrl;
+  }
+  // Click to copy the full join URL — handler is idempotent, attached
+  // once on the first room creation.
+  if (!joinUrlEl.dataset.copyBound) {
+    joinUrlEl.dataset.copyBound = '1';
+    joinUrlEl.setAttribute('role', 'button');
+    joinUrlEl.setAttribute('tabindex', '0');
+    var copyToClipboard = function() {
+      if (!joinUrl) return;
+      var write = navigator.clipboard && navigator.clipboard.writeText
+        ? navigator.clipboard.writeText(joinUrl)
+        : Promise.reject();
+      write.catch(function() {
+        // Fallback: offscreen textarea + execCommand('copy') for old browsers
+        var ta = document.createElement('textarea');
+        ta.value = joinUrl;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); } catch (_) {}
+        document.body.removeChild(ta);
+      }).finally(function() {
+        joinUrlEl.setAttribute('data-copied-label', t('copied') || 'Copied');
+        joinUrlEl.setAttribute('data-copied', '1');
+        clearTimeout(joinUrlEl._copyTimer);
+        joinUrlEl._copyTimer = setTimeout(function() {
+          joinUrlEl.removeAttribute('data-copied');
+        }, 1600);
+      });
+    };
+    joinUrlEl.addEventListener('click', copyToClipboard);
+    joinUrlEl.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); copyToClipboard(); }
+    });
+  }
 
   // Reset local state
   resetRoomData();

@@ -342,11 +342,13 @@ class UIRenderer {
     ctx.restore();
 
     // 4. Thin player-tinted rim stroke for identity.
+    ctx.save();
     ctx.strokeStyle = this._panelStroke;
     ctx.lineWidth = Math.max(1, cellSize * THEME.stroke.border * 0.6);
     ctx.beginPath();
     _addRoundRectSubPath(ctx, x, y, w, h, r);
     ctx.stroke();
+    ctx.restore();
   }
 
   drawGarbageMeter(pendingGarbage) {
@@ -470,7 +472,7 @@ class UIRenderer {
     var isNeon = this._styleTier === STYLE_TIERS.NEON_FLAT;
     var color = (isNeon ? NEON_PIECE_COLORS[typeId] : PIECE_COLORS[typeId]) || '#ffffff';
 
-    var hexS = size * 0.45;
+    var hexS = size * 0.58;
     var drawS = hexS * (1 - THEME.size.blockGap * 2);
     var hexH = _SQRT3 * hexS;   // height of flat-top hex (layout spacing)
     var colW = 1.5 * hexS;            // column spacing

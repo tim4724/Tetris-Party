@@ -54,9 +54,12 @@ class BoardRenderer {
       this.x, this.y, this.hexSize, this.hexH, this.colW, HEX_COLS_N, HEX_VIS_ROWS, borderHalf
     );
 
-    // Cached rgba strings (stable between layout recalculations)
+    // Cached rgba strings (stable between layout recalculations).
+    // Board tint uses a stronger alpha than THEME.opacity.tint so the
+    // player's color reads boldly against the card surface rather than
+    // blending into generic plum.
     var rgb = this._accentRgb;
-    this._tintFill = rgb ? 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',' + THEME.opacity.tint + ')' : null;
+    this._tintFill = rgb ? 'rgba(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ',0.12)' : null;
     var gridAlpha = THEME.opacity.grid + (rgb ? (1 - (rgb.r * 0.299 + rgb.g * 0.587 + rgb.b * 0.114) / 255) * 0.08 : 0);
     this._gridAlpha = gridAlpha;
     this._gridStrokeOpaque = rgb ? 'rgb(' + rgb.r + ',' + rgb.g + ',' + rgb.b + ')' : 'rgb(255,255,255)';
@@ -80,7 +83,9 @@ class BoardRenderer {
     var gc = oc.getContext('2d');
     gc.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    // 1. Clip to hex outline and fill board background + tint
+    // 1. Clip to hex outline and fill board background — tactile recipe:
+    //    vertical gradient (cardSoft → card), player-tint wash, top bevel
+    //    highlight inside the clipped zigzag shape.
     var bgv = this._bgOutlineVerts;
     var ox = this.x, oy = this.y;
     gc.save();
@@ -89,12 +94,29 @@ class BoardRenderer {
     for (var i = 1; i < bgv.length; i++) gc.lineTo(bgv[i][0] - ox, bgv[i][1] - oy);
     gc.closePath();
     gc.clip();
-    gc.fillStyle = THEME.color.bg.board;
-    gc.fill();
+
+    // Deeper plum base so the player tint adds identity without brightening
+    // the well (which would wash out piece contrast).
+    var bgGrad = gc.createLinearGradient(0, 0, 0, h);
+    bgGrad.addColorStop(0, THEME.color.bg.secondary);
+    bgGrad.addColorStop(1, THEME.color.bg.board);
+    gc.fillStyle = bgGrad;
+    gc.fillRect(0, 0, w, h);
+
     if (this._tintFill) {
       gc.fillStyle = this._tintFill;
-      gc.fill();
+      gc.fillRect(0, 0, w, h);
     }
+
+    // Top bevel — horizontal white line just inside the top edge of the hex.
+    gc.strokeStyle = 'rgba(255, 255, 255, 0.10)';
+    gc.lineWidth = Math.max(1, this.cellSize * 0.04);
+    var bevelY = Math.max(2, this.cellSize * 0.08);
+    gc.beginPath();
+    gc.moveTo(0, bevelY);
+    gc.lineTo(w, bevelY);
+    gc.stroke();
+
     gc.restore();
 
     // 2. Grid lines — draw opaque on a temp canvas, then composite at target alpha.
@@ -185,7 +207,23 @@ class BoardRenderer {
 
     var sCell = this._sCell;
 
-    // 1. Board background + grid lines (cached, single blit).
+    // 1. Outer cushion shadow — cast behind the hex outline so the board
+    //    reads as a raised card on the table. Filled per-frame (shadowBlur
+    //    on a cached image is hard; the path is cheap).
+    ctx.save();
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.45)';
+    ctx.shadowBlur = this.cellSize * 0.6;
+    ctx.shadowOffsetY = this.cellSize * 0.18;
+    ctx.fillStyle = THEME.color.bg.card;
+    ctx.beginPath();
+    var bgVerts = this._bgOutlineVerts;
+    ctx.moveTo(bgVerts[0][0], bgVerts[0][1]);
+    for (var vi = 1; vi < bgVerts.length; vi++) ctx.lineTo(bgVerts[vi][0], bgVerts[vi][1]);
+    ctx.closePath();
+    ctx.fill();
+    ctx.restore();
+
+    // 2. Board background + grid lines (cached, single blit).
     // Rebuild if missing or if DPR/board dimensions changed (monitor move).
     var _dpr = window.devicePixelRatio || 1;
     var _bgPw = Math.ceil(Math.ceil(this.boardWidth) * _dpr);

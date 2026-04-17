@@ -54,6 +54,7 @@
 
   <!-- Welcome screen: unlocks audio via user gesture -->
   <div id="welcome-screen" class="screen">
+    <span id="welcome-version-label"></span>
     <h1 class="gradient-title">HEX STACKER<span class="gradient-title__sub">party</span></h1>
     <button id="new-game-btn" class="btn btn-primary" data-i18n="start_new_game">START NEW GAME</button>
     <div id="welcome-footer">
@@ -70,19 +71,22 @@
           <a href="/imprint" data-i18n="imprint">Imprint</a>
         </span>
       </div>
-      <span id="version-label"></span>
     </div>
   </div>
 
   <!-- Lobby screen: QR code + player list + start button -->
   <div id="lobby-screen" class="screen hidden">
     <h1 class="gradient-title">HEX STACKER<span class="gradient-title__sub">party</span></h1>
-    <div id="qr-container">
-      <canvas id="qr-code"></canvas>
-      <p id="qr-label" data-i18n="scan_to_join">Scan to join</p>
-      <p id="join-url"></p>
+    <div id="lobby-body">
+      <div id="qr-container">
+        <canvas id="qr-code"></canvas>
+        <p id="qr-label" data-i18n="scan_to_join">Scan to join</p>
+        <p id="join-url">
+          <span class="join-url__host"></span><span class="join-url__code"></span>
+        </p>
+      </div>
+      <div id="player-list"></div>
     </div>
-    <div id="player-list"></div>
     <button id="start-btn" class="btn btn-primary" disabled data-i18n="waiting_for_players">Waiting for players...</button>
     <div id="lobby-footer">
       <div class="footer-row">

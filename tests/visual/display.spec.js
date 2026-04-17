@@ -34,7 +34,7 @@ test.describe('Display', () => {
   test('welcome screen', async ({ page }) => {
     await page.goto('/?test=1');
     await waitForFont(page);
-    await page.locator('#version-label').evaluate(el => el.textContent = 'X.Y.Z');
+    await page.locator('#welcome-version-label').evaluate(el => el.textContent = 'vX.Y.Z');
     await expect(page).toHaveScreenshot('02-welcome.png');
   });
 
