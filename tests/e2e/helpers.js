@@ -66,14 +66,14 @@ async function createRoom(page) {
   await page.click('#new-game-btn');
   await page.waitForSelector('#lobby-screen:not(.hidden)', { timeout: 30000 });
   await page.waitForFunction(() => {
-    const joinUrl = document.getElementById('join-url');
+    const codeEl = document.querySelector('#join-url .join-url__code');
     const qrCanvas = document.getElementById('qr-code');
-    return joinUrl && joinUrl.textContent && joinUrl.textContent.length > 0
+    return codeEl && codeEl.textContent.trim().length > 0
       && qrCanvas && qrCanvas.width > 0;
   }, null, { timeout: 10000 });
 
   const joinUrl = (await page.textContent('#join-url')).trim();
-  const roomCode = joinUrl.split('/').pop();
+  const roomCode = (await page.textContent('#join-url .join-url__code')).trim();
   return { joinUrl, roomCode };
 }
 
