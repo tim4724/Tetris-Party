@@ -144,14 +144,14 @@ function _fakeLobbyQR() {
     var hostEl = joinUrlEl.querySelector('.join-url__host');
     var codeEl = joinUrlEl.querySelector('.join-url__code');
     if (hostEl && codeEl) {
-      hostEl.textContent = 'hexstackerparty.com/';
+      hostEl.textContent = 'hexstacker.com/';
       codeEl.textContent = 'TEST';
     } else {
-      joinUrlEl.textContent = 'hexstackerparty.com/TEST';
+      joinUrlEl.textContent = 'hexstacker.com/TEST';
     }
   }
   // Render a real QR for a fake URL so the lobby layout looks realistic.
-  fetch('/api/qr?text=' + encodeURIComponent('https://hexstackerparty.com/TEST12'))
+  fetch('/api/qr?text=' + encodeURIComponent('https://hexstacker.com/TEST12'))
     .then(function(r) { return r.json(); })
     .then(function(matrix) { if (qrCode) renderQR(qrCode, matrix); })
     .catch(function() { /* gallery works without QR — ignore */ });

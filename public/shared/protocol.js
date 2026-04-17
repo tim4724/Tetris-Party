@@ -1,7 +1,7 @@
 'use strict';
 
 // Party-Server relay URL
-var RELAY_URL = 'wss://ws.hexstackerparty.com';
+var RELAY_URL = 'wss://ws.hexstacker.com';
 
 // Message types for game communication (inside Party-Server data field)
 var MSG = {

@@ -79,7 +79,7 @@ if (endContinueBtn) {
   });
 }
 
-// Share hexstackerparty.com via the Web Share API when the link is tapped on mobile.
+// Share hexstacker.com via the Web Share API when the link is tapped on mobile.
 // Delegated on document so i18n re-translations don't discard the listener.
 if (navigator.share) {
   document.addEventListener('click', function(e) {
@@ -89,7 +89,7 @@ if (navigator.share) {
     navigator.share({
       title: 'HexStacker Party',
       text: 'Play HexStacker Party with your friends',
-      url: 'https://hexstackerparty.com'
+      url: 'https://hexstacker.com'
     }).catch(function(err) {
       // AbortError = user cancelled the sheet — do nothing.
       // Any other error = share was blocked — fall back to normal navigation.

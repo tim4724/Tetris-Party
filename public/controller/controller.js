@@ -290,7 +290,7 @@ window.addEventListener('pagehide', function () {
   if (party) party.close();
 });
 
-// Share hexstackerparty.com via the Web Share API when the end-screen link is tapped.
+// Share hexstacker.com via the Web Share API when the end-screen link is tapped.
 // Delegated on document because i18n translatePage re-sets innerHTML and would
 // discard a direct listener.
 if (navigator.share) {
@@ -301,7 +301,7 @@ if (navigator.share) {
     navigator.share({
       title: 'HexStacker Party',
       text: 'Play HexStacker Party with your friends',
-      url: 'https://hexstackerparty.com'
+      url: 'https://hexstacker.com'
     }).catch(function(err) {
       // AbortError = user cancelled the sheet — do nothing.
       // Any other error = share was blocked (e.g. NotAllowedError when
