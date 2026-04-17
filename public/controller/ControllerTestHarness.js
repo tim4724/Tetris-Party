@@ -35,7 +35,6 @@
     opts = opts || {};
     playerColor = PLAYER_COLORS[colorIdx];
     document.body.style.setProperty('--player-color', playerColor);
-    document.body.style.setProperty('--player-text', onColor(playerColor));
     playerName = fakeName;
     playerCount = opts.playerCount || 4;
     isHost = !!opts.isHost;
@@ -87,7 +86,14 @@
   // --- Dispatch by scenario ---
   switch (scenario) {
     case 'name':
-      // Default controller init already shows the name screen; nothing to do.
+      // Gallery iframes share localStorage; if a prior scenario stored a
+      // clientId_<roomCode>, controller.js init takes the "reconnect"
+      // branch and leaves the JOIN button disabled with "CONNECTING…".
+      // Reset the name screen to its pristine first-visit state.
+      nameInput.value = '';
+      nameInput.disabled = false;
+      nameJoinBtn.disabled = false;
+      nameJoinBtn.textContent = t('join');
       break;
 
     case 'name-connecting':

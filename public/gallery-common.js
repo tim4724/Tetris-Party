@@ -120,14 +120,24 @@ var Gallery = (function() {
   var MAX_CONCURRENT = 6;
   var active = 0;
   var queue = [];
-  // Paused while the user is interacting with header controls. Chrome closes
+  // Paused while a header <select> popup is (or may be) open. Chrome closes
   // open <select> popups whenever an iframe load completes in the same
-  // document, so we hold off starting new loads until focus leaves the header.
+  // document, so we hold off starting new loads while the popup is visible.
   var paused = false;
+  var pauseSafetyTimer = null;
+  var PAUSE_SAFETY_MS = 3000;
   function setLoadingPaused(p) {
     if (paused === p) return;
     paused = p;
-    if (!paused) _drain();
+    clearTimeout(pauseSafetyTimer);
+    pauseSafetyTimer = null;
+    if (paused) {
+      // Safety net: if a resume event is missed (focus stolen, devtools, etc.)
+      // never stay paused longer than PAUSE_SAFETY_MS.
+      pauseSafetyTimer = setTimeout(function() { setLoadingPaused(false); }, PAUSE_SAFETY_MS);
+    } else {
+      _drain();
+    }
   }
   function _drain() {
     while (!paused && active < MAX_CONCURRENT && queue.length) {
@@ -160,21 +170,28 @@ var Gallery = (function() {
   // `active` here would push it negative as their `finish` callbacks fire.
   function resetQueue() { queue = []; }
 
-  // Auto-pause loading while focus is inside the header. Selects/inputs grab
-  // focus on click, so this catches both keyboard and pointer interaction.
-  // pointerdown is also wired because Chrome may open a select popup before
-  // dispatching focusin, and we want the queue paused before any new load
-  // starts that could close the popup.
+  // Auto-pause loading while a header <select> popup is open. Only selects
+  // need this — buttons and number inputs have no popup that an iframe load
+  // can clobber, and pausing on them caused stuck-paused states (e.g. the
+  // reload button's pointerdown flipped pause=true but no focusout followed
+  // because buttons don't retain focus on click).
+  //
+  // pointerdown is wired because Chrome may open the popup before focus
+  // events fire, and we want the queue paused before any new load starts.
+  // change resumes immediately (spec: popup is closed by the time change
+  // fires), so the just-selected scenario renders without waiting for the
+  // user to click outside the header.
   function autoPauseOnHeaderFocus() {
     var hdr = document.querySelector('header');
     if (!hdr) return;
-    hdr.addEventListener('pointerdown', function(e) {
-      if (e.target.closest('select, input, button')) setLoadingPaused(true);
-    });
-    hdr.addEventListener('focusin', function() { setLoadingPaused(true); });
-    hdr.addEventListener('focusout', function(e) {
-      if (!hdr.contains(e.relatedTarget)) setLoadingPaused(false);
-    });
+    var selects = hdr.querySelectorAll('select');
+    for (var i = 0; i < selects.length; i++) {
+      var sel = selects[i];
+      sel.addEventListener('pointerdown', function() { setLoadingPaused(true); });
+      sel.addEventListener('focus', function() { setLoadingPaused(true); });
+      sel.addEventListener('change', function() { setLoadingPaused(false); });
+      sel.addEventListener('blur', function() { setLoadingPaused(false); });
+    }
   }
 
   // --- Card factory ---

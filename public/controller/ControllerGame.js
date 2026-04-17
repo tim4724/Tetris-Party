@@ -143,7 +143,6 @@ function renderHostBanner(element, key, name, color) {
 function onWelcome(data) {
   playerColor = data.playerColor || PLAYER_COLORS[0];
   document.body.style.setProperty('--player-color', playerColor);
-  document.body.style.setProperty('--player-text', onColor(playerColor));
   playerCount = data.playerCount || 1;
   gameCancelled = false;
   waitingForNextGame = false;

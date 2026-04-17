@@ -23,7 +23,6 @@
   border-radius: var(--radius-md);
   background: var(--bg-card);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm), var(--bevel-top);
   animation: resultRowIn 0.4s ease-out both;
   animation-delay: var(--row-delay, 0.2s);
 }

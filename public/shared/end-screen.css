@@ -116,7 +116,6 @@ body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
   height: auto;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
-  box-shadow: 0 6px 28px rgba(0, 0, 0, 0.5), var(--bevel-top);
 }
 
 /* --- Instructions card — Cocoa Arcade tactile surface (matches .card) --- */
@@ -126,7 +125,6 @@ body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md), var(--bevel-top);
   padding: 18px;
 }
 
@@ -185,7 +183,6 @@ body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: var(--bevel-top), var(--shadow-sm);
   position: relative;
   z-index: 1;
 }
@@ -217,7 +214,6 @@ body:has(#end-screen:not(.hidden)) .screen { display: none !important; }
   font-size: 0.85rem;
   font-weight: 500;
   letter-spacing: 0.06em;
-  box-shadow: var(--shadow-sm);
   transition: opacity 0.3s ease;
   opacity: 1;
 }

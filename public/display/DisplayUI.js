@@ -219,11 +219,10 @@ function updateStartButton() {
 // Tint primary CTAs (lobby start + pause/reconnect/results overlays) with the
 // current host's identity color. Setting on <body> lets every tinted button in
 // theme.css inherit without per-button wiring. Shared rule reads
-// --player-color / --player-text, falling back to --accent-primary /
-// --btn-primary-text when unset. Called both from the lobby flow
-// (updateStartButton) and from broadcastLobbyUpdate so a mid-game host handoff
-// (AirConsole master_changed, player leaving during RESULTS) refreshes the tint
-// on the pause/results/reconnect overlays too.
+// --player-color, falling back to --accent-primary when unset. Called both
+// from the lobby flow (updateStartButton) and from broadcastLobbyUpdate so a
+// mid-game host handoff (AirConsole master_changed, player leaving during
+// RESULTS) refreshes the tint on the pause/results/reconnect overlays too.
 function applyHostTint() {
   var hostId = getHostClientId();
   var hostPlayer = hostId ? players.get(hostId) : null;
@@ -232,10 +231,8 @@ function applyHostTint() {
     : null;
   if (hostColor) {
     document.body.style.setProperty('--player-color', hostColor);
-    document.body.style.setProperty('--player-text', onColor(hostColor));
   } else {
     document.body.style.removeProperty('--player-color');
-    document.body.style.removeProperty('--player-text');
   }
 }
 

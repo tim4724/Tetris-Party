@@ -1,7 +1,7 @@
 /* ==========================================================
    Design Tokens — CSS custom properties (mirrors theme.js)
    Cocoa Arcade theme: warm-plum surfaces, palette-derived
-   accents, soft shadows + inset bevels instead of glows.
+   accents, flat surfaces (no shadows/bevels/glows).
    ========================================================== */
 
 :root {
@@ -63,8 +63,11 @@
   --medal-bronze-rgb: 205, 127, 50;
   --medal-bronze: rgb(var(--medal-bronze-rgb));
 
-  /* Button text */
-  --btn-primary-text: #ffffff;
+  /* Button text — Cocoa plum-dark. Every PARTY_PALETTE slot is bright
+     enough that dark text out-contrasts white (and passes WCAG AA on
+     most slots), so the host-tinted CTAs reuse this value regardless
+     of which player is host. */
+  --btn-primary-text: #1E1A2B;
 
   /* Ping indicators */
   --ping-good: #7BED6F;                   /* mint */
@@ -74,12 +77,8 @@
   /* Overlay */
   --overlay-bg: rgba(var(--bg-primary-rgb), 0.88);
 
-  /* Shadows + bevels — replace old glow tokens */
+  /* Shadows */
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.32);
-  --shadow-md: 0 8px 22px rgba(0, 0, 0, 0.36);
-  --shadow-lg: 0 22px 48px rgba(0, 0, 0, 0.48);
-  --bevel-top: inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  --bevel-btn: inset 0 2px 0 rgba(255, 255, 255, 0.25), inset 0 -2px 6px rgba(0, 0, 0, 0.18);
 
   /* Opacities */
   --opacity-faint: 0.04;
@@ -104,8 +103,7 @@
 }
 
 /* ==========================================================
-   Shared Button Classes — cushion recipe (Phase 2)
-   Pillow shadow (outer) + Normal bevel (inner) + gradient fill.
+   Shared Button Classes
    ========================================================== */
 
 .btn {
@@ -114,38 +112,32 @@
   font-family: 'Orbitron', sans-serif;
   font-weight: 700;
   cursor: pointer;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  transition: transform var(--transition-fast);
 }
 
 .btn-primary {
   background: linear-gradient(180deg, var(--accent-primary) 0%, var(--accent-primary-dark) 100%);
   color: var(--btn-primary-text);
-  box-shadow: var(--shadow-md), var(--bevel-btn);
-}
-
-.btn-primary:hover {
-  box-shadow: var(--shadow-lg), var(--bevel-btn);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-primary:active {
   transform: translateY(1px);
-  box-shadow: var(--shadow-sm), inset 0 1px 0 rgba(255, 255, 255, 0.15), inset 0 2px 6px rgba(0, 0, 0, 0.22);
+  box-shadow: none;
 }
 
 .btn-primary:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
-  box-shadow: var(--shadow-sm);
 }
 
 /* Player-tinted CTAs — match the lobby host (display) or the local player
    (controller) so the primary action visually ties to their identity color.
-   --player-color / --player-text are set on #start-btn (display lobby) or
-   <body> (controller) by JS; when unset, these fall back to the default
-   .btn-primary palette. Text color flips to dark on high-luminance slots
-   (Honey/Mint/Teal) — see onColor() in theme.js. The color-mix(82%, black)
-   darkening mirrors the shape of --accent-primary → --accent-primary-dark. */
+   --player-color is set on <body> by JS; when unset, these fall back to
+   --accent-primary (Red). Text always uses --btn-primary-text (Cocoa plum)
+   since every PARTY_PALETTE slot reads better with dark text. The
+   color-mix(82%, black) darkening mirrors --accent-primary → --accent-primary-dark. */
 #start-btn:not(:disabled),
 #pause-continue-btn,
 #play-again-btn,
@@ -156,30 +148,28 @@
     var(--player-color, var(--accent-primary)) 0%,
     color-mix(in srgb, var(--player-color, var(--accent-primary)) 82%, black) 100%
   );
-  color: var(--player-text, var(--btn-primary-text));
+  color: var(--btn-primary-text);
 }
 
 .btn-secondary {
   background: var(--bg-card);
   border: 1px solid var(--border-strong);
   color: var(--text-primary);
-  box-shadow: var(--shadow-sm), var(--bevel-top);
+  box-shadow: var(--shadow-sm);
 }
 
 .btn-secondary:hover {
   background: var(--bg-card-soft);
-  box-shadow: var(--shadow-md), var(--bevel-top);
 }
 
 .btn-secondary:active {
   transform: translateY(1px);
-  box-shadow: var(--shadow-sm), var(--bevel-top);
+  box-shadow: none;
 }
 
 .btn-ghost {
   background: transparent;
   color: var(--text-secondary);
-  box-shadow: none;
   transition: background var(--transition-fast), color var(--transition-fast);
 }
 
@@ -208,7 +198,6 @@
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md), var(--bevel-top);
   padding: 16px;
 }
 
@@ -243,7 +232,6 @@
   color: var(--text-primary);
   font-family: 'Orbitron', sans-serif;
   font-weight: 500;
-  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.3);
   outline: none;
   width: 100%;
   transition: border-color var(--transition-fast);
@@ -261,7 +249,6 @@
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-lg), var(--bevel-top);
   padding: 28px 32px;
   max-width: 320px;
 }
@@ -274,7 +261,6 @@
   border: 1px solid var(--accent-tertiary);
   border-radius: var(--radius-md);
   padding: 10px 18px;
-  box-shadow: var(--shadow-md), var(--bevel-top);
   font-family: 'Orbitron', sans-serif;
   font-size: 12px;
   font-weight: 600;
@@ -305,17 +291,13 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  box-shadow: var(--shadow-sm), var(--bevel-top);
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
-}
-
-.icon-btn:hover {
-  box-shadow: var(--shadow-md), var(--bevel-top);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-fast);
 }
 
 .icon-btn:active {
   transform: translateY(1px);
-  box-shadow: var(--shadow-sm), var(--bevel-top);
+  box-shadow: none;
 }
 
 .player-card {
@@ -324,7 +306,6 @@
   border-radius: var(--radius-md);
   background: var(--bg-card);
   border: 2px solid var(--player-color, var(--border-strong));
-  box-shadow: var(--shadow-sm), var(--bevel-top);
   font-family: 'Orbitron', sans-serif;
   font-weight: 600;
   letter-spacing: 0.05em;
@@ -386,7 +367,9 @@
   to { opacity: 1; }
 }
 
-/* Game overlays (pause, reconnect) — shared between display and controller */
+/* Game overlays (pause, reconnect) — shared between display and controller.
+   Safe-area padding mirrors .controller-shell so overlay CTAs keep the
+   same edge breathing room as lobby/name screens on narrow viewports. */
 .game-overlay {
   position: fixed;
   top: 0;
@@ -399,6 +382,11 @@
   align-items: center;
   justify-content: center;
   gap: 20px;
+  padding:
+    max(env(safe-area-inset-top), 8px)
+    max(env(safe-area-inset-right), 12px)
+    calc(env(safe-area-inset-bottom) + 16px)
+    max(env(safe-area-inset-left), 12px);
   background: var(--overlay-bg);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
