@@ -462,15 +462,4 @@ function initTouchInput() {
       sendToDisplay(MSG.INPUT, { action: action });
     }
   }, onDragProgress);
-
-  // Reset anchor on each ratchet trigger — listen for input actions to reset
-  var origOnInput = touchInput.onInput;
-  var wrappedOnInput = function (action, data) {
-    if (action === 'left' || action === 'right' || action === 'hard_drop' || action === 'hold') {
-      anchorX = lastTouchX;
-      anchorY = lastTouchY;
-    }
-    origOnInput(action, data);
-  };
-  touchInput.onInput = wrappedOnInput;
 }
