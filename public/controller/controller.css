@@ -130,7 +130,7 @@ html, body {
 
 .join-url-hint {
   position: absolute;
-  bottom: max(env(safe-area-inset-bottom), 4px);
+  bottom: max(env(safe-area-inset-bottom), 8px);
   left: 12px;
   right: 12px;
   font-size: clamp(1rem, 4.5vw, 1.2rem);
@@ -142,7 +142,7 @@ html, body {
 
 .legal-links {
   position: absolute;
-  bottom: calc(env(safe-area-inset-bottom) + 4px);
+  bottom: calc(env(safe-area-inset-bottom) + 8px);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -1160,11 +1160,11 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
   }
 }
 
-/* Short landscape with enough vertical room (iPhone SE 568×320 and up):
+/* Short landscape with enough vertical room (> 300px):
    bring the title back on Name + Lobby, compacted so it doesn't crowd the
    input/card. The h ≤ 220 rule below still hides the whole brand when the
    soft keyboard collapses the viewport. */
-@media (orientation: landscape) and (min-aspect-ratio: 5/4) and (max-height: 499px) and (min-height: 320px) {
+@media (orientation: landscape) and (min-aspect-ratio: 5/4) and (max-height: 499px) and (min-height: 301px) {
   .controller-shell__frame--name .controller-shell__title,
   .controller-shell__frame--lobby .controller-shell__title {
     display: block;
