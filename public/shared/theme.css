@@ -317,6 +317,7 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  color: transparent; /* Firefox: supports background-clip:text but not -webkit-text-fill-color */
 }
 
 .gradient-title__sub {
