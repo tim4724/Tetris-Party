@@ -114,8 +114,14 @@ connect = function() {
     var v = min + ratio * (max - min);
     if (step > 0) v = Math.round((v - min) / step) * step + min;
     v = Math.max(min, Math.min(max, v));
-    if (String(v) !== slider.value) {
-      slider.value = String(v);
+    // Assign first and compare the browser-normalized strings. Our computed
+    // v carries float noise (e.g. 1.1500000000000001) that the slider
+    // normalizes to "1.15", so comparing our raw String(v) to slider.value
+    // would always differ and fire a redundant 'input' (and the accompanying
+    // vibrate from controller.js) on every pointermove.
+    var prev = slider.value;
+    slider.value = String(v);
+    if (slider.value !== prev) {
       slider.dispatchEvent(new Event('input', { bubbles: true }));
     }
   }
