@@ -10,7 +10,6 @@
 AirConsoleAdapter.neutralizeLocalStorage();
 
 var airconsole = new AirConsole({
-  orientation: AirConsole.ORIENTATION_PORTRAIT,
   silence_inactive_players: false
 });
 
@@ -87,6 +86,49 @@ connect = function() {
   if (!el) return;
   var v = '__AC_VERSION__';
   if (v.indexOf('__') !== 0) el.textContent = v;
+})();
+
+// Drive the sensitivity slider via pointer events. Chromium's native
+// <input type="range"> doesn't update its value on touch-drag when hosted
+// inside an iframe (confirmed via tests/e2e/airconsole-slider.spec.js):
+// pointermove/touchmove fire but no 'input' follows. Tap still works because
+// it's a single down+up. We map pointer X to slider value ourselves and
+// dispatch 'input' so the existing handler in controller.js picks it up.
+(function() {
+  var slider = document.getElementById('sensitivity-slider');
+  if (!slider) return;
+  var dragging = false;
+  function setFromPointer(e) {
+    var rect = slider.getBoundingClientRect();
+    var ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+    var min = parseFloat(slider.min) || 0;
+    var max = parseFloat(slider.max) || 1;
+    var step = parseFloat(slider.step) || 0;
+    var v = min + ratio * (max - min);
+    if (step > 0) v = Math.round((v - min) / step) * step + min;
+    v = Math.max(min, Math.min(max, v));
+    if (String(v) !== slider.value) {
+      slider.value = String(v);
+      slider.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+  slider.addEventListener('pointerdown', function(e) {
+    dragging = true;
+    slider.setPointerCapture(e.pointerId);
+    setFromPointer(e);
+    e.preventDefault();
+  });
+  slider.addEventListener('pointermove', function(e) {
+    if (!dragging) return;
+    setFromPointer(e);
+  });
+  function end(e) {
+    if (!dragging) return;
+    dragging = false;
+    try { slider.releasePointerCapture(e.pointerId); } catch (_) {}
+  }
+  slider.addEventListener('pointerup', end);
+  slider.addEventListener('pointercancel', end);
 })();
 
 // AirConsole status overlay: show "Loading..." until lobby, show errors.
