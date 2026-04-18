@@ -117,9 +117,10 @@ if (rejoinId) {
 
 // Probe the relay for an existence check so an invalid room code surfaces
 // immediately instead of only after the user types a name and hits JOIN.
-// Gate on the relay's 4-letter code shape so AirConsole (/controller.html)
-// and gallery paths are skipped automatically.
-if (/^[A-Z]{4}$/.test(roomCode) && !new URLSearchParams(location.search).get('scenario')) {
+// AirConsole parses /controller.html into roomCode and owns its own identity
+// (skipNameScreen); gallery iframes carry ?scenario= and never hit a relay.
+var isScenario = !!new URLSearchParams(location.search).get('scenario');
+if (roomCode && !skipNameScreen && !isScenario) {
   var isNewClient = !hadStoredId && !rejoinId;
   fetch(RELAY_URL.replace(/^ws/, 'http') + '/room/' + encodeURIComponent(roomCode))
     .then(function (res) {
