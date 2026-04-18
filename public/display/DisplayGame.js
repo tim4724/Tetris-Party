@@ -82,10 +82,12 @@ function startCountdown(onComplete, startFrom) {
   countdown.callback = onComplete;
   countdown.remaining = count;
 
-  // Broadcast to controllers
-  party.broadcast({ type: MSG.COUNTDOWN, value: count });
-  // Handle locally on display
-  onCountdownDisplay(count);
+  // On resume (startFrom is set), the current number is already on screen —
+  // skip the redundant broadcast/beep.
+  if (!startFrom) {
+    party.broadcast({ type: MSG.COUNTDOWN, value: count });
+    onCountdownDisplay(count);
+  }
 
   countdown.timer = setInterval(function() {
     count--;
@@ -113,7 +115,7 @@ function clearCountdownTimers() {
   if (countdown.overlayTimer) { clearTimeout(countdown.overlayTimer); countdown.overlayTimer = null; }
 }
 
-function pauseGame(selfInitiated) {
+function pauseGame() {
   if (paused) return;
   if (roomState !== ROOM_STATE.PLAYING && roomState !== ROOM_STATE.COUNTDOWN) return;
   paused = true;
@@ -121,7 +123,7 @@ function pauseGame(selfInitiated) {
     clearCountdownTimers();
   }
   party.broadcast({ type: MSG.GAME_PAUSED });
-  onGamePaused(selfInitiated);
+  onGamePaused();
 }
 
 // Check if all game participants are disconnected — auto-pause if so
@@ -185,8 +187,6 @@ function resumeGame() {
     party.broadcast({ type: MSG.GAME_RESUMED });
     onGameResumed();
     if (countdown.remaining === 0) {
-      party.broadcast({ type: MSG.COUNTDOWN, value: 'GO' });
-      onCountdownDisplay('GO');
       countdown.goTimeout = setTimeout(function() {
         countdown.goTimeout = null;
         countdown.callback();
@@ -479,18 +479,18 @@ function onGameEnd(msg) {
   showScreen(SCREEN.RESULTS);
 }
 
-function onGamePaused(selfInitiated) {
+function onGamePaused() {
   if (displayGame) displayGame.pause();
-  pauseOverlay.classList.toggle('pause-overlay--self', !!selfInitiated);
   pauseOverlay.classList.remove('hidden');
   gameToolbar.classList.add('hidden');
+  countdownOverlay.classList.add('paused');
   if (music) music.pause();
 }
 
 function onGameResumed() {
   if (displayGame) displayGame.resume();
-  pauseOverlay.classList.remove('pause-overlay--self');
   pauseOverlay.classList.add('hidden');
+  countdownOverlay.classList.remove('paused');
   if (currentScreen === SCREEN.GAME) {
     gameToolbar.classList.remove('hidden');
   }
