@@ -16,9 +16,10 @@ var ControllerSettings = (function () {
 
   var HAPTIC_TIERS = ['off', 'light', 'medium', 'strong'];
   // Web vibration only exposes duration, not amplitude, so "stronger" means
-  // longer pulses. Medium bumped from the raw 10ms (felt like a micro-tap on
-  // most phones) to a more definite thud; strong is a firm punch.
-  var HAPTIC_SCALE = { off: 0, light: 0.8, medium: 2, strong: 6 };
+  // longer pulses. Medium is 1.0 by convention — raw pattern values at each
+  // call site are therefore the Medium-tier ms. Light and Strong are plain
+  // multipliers around it.
+  var HAPTIC_SCALE = { off: 0, light: 0.6, medium: 1, strong: 2 };
 
   // Absolute clamp for persisted values. The UI slider narrows this further
   // to [touchpadWidth * 0.1, touchpadWidth * 0.5] each time Settings opens

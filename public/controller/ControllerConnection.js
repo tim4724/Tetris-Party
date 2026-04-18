@@ -23,7 +23,7 @@ function connect() {
   party.onProtocol = function (type, msg) {
     if (type === 'joined') {
       startPing();
-      if (currentScreen !== 'game') vibrate(10);
+      if (currentScreen !== 'game') vibrate(15);
       party.sendTo('display', {
         type: MSG.HELLO,
         name: playerName

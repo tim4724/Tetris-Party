@@ -176,7 +176,7 @@ function submitName() {
   connect();
 }
 
-nameJoinBtn.addEventListener('click', function () { vibrate(10); submitName(); });
+nameJoinBtn.addEventListener('click', function () { vibrate(15); submitName(); });
 nameInput.addEventListener('keydown', function (e) {
   if (e.key === 'Enter') submitName();
 });
@@ -189,7 +189,7 @@ nameInput.addEventListener('blur', function () {
 
 // Prime audio on first interaction
 document.addEventListener('pointerdown', function onFirstPointer() {
-  vibrate(1);
+  vibrate(2);
   ControllerAudio.prime();
   document.removeEventListener('pointerdown', onFirstPointer, true);
 }, { capture: true, passive: true });
@@ -291,7 +291,7 @@ window.updateSettingsHostUI = function () {
 };
 
 toggleMuteController.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   ControllerSettings.setMuted(!ControllerSettings.isMuted());
   syncMuteControllerToggle();
   // Preview the move sound when the user turns touch sounds ON so they
@@ -304,7 +304,7 @@ toggleMuteController.addEventListener('click', function () {
 });
 
 toggleMuteDisplay.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   if (!isHost) return;
   displayMuteIntent = !displayMuteIntent;
   syncMuteDisplayToggle();
@@ -316,7 +316,7 @@ rowHaptics.addEventListener('click', function (e) {
   if (!btn) return;
   ControllerSettings.setHapticStrength(btn.dataset.haptic);
   syncHapticButtons();
-  vibrate(12);
+  vibrate(18);
 });
 
 // Native step=0.05 snapping means every 'input' event fires on a real
@@ -326,7 +326,7 @@ sensitivitySlider.addEventListener('input', function () {
   ControllerSettings.setSensitivity(ratioToPx(ratio));
   sensitivityValueEl.textContent = ratio.toFixed(2);
   drawSensitivityPreview();
-  vibrate(5);
+  vibrate(8);
 });
 
 function resizePreviewCanvas() {
@@ -344,7 +344,7 @@ function resizePreviewCanvas() {
 }
 
 function openSettings() {
-  vibrate(10);
+  vibrate(15);
   // Pause the display while the user is in settings — but only when actively
   // playing (not in lobby) and not already paused. onGamePaused checks the
   // pausedBySettings flag and keeps its overlay hidden so we don't flash
@@ -372,7 +372,7 @@ if (lobbySettingsBtn) lobbySettingsBtn.addEventListener('click', openSettings);
 window.openSettings = openSettings;
 
 settingsCloseBtn.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   settingsOverlay.classList.add('hidden');
   if (pausedBySettings) {
     pausedBySettings = false;
@@ -574,7 +574,7 @@ if (sensitivityPreview) {
     if (steps !== prevSteps) {
       // Match the real ratchet-step haptic from TouchInput.js so the
       // preview feels identical to an actual left/right move in-game.
-      vibrate(10);
+      vibrate(15);
       // Click sound reinforces the ratchet feel, matching the real pad.
       if (!ControllerSettings.isMuted()) ControllerAudio.tick();
       _previewDrag.lastSteps = steps;
@@ -595,7 +595,7 @@ if (sensitivityPreview) {
 // =====================================================================
 
 pauseBtn.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   // Mark the upcoming GAME_PAUSED as self-initiated so onGamePaused can skip
   // the pause-overlay's anti-misclick gate. Timeout guards against a dropped
   // PAUSE_GAME leaving the flag sticky for a later unrelated pause.
@@ -606,17 +606,17 @@ pauseBtn.addEventListener('click', function () {
 });
 
 pauseContinueBtn.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   sendToDisplay(MSG.RESUME_GAME);
 });
 
 pauseNewGameBtn.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   sendToDisplay(MSG.RETURN_TO_LOBBY);
 });
 
 reconnectRejoinBtn.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   reconnectHeading.textContent = t('reconnecting');
   reconnectStatus.textContent = t('connecting');
   reconnectRejoinBtn.classList.add('hidden');
@@ -624,19 +624,19 @@ reconnectRejoinBtn.addEventListener('click', function () {
 });
 
 lobbyBackBtn.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   performDisconnect();
 });
 
 startBtn.addEventListener('click', function () {
   if (startBtn.disabled) return;
-  vibrate(10);
+  vibrate(15);
   sendToDisplay(MSG.START_GAME);
 });
 
 levelMinusBtn.addEventListener('click', function () {
   if (startLevel <= 1) return;
-  vibrate(10);
+  vibrate(15);
   startLevel = Math.max(1, startLevel - 1);
   updateLevelDisplay();
   sendToDisplay(MSG.SET_LEVEL, { level: startLevel });
@@ -644,19 +644,19 @@ levelMinusBtn.addEventListener('click', function () {
 
 levelPlusBtn.addEventListener('click', function () {
   if (startLevel >= 15) return;
-  vibrate(10);
+  vibrate(15);
   startLevel = Math.min(15, startLevel + 1);
   updateLevelDisplay();
   sendToDisplay(MSG.SET_LEVEL, { level: startLevel });
 });
 
 playAgainBtn.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   sendToDisplay(MSG.PLAY_AGAIN);
 });
 
 newGameBtn.addEventListener('click', function () {
-  vibrate(10);
+  vibrate(15);
   sendToDisplay(MSG.RETURN_TO_LOBBY);
 });
 

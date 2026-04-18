@@ -172,14 +172,14 @@ class TouchInput {
 
     if (vy > 0 && totalDy > this.TAP_MAX_DISTANCE) {
       this.onInput(INPUT.HARD_DROP);
-      this._haptic([5, 5, 5]);
+      this._haptic([8, 8, 8]);
       this._resetState();
       return true;
     }
 
     if (vy < 0 && totalDy < -this.TAP_MAX_DISTANCE) {
       this.onInput(INPUT.HOLD);
-      this._haptic(15);
+      this._haptic(23);
       this._resetState();
       return true;
     }
@@ -251,7 +251,7 @@ class TouchInput {
       for (let i = 0, n = Math.abs(steps); i < n; i++) {
         this.onInput(action);
       }
-      this._haptic(10);
+      this._haptic(23);
       this.anchorX += steps * this.RATCHET_THRESHOLD;
       this.hasMovedHorizontally = true;
     }
@@ -266,7 +266,7 @@ class TouchInput {
       if (!this.isSoftDropping && !this.hasMovedHorizontally) {
         this.isSoftDropping = true;
         this.hasSoftDropped = true;
-        this._haptic(15);
+        this._haptic(23);
         this._startSoftDropInterval();
       }
     } else if (this.isSoftDropping) {
@@ -317,7 +317,7 @@ class TouchInput {
     // 1. Tap: minimal movement + short duration → rotate
     if (totalDist < this.TAP_MAX_DISTANCE && duration < this.TAP_MAX_DURATION) {
       this.onInput(INPUT.ROTATE_CW);
-      this._haptic(10);
+      this._haptic(23);
       this._resetState();
       return;
     }
@@ -337,7 +337,7 @@ class TouchInput {
     // 2. Short downward swipe fallback → hard drop
     if (totalDy > 50 && duration < 300 && Math.abs(totalDy) > Math.abs(totalDx) * 1.5) {
       this.onInput(INPUT.HARD_DROP);
-      this._haptic([5, 5, 5]);
+      this._haptic([8, 8, 8]);
       this._resetState();
       return;
     }
@@ -345,7 +345,7 @@ class TouchInput {
     // 3. Short upward swipe fallback → hold
     if (totalDy < -30 && duration < 400 && Math.abs(totalDy) > Math.abs(totalDx) * 1.5) {
       this.onInput(INPUT.HOLD);
-      this._haptic(15);
+      this._haptic(23);
       this._resetState();
       return;
     }
