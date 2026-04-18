@@ -118,10 +118,23 @@ var ControllerSettings = (function () {
     } catch (e) { return null; }
   }
 
+  // Set once the onPersistentDataLoaded handler is installed so repeat
+  // calls (init() + onReady) only re-issue the data request and don't
+  // grow the wrapped-handler chain.
+  var _acPersistenceInstalled = false;
+
   function initAirConsolePersistence() {
     if (!hasAirConsole()) return;
     var uid = getOwnUid();
     if (!uid) return;
+
+    if (_acPersistenceInstalled) {
+      // Handler already installed — just refresh the data request in case
+      // the UID was null on the first attempt (init() before onReady).
+      try { airconsole.requestPersistentData([uid]); } catch (e) { /* ignore */ }
+      return;
+    }
+    _acPersistenceInstalled = true;
 
     var prevOnLoaded = airconsole.onPersistentDataLoaded;
     airconsole.onPersistentDataLoaded = function (data) {
@@ -212,7 +225,8 @@ var ControllerSettings = (function () {
     var n = parseInt(px, 10);
     if (isNaN(n)) return;
     n = Math.max(SENSITIVITY_MIN, Math.min(SENSITIVITY_MAX, n));
-    if (n !== state.sensitivity) _dirty = true;
+    if (n === state.sensitivity) return; // no-op: match setMuted/setHaptic guard shape
+    _dirty = true;
     state.sensitivity = n;
     write(KEY_SENSITIVITY, String(n));
     // Live-apply to the active TouchInput instance if present. Calls the

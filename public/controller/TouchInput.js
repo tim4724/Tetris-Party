@@ -76,14 +76,20 @@ class TouchInput {
   // Re-derive every slider-tied threshold from the current sensitivity
   // value. Called once from the constructor and live from Settings.js on
   // slider change so changes take effect without rebuilding TouchInput.
-  // Ratios calibrated so the default 48px keeps each constant at its
-  // pre-slider value (TAP=15, DEAD_ZONE=96, MAX_DIST=200, FLICK=0.8/ms).
+  // Ratios calibrated so the default 48px keeps each constant close to
+  // its pre-slider value (TAP=15, DEAD_ZONE=96, MAX_DIST=200, FLICK=0.8/ms,
+  // SWIPE_HARD_DROP=48 ~= old 50, SWIPE_HOLD=29 ~= old 30).
   _applySensitivity(ratchet) {
     this.RATCHET_THRESHOLD = ratchet;
     this.TAP_MAX_DISTANCE = Math.max(5, Math.round(ratchet * 0.3));
     this.SOFT_DROP_DEAD_ZONE = ratchet * 2;
     this.SOFT_DROP_MAX_DIST = ratchet * 4;
     this.FLICK_VELOCITY_THRESHOLD = ratchet / 60;
+    // Fallback swipe distances (pointerup classifier when velocity didn't
+    // trigger a fresh fling). Asymmetric: hard drop demands more downward
+    // travel than hold demands upward, matching the thumb ergonomics.
+    this.SWIPE_HARD_DROP_DY = ratchet;
+    this.SWIPE_HOLD_DY = Math.max(10, Math.round(ratchet * 0.6));
   }
 
   _resetState() {
@@ -335,7 +341,7 @@ class TouchInput {
     }
 
     // 2. Short downward swipe fallback → hard drop
-    if (totalDy > 50 && duration < 300 && Math.abs(totalDy) > Math.abs(totalDx) * 1.5) {
+    if (totalDy > this.SWIPE_HARD_DROP_DY && duration < 300 && Math.abs(totalDy) > Math.abs(totalDx) * 1.5) {
       this.onInput(INPUT.HARD_DROP);
       this._haptic([8, 8, 8]);
       this._resetState();
@@ -343,7 +349,7 @@ class TouchInput {
     }
 
     // 3. Short upward swipe fallback → hold
-    if (totalDy < -30 && duration < 400 && Math.abs(totalDy) > Math.abs(totalDx) * 1.5) {
+    if (totalDy < -this.SWIPE_HOLD_DY && duration < 400 && Math.abs(totalDy) > Math.abs(totalDx) * 1.5) {
       this.onInput(INPUT.HOLD);
       this._haptic(23);
       this._resetState();
