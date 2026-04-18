@@ -44,12 +44,17 @@ var OVERLAYS = [
 var state = Gallery.loadState();
 var nonce = 0;
 
-// Display uses its own cards-per-row key so switching between display
-// and controller pages doesn't clobber each other's preference (the
-// ranges differ: 1–5 vs 1–8).
+// Display uses its own cards-per-row and players keys so switching between
+// display and controller pages doesn't clobber each other's preference (the
+// ranges differ: 1–5 vs 1–8; display fits 4 boards comfortably, controller
+// wants all 8 player tints visible at once).
 var DISPLAY_MAX_COLS = 5;
+var DISPLAY_DEFAULT_COLS = 4;
+var DISPLAY_DEFAULT_PLAYERS = 4;
 var stored = parseInt(state.displayCardsPerRow, 10);
-state.displayCardsPerRow = Math.max(1, Math.min(stored || DISPLAY_MAX_COLS, DISPLAY_MAX_COLS));
+state.displayCardsPerRow = Math.max(1, Math.min(stored || DISPLAY_DEFAULT_COLS, DISPLAY_MAX_COLS));
+state.displayPlayers = parseInt(state.displayPlayers, 10) || DISPLAY_DEFAULT_PLAYERS;
+state.players = state.displayPlayers;
 
 function frameClass() { return 'display'; }
 function dims() { return Gallery.DISPLAY_AR_DIMS[state.displayAR] || Gallery.DISPLAY_AR_DIMS['16x9']; }
@@ -224,16 +229,18 @@ function updateLayout() {
 }
 
 Gallery.bindSelect(state, 'display-ar', 'displayAR', updateDims);
-Gallery.bindNumber(state, 'player-count', 'players', 1, 8, render);
+Gallery.bindNumber(state, 'player-count', 'displayPlayers', 1, 8, function() {
+  state.players = state.displayPlayers;
+  render();
+});
 Gallery.bindSelect(state, 'language', 'lang', render);
-Gallery.bindSelect(state, 'cards-per-row', 'displayCardsPerRow', updateLayout, function(v) { return parseInt(v, 10) || 5; });
+Gallery.bindSelect(state, 'cards-per-row', 'displayCardsPerRow', updateLayout, function(v) { return parseInt(v, 10) || DISPLAY_DEFAULT_COLS; });
 document.getElementById('reload-all').addEventListener('click', function() {
   nonce = Date.now(); render();
 });
 
-state.players = parseInt(state.players, 10) || 4;
 state.level = parseInt(state.level, 10) || 1;
-state.displayCardsPerRow = parseInt(state.displayCardsPerRow, 10) || 5;
+state.displayCardsPerRow = parseInt(state.displayCardsPerRow, 10) || DISPLAY_DEFAULT_COLS;
 
 Gallery.autoPauseOnHeaderFocus();
 render();

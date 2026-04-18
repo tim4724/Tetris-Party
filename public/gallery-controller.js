@@ -29,11 +29,15 @@ var PER_COLOR_SCENARIOS = [
 var state = Gallery.loadState();
 var nonce = 0;
 
-// Controller uses its own cards-per-row key so switching pages doesn't
-// clobber the display page's preference (display caps at 5, controller at 8).
+// Controller uses its own cards-per-row and players keys so switching pages
+// doesn't clobber the display page's preference (display caps at 5, controller
+// at 8; controller defaults to 8 players so every color tint is on screen).
 var CTRL_MAX_COLS = 8;
+var CTRL_DEFAULT_PLAYERS = 8;
 var stored = parseInt(state.controllerCardsPerRow, 10);
 state.controllerCardsPerRow = Math.max(1, Math.min(stored || CTRL_MAX_COLS, CTRL_MAX_COLS));
+state.controllerPlayers = parseInt(state.controllerPlayers, 10) || CTRL_DEFAULT_PLAYERS;
+state.players = state.controllerPlayers;
 
 function frameClass() { return 'controller'; }
 function dims() {
@@ -158,14 +162,16 @@ function updateLayout() {
 Gallery.bindSelect(state, 'controller-device', 'controllerDevice', updateDims);
 Gallery.bindSelect(state, 'controller-orientation', 'controllerOrientation', updateDims);
 Gallery.bindCheckbox(state, 'controller-chrome', 'controllerBrowserChrome', updateDims);
-Gallery.bindNumber(state, 'player-count', 'players', 1, 8, render);
+Gallery.bindNumber(state, 'player-count', 'controllerPlayers', 1, 8, function() {
+  state.players = state.controllerPlayers;
+  render();
+});
 Gallery.bindSelect(state, 'language', 'lang', render);
 Gallery.bindSelect(state, 'cards-per-row', 'controllerCardsPerRow', updateLayout, function(v) { return parseInt(v, 10) || 8; });
 document.getElementById('reload-all').addEventListener('click', function() {
   nonce = Date.now(); render();
 });
 
-state.players = parseInt(state.players, 10) || 4;
 state.level = parseInt(state.level, 10) || 1;
 state.controllerCardsPerRow = parseInt(state.controllerCardsPerRow, 10) || 8;
 
