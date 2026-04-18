@@ -66,6 +66,21 @@ describe('PartyConnection', () => {
     assert.strictEqual(MockWebSocket._instances[0].url, 'wss://test.example.com');
   });
 
+  test('connect refuses to open a WebSocket when window.airconsole exists', () => {
+    const originalWindow = global.window;
+    global.window = { airconsole: {} };
+    try {
+      const origWarn = console.warn;
+      console.warn = () => {};
+      const pc = new PartyConnection('wss://test.example.com', { clientId: 'abc' });
+      pc.connect();
+      console.warn = origWarn;
+      assert.strictEqual(MockWebSocket._instances.length, 0);
+    } finally {
+      global.window = originalWindow;
+    }
+  });
+
   test('onOpen callback fires on connection', () => {
     const pc = new PartyConnection('wss://test.example.com');
     let opened = false;

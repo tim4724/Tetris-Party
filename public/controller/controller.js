@@ -120,7 +120,8 @@ if (rejoinId) {
 // AirConsole parses /controller.html into roomCode and owns its own identity
 // (skipNameScreen); gallery iframes carry ?scenario= and never hit a relay.
 var isScenario = !!new URLSearchParams(location.search).get('scenario');
-if (roomCode && !skipNameScreen && !isScenario) {
+var isAirConsole = typeof window !== 'undefined' && !!window.airconsole;
+if (roomCode && !skipNameScreen && !isScenario && !isAirConsole) {
   var isNewClient = !hadStoredId && !rejoinId;
   fetch(RELAY_URL.replace(/^ws/, 'http') + '/room/' + encodeURIComponent(roomCode))
     .then(function (res) {
