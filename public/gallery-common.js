@@ -277,20 +277,25 @@ var Gallery = (function() {
     requestAnimationFrame(rescale);
     new ResizeObserver(rescale).observe(wrap);
 
+    // Generation counter — each loadUrl bumps it, and onDone early-exits if
+    // it no longer matches. Needed because rapid _setUrl calls on an already-
+    // loaded card queue multiple concurrent loadUrl calls whose `load` event
+    // listeners all fire against the same iframe once the final src settles.
+    // Without this guard, a superseded onDone would still run its
+    // _pendingUrl chase + pending-class toggle logic against stale state.
+    var _loadGen = 0;
     function loadUrl(url) {
+      var gen = ++_loadGen;
       link.href = url;
       enqueueLoad(iframe, url, function() {
+        if (gen !== _loadGen) return;
         wrap.classList.remove('pending');
         card._loaded = true;
-        // If _setUrl was called while this load was in flight, chase the
-        // latest URL now. Without this, a viewAs change that fires between
-        // the IntersectionObserver enqueue and the actual load would leave
-        // the card showing stale content forever (the queued task captures
-        // url by value, not by reference to _initialUrl).
-        //
-        // Always clear _pendingUrl — even when pending === url — so a later
-        // _setUrl on this card doesn't mistake a stale stash for a fresh
-        // chase request and bounce back to the prior URL.
+        // Chase the latest URL if _setUrl stashed one while this load was
+        // in flight (common during the IntersectionObserver → first-load
+        // window). Always clear _pendingUrl afterwards — even when pending
+        // === url — so a later _setUrl can't mistake a stale stash for a
+        // fresh chase request and bounce back to the prior URL.
         var pending = card._pendingUrl;
         card._pendingUrl = null;
         if (pending && pending !== url) {

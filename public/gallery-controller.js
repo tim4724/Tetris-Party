@@ -158,7 +158,9 @@ Gallery.bindSelect(state, 'view-as-player', 'viewAs', updateViewAs, function(v) 
   return clampViewAs(parseInt(v, 10) || 0);
 });
 Gallery.bindSelect(state, 'language', 'lang', render);
-Gallery.bindSelect(state, 'cards-per-row', 'controllerCardsPerRow', updateLayout, function(v) { return parseInt(v, 10) || 8; });
+Gallery.bindSelect(state, 'cards-per-row', 'controllerCardsPerRow', updateLayout, function(v) {
+  return Math.max(1, Math.min(parseInt(v, 10) || CTRL_MAX_COLS, CTRL_MAX_COLS));
+});
 
 Gallery.autoPauseOnHeaderFocus();
 Gallery.initMobileOptionsToggle();
