@@ -203,14 +203,14 @@ var LOCALES = {
     gesture_move: 'Bewegen', gesture_rotate: 'Drehen',
     gesture_drop: 'Fallen', gesture_hold: 'Halten',
     settings_title: 'EINSTELLUNGEN', settings_done: 'FERTIG',
-    settings_game_music: 'Spielmusik', settings_touch_sounds: 'Touch-Sounds',
+    settings_game_music: 'Musik', settings_touch_sounds: 'Touch-Sounds',
     settings_haptics: 'Vibration', settings_haptics_hint: 'Klappt nicht auf jedem Gerät',
     settings_haptic_off: 'Aus', settings_haptic_light: 'Leicht',
     settings_haptic_medium: 'Mittel', settings_haptic_strong: 'Stark',
     settings_sensitivity: 'Empfindlichkeit',
     fullscreen: 'Vollbild', pause: 'Pause', copy_url: 'URL kopieren',
     level_minus: 'Level runter', level_plus: 'Level rauf',
-    share_text: 'Spiel HexStacker Party mit deinen Freunden',
+    share_text: 'Spiele HexStacker Party mit deinen Freunden',
   },
 
   fr: {
