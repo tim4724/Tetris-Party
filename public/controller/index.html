@@ -139,16 +139,16 @@
            from stretching the rows apart via rowspan. -->
       <div class="settings-body-left">
         <div class="settings-row settings-row--switch" id="row-mute-display" hidden>
-          <span class="settings-row__label" data-i18n="settings_game_music">Game Music</span>
-          <button class="settings-switch" id="toggle-mute-display" role="switch" aria-checked="true" aria-label="Game music on display"><span class="settings-switch__thumb"></span></button>
+          <span id="label-game-music" class="settings-row__label" data-i18n="settings_game_music">Game Music</span>
+          <button class="settings-switch" id="toggle-mute-display" role="switch" aria-checked="true" aria-labelledby="label-game-music"><span class="settings-switch__thumb"></span></button>
         </div>
         <div class="settings-row settings-row--switch">
-          <span class="settings-row__label" data-i18n="settings_touch_sounds">Touch Sounds</span>
-          <button class="settings-switch" id="toggle-mute-controller" role="switch" aria-checked="true" aria-label="Controller touch sounds"><span class="settings-switch__thumb"></span></button>
+          <span id="label-touch-sounds" class="settings-row__label" data-i18n="settings_touch_sounds">Touch Sounds</span>
+          <button class="settings-switch" id="toggle-mute-controller" role="switch" aria-checked="true" aria-labelledby="label-touch-sounds"><span class="settings-switch__thumb"></span></button>
         </div>
         <div class="settings-row" id="row-haptics">
-          <span class="settings-row__label" data-i18n="settings_haptics">Haptics</span>
-          <div class="settings-segmented" role="radiogroup" aria-label="Haptic strength">
+          <span id="label-haptics" class="settings-row__label" data-i18n="settings_haptics">Haptics</span>
+          <div class="settings-segmented" role="radiogroup" aria-labelledby="label-haptics">
             <button class="settings-segmented__btn" data-haptic="off" role="radio" aria-checked="false" data-i18n="settings_haptic_off">Off</button>
             <button class="settings-segmented__btn" data-haptic="light" role="radio" aria-checked="false" data-i18n="settings_haptic_light">Light</button>
             <button class="settings-segmented__btn" data-haptic="medium" role="radio" aria-checked="true" data-i18n="settings_haptic_medium">Med</button>
@@ -162,8 +162,8 @@
           <span id="sensitivity-label-text" data-i18n="settings_sensitivity">Sensitivity</span>
           <span class="settings-row__value" id="sensitivity-value">1.00</span>
         </span>
-        <input type="range" id="sensitivity-slider" min="0.55" max="1.75" step="0.05" value="1" aria-label="Touch sensitivity (scaled multiplier, 1.0 is default)">
-        <canvas id="sensitivity-preview" class="settings-preview" width="280" height="120" aria-label="Sensitivity preview"></canvas>
+        <input type="range" id="sensitivity-slider" min="0.55" max="1.75" step="0.05" value="1" aria-labelledby="sensitivity-label-text">
+        <canvas id="sensitivity-preview" class="settings-preview" width="280" height="120" aria-hidden="true"></canvas>
       </div>
       <button id="settings-close" class="btn btn-primary" data-i18n="settings_done">DONE</button>
       <footer class="settings-about">
