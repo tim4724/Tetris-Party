@@ -25,7 +25,6 @@ var DISPLAY_CARDS = [
 ];
 
 var state = Gallery.loadState();
-var nonce = 0;
 
 // Display uses its own cards-per-row and players keys so switching between
 // display and controller pages doesn't clobber each other's preference.
@@ -54,9 +53,9 @@ var allCards = [];
 var hostVariantCards = [];
 
 function cardURL(c) {
-  if (c.staticPath) return Gallery.staticURL(state, c.staticPath, nonce || undefined);
-  if (c.hostVariant) return Gallery.displayURL(state, c.key, nonce || undefined, undefined, { host: state.viewAs });
-  return Gallery.displayURL(state, c.key, nonce || undefined, c.level);
+  if (c.staticPath) return Gallery.staticURL(state, c.staticPath);
+  if (c.hostVariant) return Gallery.displayURL(state, c.key, undefined, { host: state.viewAs });
+  return Gallery.displayURL(state, c.key, c.level);
 }
 
 function cardTag(c) {

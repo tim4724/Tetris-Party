@@ -33,7 +33,6 @@ var CONTROLLER_CARDS = [
 ];
 
 var state = Gallery.loadState();
-var nonce = 0;
 
 // Controller uses its own cards-per-row and players keys so switching pages
 // doesn't clobber the display page's preference (display caps at 5, controller
@@ -63,9 +62,9 @@ var allCards = [];
 var perColorCards = [];
 
 function cardURL(c) {
-  if (c.staticPath) return Gallery.staticURL(state, c.staticPath, nonce || undefined);
+  if (c.staticPath) return Gallery.staticURL(state, c.staticPath);
   var colorIdx = c.perColor ? state.viewAs : 0;
-  return Gallery.controllerURL(state, c.key, colorIdx, c.extra || null, nonce || undefined);
+  return Gallery.controllerURL(state, c.key, colorIdx, c.extra || null);
 }
 
 function cardTag(c) {

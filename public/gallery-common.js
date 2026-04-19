@@ -83,31 +83,28 @@ var Gallery = (function() {
     return parts.length ? '?' + parts.join('&') : '';
   }
 
-  function displayURL(state, scenario, nonce, levelOverride, extra) {
+  function displayURL(state, scenario, levelOverride, extra) {
     var p = {
       test: 1, bg: 1, lang: state.lang,
       scenario: scenario,
       players: state.players,
-      level: levelOverride !== undefined ? levelOverride : state.level,
-      _r: nonce || undefined
+      level: levelOverride !== undefined ? levelOverride : state.level
     };
     if (extra) for (var k in extra) p[k] = extra[k];
     return '/' + qs(p);
   }
 
-  // Static pages (privacy, imprint) accept only ?lang and a cache-bust.
-  function staticURL(state, path, nonce) {
-    return path + qs({ lang: state.lang, _r: nonce || undefined });
+  function staticURL(state, path) {
+    return path + qs({ lang: state.lang });
   }
 
-  function controllerURL(state, scenario, colorIdx, extra, nonce) {
+  function controllerURL(state, scenario, colorIdx, extra) {
     var p = {
       test: 1, bg: 1, lang: state.lang,
       scenario: scenario,
       color: colorIdx,
       level: state.level,
-      players: state.players,
-      _r: nonce || undefined
+      players: state.players
     };
     if (extra) for (var k in extra) p[k] = extra[k];
     // First path segment is the controller's roomCode — any value works in test mode.
@@ -283,6 +280,17 @@ var Gallery = (function() {
       enqueueLoad(iframe, url, function() {
         wrap.classList.remove('pending');
         card._loaded = true;
+        // If _setUrl was called while this load was in flight, chase the
+        // latest URL now. Without this, a viewAs change that fires between
+        // the IntersectionObserver enqueue and the actual load would leave
+        // the card showing stale content forever (the queued task captures
+        // url by value, not by reference to _initialUrl).
+        if (card._pendingUrl && card._pendingUrl !== url) {
+          var pending = card._pendingUrl;
+          card._pendingUrl = null;
+          wrap.classList.add('pending');
+          loadUrl(pending);
+        }
       });
     }
 
@@ -296,14 +304,17 @@ var Gallery = (function() {
     };
     // Retarget the card to a new URL. For already-mounted cards this swaps
     // the iframe src in place (no DOM rebuild); for cards still awaiting
-    // lazy-mount it just updates what lazyMount will load when they scroll in.
+    // lazy-mount it updates _initialUrl so lazyMount picks the new target,
+    // and also stashes a _pendingUrl that the in-flight onDone (if any)
+    // will chase after it settles.
     card._setUrl = function(url) {
       card._initialUrl = url;
+      link.href = url;
       if (card._loaded) {
         wrap.classList.add('pending');
         loadUrl(url);
       } else {
-        link.href = url;
+        card._pendingUrl = url;
       }
     };
     return card;

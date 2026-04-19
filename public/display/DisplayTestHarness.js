@@ -225,12 +225,13 @@ function initScenario(opts) {
     }
     function startCountdown() {
       clearPending();
-      // Also cancel onCountdownDisplay's own GO-hide timer in case a prior
-      // run just fired GO — otherwise it would hide our new "3" mid-tick.
-      if (countdown.overlayTimer) {
-        clearTimeout(countdown.overlayTimer);
-        countdown.overlayTimer = null;
-      }
+      // Tear down any live countdown timers from a previous run so a rapid
+      // replay can't race its predecessor (GO-hide, music-start, or the
+      // tick interval firing against the new sequence). Mirror the full
+      // DisplayGame.stopCountdown teardown.
+      if (countdown.timer) { clearInterval(countdown.timer); countdown.timer = null; }
+      if (countdown.goTimeout) { clearTimeout(countdown.goTimeout); countdown.goTimeout = null; }
+      if (countdown.overlayTimer) { clearTimeout(countdown.overlayTimer); countdown.overlayTimer = null; }
       countdownOverlay.classList.add('hidden');
       countdownNumber.textContent = '';
       // Boot the audio context so playCountdownBeep actually beeps. Only
