@@ -703,8 +703,8 @@ function translatePage() {
   // data-i18n-title: sets textContent on the <title> element, sets the
   // `title` attribute (hover tooltip) on any other element.
   var titleEls = document.querySelectorAll('[data-i18n-title]');
-  for (var ti = 0; ti < titleEls.length; ti++) {
-    var titleEl = titleEls[ti];
+  for (var k = 0; k < titleEls.length; k++) {
+    var titleEl = titleEls[k];
     var translated = t(titleEl.getAttribute('data-i18n-title'));
     if (titleEl.tagName === 'TITLE') {
       titleEl.textContent = translated;
