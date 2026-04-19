@@ -134,13 +134,21 @@ describe('i18n', function () {
       'reconnecting', 'disconnected', 'connecting', 'connection_lost',
       'attempt_n_of_m', 'display_reconnecting', 'bad_connection',
       'paused', 'end_step_1', 'end_step_2',
-      'room_not_found', 'game_ended', 'game_in_progress',
+      'room_not_found', 'game_ended', 'game_full', 'game_in_progress',
       'waiting_for_host_to_start', 'waiting_for_host_to_continue',
       'n_lines', 'level_n', 'player', 'level_heading',
-      'enter_name', 'copied', 'touchpad', 'privacy',
+      'enter_name', 'copied', 'touchpad', 'privacy', 'imprint', 'back',
       'stacked_by', 'music_by', 'hex_lines_level',
       'swipe', 'tap', 'flick', 'gesture_move', 'gesture_rotate',
       'gesture_drop', 'gesture_hold',
+      'settings_title', 'settings_done',
+      'settings_game_music', 'settings_touch_sounds',
+      'settings_haptics', 'settings_haptics_hint',
+      'settings_haptic_off', 'settings_haptic_light',
+      'settings_haptic_medium', 'settings_haptic_strong',
+      'settings_sensitivity',
+      'fullscreen', 'pause', 'copy_url', 'share_text',
+      'level_minus', 'level_plus',
     ];
 
     for (var locale of Object.keys(LOCALES)) {

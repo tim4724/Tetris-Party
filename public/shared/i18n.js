@@ -65,7 +65,7 @@ var LOCALES = {
     touchpad: 'Touchpad',
     privacy: 'Privacy',
     imprint: 'Imprint',
-    back_to_game: '← Back',
+    back: 'Back',
 
     // Privacy page
     privacy_title: 'PRIVACY NOTICE',
@@ -113,6 +113,31 @@ var LOCALES = {
     gesture_rotate: 'rotate',
     gesture_drop: 'drop',
     gesture_hold: 'hold',
+
+    // Settings overlay
+    settings_title: 'SETTINGS',
+    settings_done: 'DONE',
+    settings_game_music: 'Game Music',
+    settings_touch_sounds: 'Touch Sounds',
+    settings_haptics: 'Haptics',
+    settings_haptics_hint: 'Vibration may not work on all devices',
+    settings_haptic_off: 'Off',
+    settings_haptic_light: 'Light',
+    settings_haptic_medium: 'Med',
+    settings_haptic_strong: 'Strong',
+    settings_sensitivity: 'Sensitivity',
+
+    // Display toolbar
+    fullscreen: 'Fullscreen',
+
+    // Action buttons without visible text
+    pause: 'Pause',
+    copy_url: 'Copy URL',
+    level_minus: 'Decrease level',
+    level_plus: 'Increase level',
+
+    // Web Share API
+    share_text: 'Play HexStacker Party with your friends',
   },
 
   de: {
@@ -149,7 +174,7 @@ var LOCALES = {
     imprint_contact: 'Kontakt',
     imprint_page_title: 'Impressum — HexStacker Party',
     privacy_page_title: 'Datenschutz — HexStacker Party',
-    back_to_game: '← Zurück',
+    back: 'Zurück',
     privacy_title: 'DATENSCHUTZ\u00ADERKLÄRUNG',
     privacy_controller: 'Verantwortlicher',
     privacy_controller_intro: 'Verantwortlicher im Sinne der DSGVO ist:',
@@ -177,6 +202,15 @@ var LOCALES = {
     swipe: 'Wischen', tap: 'Tippen', flick: 'Schnippen',
     gesture_move: 'Bewegen', gesture_rotate: 'Drehen',
     gesture_drop: 'Fallen', gesture_hold: 'Halten',
+    settings_title: 'EINSTELLUNGEN', settings_done: 'FERTIG',
+    settings_game_music: 'Musik', settings_touch_sounds: 'Touch-Sounds',
+    settings_haptics: 'Vibration', settings_haptics_hint: 'Funktioniert nicht mit jedem Gerät',
+    settings_haptic_off: 'Aus', settings_haptic_light: 'Leicht',
+    settings_haptic_medium: 'Mittel', settings_haptic_strong: 'Stark',
+    settings_sensitivity: 'Empfindlichkeit',
+    fullscreen: 'Vollbild', pause: 'Pause', copy_url: 'URL kopieren',
+    level_minus: 'Level runter', level_plus: 'Level rauf',
+    share_text: 'Spiele HexStacker Party mit deinen Freunden',
   },
 
   fr: {
@@ -207,12 +241,21 @@ var LOCALES = {
     n_lines: { one: '{count} ligne', other: '{count} lignes' },
     level_n: 'Niveau {level}', player: 'Joueur', level_heading: 'Niveau',
     enter_name: 'Entre ton nom...', copied: 'Copié', touchpad: 'Pavé tactile',
-    privacy: 'Confidentialité', imprint: 'Mentions légales', back_to_game: '← Retour',
+    privacy: 'Confidentialité', imprint: 'Mentions légales', back: 'Retour',
     hex_lines_level: 'Lignes {lines}  Niveau {level}',
     swipe: 'Glisser', tap: 'Appuyer', flick: 'Lancer',
     gesture_move: 'déplacer', gesture_rotate: 'tourner',
     stacked_by: 'Créé par Tim', music_by: 'Musique par FoxSynergy',
     gesture_drop: 'lâcher', gesture_hold: 'maintenir',
+    settings_title: 'RÉGLAGES', settings_done: 'OK',
+    settings_game_music: 'Musique', settings_touch_sounds: 'Sons tactiles',
+    settings_haptics: 'Vibration', settings_haptics_hint: 'Peut ne pas marcher partout',
+    settings_haptic_off: 'Off', settings_haptic_light: 'Léger',
+    settings_haptic_medium: 'Moyen', settings_haptic_strong: 'Fort',
+    settings_sensitivity: 'Sensibilité',
+    fullscreen: 'Plein écran', pause: 'Pause', copy_url: 'Copier l\'URL',
+    level_minus: 'Baisser le niveau', level_plus: 'Monter le niveau',
+    share_text: 'Joue à HexStacker Party avec tes amis',
   },
 
   pt: {
@@ -243,12 +286,21 @@ var LOCALES = {
     n_lines: { one: '{count} linha', other: '{count} linhas' },
     level_n: 'Nível {level}', player: 'Jogador', level_heading: 'Nível',
     enter_name: 'Digita o nome...', copied: 'Copiado', touchpad: 'Touchpad',
-    privacy: 'Privacidade', imprint: 'Aviso legal', back_to_game: '← Voltar',
+    privacy: 'Privacidade', imprint: 'Aviso legal', back: 'Voltar',
     stacked_by: 'Criado por Tim', music_by: 'Música de FoxSynergy',
     hex_lines_level: 'Linhas {lines}  Nível {level}',
     swipe: 'Deslizar', tap: 'Tocar', flick: 'Lançar',
     gesture_move: 'mover', gesture_rotate: 'girar',
     gesture_drop: 'soltar', gesture_hold: 'segurar',
+    settings_title: 'AJUSTES', settings_done: 'PRONTO',
+    settings_game_music: 'Música', settings_touch_sounds: 'Sons de toque',
+    settings_haptics: 'Vibração', settings_haptics_hint: 'Pode não funcionar em todos os aparelhos',
+    settings_haptic_off: 'Off', settings_haptic_light: 'Fraca',
+    settings_haptic_medium: 'Média', settings_haptic_strong: 'Forte',
+    settings_sensitivity: 'Sensibilidade',
+    fullscreen: 'Tela cheia', pause: 'Pausar', copy_url: 'Copiar URL',
+    level_minus: 'Baixar nível', level_plus: 'Subir nível',
+    share_text: 'Joga HexStacker Party com seus amigos',
   },
 
   es: {
@@ -279,12 +331,21 @@ var LOCALES = {
     n_lines: { one: '{count} línea', other: '{count} líneas' },
     level_n: 'Nivel {level}', player: 'Jugador', level_heading: 'Nivel',
     enter_name: 'Escribe tu nombre...', copied: 'Copiado', touchpad: 'Touchpad',
-    privacy: 'Privacidad', imprint: 'Aviso legal', back_to_game: '← Volver',
+    privacy: 'Privacidad', imprint: 'Aviso legal', back: 'Volver',
     hex_lines_level: 'Líneas {lines}  Nivel {level}',
     swipe: 'Deslizar', tap: 'Tocar', flick: 'Lanzar',
     gesture_move: 'mover', gesture_rotate: 'girar',
     stacked_by: 'Creado por Tim', music_by: 'Música de FoxSynergy',
     gesture_drop: 'soltar', gesture_hold: 'guardar',
+    settings_title: 'AJUSTES', settings_done: 'LISTO',
+    settings_game_music: 'Música', settings_touch_sounds: 'Sonidos táctiles',
+    settings_haptics: 'Vibración', settings_haptics_hint: 'Puede no funcionar en todos los dispositivos',
+    settings_haptic_off: 'Off', settings_haptic_light: 'Suave',
+    settings_haptic_medium: 'Media', settings_haptic_strong: 'Fuerte',
+    settings_sensitivity: 'Sensibilidad',
+    fullscreen: 'Pantalla completa', pause: 'Pausa', copy_url: 'Copiar URL',
+    level_minus: 'Bajar nivel', level_plus: 'Subir nivel',
+    share_text: 'Juega a HexStacker Party con tus amigos',
   },
 
   zh: {
@@ -314,12 +375,21 @@ var LOCALES = {
     waiting_for_host_to_continue: '等待 {name} 继续',
     n_lines: { other: '{count} 行' },
     level_n: '等级 {level}', player: '玩家', level_heading: '等级',
-    enter_name: '输入名字...', copied: '已复制', touchpad: '触控板', privacy: '隐私', imprint: '法律声明', back_to_game: '← 返回',
+    enter_name: '输入名字...', copied: '已复制', touchpad: '触控板', privacy: '隐私', imprint: '法律声明', back: '返回',
     hex_lines_level: '行数 {lines}  等级 {level}',
     swipe: '滑动', tap: '点按', flick: '快划',
     gesture_move: '移动', gesture_rotate: '旋转',
     stacked_by: '开发：Tim', music_by: '音乐：FoxSynergy',
     gesture_drop: '落下', gesture_hold: '暂存',
+    settings_title: '设置', settings_done: '完成',
+    settings_game_music: '游戏音乐', settings_touch_sounds: '触控声音',
+    settings_haptics: '振动', settings_haptics_hint: '部分设备可能不支持',
+    settings_haptic_off: '关', settings_haptic_light: '弱',
+    settings_haptic_medium: '中', settings_haptic_strong: '强',
+    settings_sensitivity: '灵敏度',
+    fullscreen: '全屏', pause: '暂停', copy_url: '复制 URL',
+    level_minus: '降低等级', level_plus: '提升等级',
+    share_text: '和朋友一起玩 HexStacker Party',
   },
 
   ja: {
@@ -350,12 +420,21 @@ var LOCALES = {
     n_lines: { other: '{count}ライン' },
     level_n: 'レベル {level}', player: 'プレイヤー', level_heading: 'レベル',
     enter_name: '名前を入力...', copied: 'コピー完了', touchpad: 'タッチパッド',
-    privacy: 'プライバシー', imprint: '運営者情報', back_to_game: '← 戻る',
+    privacy: 'プライバシー', imprint: '運営者情報', back: '戻る',
     hex_lines_level: 'ライン {lines}  レベル {level}',
     swipe: 'スワイプ', tap: 'タップ', flick: 'フリック',
     gesture_move: '移動', gesture_rotate: '回転',
     stacked_by: '開発：Tim', music_by: '音楽：FoxSynergy',
     gesture_drop: 'ドロップ', gesture_hold: 'ホールド',
+    settings_title: '設定', settings_done: 'OK',
+    settings_game_music: 'ゲーム音楽', settings_touch_sounds: 'タッチ音',
+    settings_haptics: '振動', settings_haptics_hint: '端末によっては効かないかも',
+    settings_haptic_off: 'オフ', settings_haptic_light: '弱',
+    settings_haptic_medium: '中', settings_haptic_strong: '強',
+    settings_sensitivity: '感度',
+    fullscreen: '全画面', pause: '一時停止', copy_url: 'URLをコピー',
+    level_minus: 'レベルを下げる', level_plus: 'レベルを上げる',
+    share_text: '友達と HexStacker Party で遊ぼう',
   },
 
   ko: {
@@ -377,20 +456,29 @@ var LOCALES = {
     display_reconnecting: '디스플레이 재연결 중...',
     bad_connection: '연결 불량',
     paused: '일시정지', room_not_found: '방을 찾을 수 없어', game_full: '방이 가득 찼어',
-    game_ended: '게임 종료',
-    end_step_1: '더 큰 화면에서 <a href="https://hexstacker.com" id="end-step-1-link" class="end-link">hexstacker.com</a> 열기',
+    game_ended: '게임 끝',
+    end_step_1: '더 큰 화면에서 <a href="https://hexstacker.com" id="end-step-1-link" class="end-link">hexstacker.com</a> 열어',
     end_step_2: 'QR 코드를 스캔해서 휴대폰을 컨트롤러로 써',
     game_in_progress: '게임 중. 새 게임 기다려',
     waiting_for_host_to_start: '{name} 기다리는 중...',
     waiting_for_host_to_continue: '{name} 기다리는 중...',
     n_lines: { other: '{count}줄' },
     level_n: '레벨 {level}', player: '플레이어', level_heading: '레벨',
-    enter_name: '이름 입력...', copied: '복사됨', touchpad: '터치패드', privacy: '개인정보', imprint: '법적 고지', back_to_game: '← 돌아가기',
+    enter_name: '이름 입력...', copied: '복사됨', touchpad: '터치패드', privacy: '개인정보', imprint: '법적 고지', back: '뒤로',
     hex_lines_level: '줄 {lines}  레벨 {level}',
     swipe: '스와이프', tap: '탭', flick: '플릭',
     gesture_move: '이동', gesture_rotate: '회전',
     stacked_by: '개발: Tim', music_by: '음악: FoxSynergy',
     gesture_drop: '드롭', gesture_hold: '홀드',
+    settings_title: '설정', settings_done: '완료',
+    settings_game_music: '게임 음악', settings_touch_sounds: '터치 소리',
+    settings_haptics: '진동', settings_haptics_hint: '일부 기기에서는 안 될 수 있어',
+    settings_haptic_off: '끔', settings_haptic_light: '약',
+    settings_haptic_medium: '중', settings_haptic_strong: '강',
+    settings_sensitivity: '감도',
+    fullscreen: '전체화면', pause: '일시정지', copy_url: 'URL 복사',
+    level_minus: '레벨 내려', level_plus: '레벨 올려',
+    share_text: '친구들과 HexStacker Party 해봐',
   },
 
   ru: {
@@ -415,7 +503,7 @@ var LOCALES = {
     display_reconnecting: 'Дисплей переподключается...',
     bad_connection: 'Плохое соединение',
     paused: 'ПАУЗА', room_not_found: 'Комната не найдена', game_full: 'Комната заполнена',
-    game_ended: 'Игра завершена',
+    game_ended: 'Игра окончена',
     end_step_1: 'Открой <a href="https://hexstacker.com" id="end-step-1-link" class="end-link">hexstacker.com</a> на большом экране',
     end_step_2: 'Отсканируй QR-код и используй телефон как контроллер',
     game_in_progress: 'Игра идёт. Жди новую.',
@@ -427,12 +515,21 @@ var LOCALES = {
     },
     level_n: 'Уровень {level}', player: 'Игрок', level_heading: 'Уровень',
     enter_name: 'Введи имя...', copied: 'Скопировано', touchpad: 'Тачпад',
-    privacy: 'Конфиденциальность', imprint: 'Выходные данные', back_to_game: '← Назад',
+    privacy: 'Конфиденциальность', imprint: 'Выходные данные', back: 'Назад',
     hex_lines_level: 'Линии {lines}  Уровень {level}',
     swipe: 'Свайп', tap: 'Нажатие', flick: 'Смахивание',
     gesture_move: 'двигать', gesture_rotate: 'вращать',
     stacked_by: 'Разработка: Tim', music_by: 'Музыка: FoxSynergy',
     gesture_drop: 'бросать', gesture_hold: 'держать',
+    settings_title: 'НАСТРОЙКИ', settings_done: 'ГОТОВО',
+    settings_game_music: 'Музыка', settings_touch_sounds: 'Звуки касаний',
+    settings_haptics: 'Вибрация', settings_haptics_hint: 'Работает не на всех устройствах',
+    settings_haptic_off: 'Выкл', settings_haptic_light: 'Слабо',
+    settings_haptic_medium: 'Средне', settings_haptic_strong: 'Сильно',
+    settings_sensitivity: 'Чувствительность',
+    fullscreen: 'Полный экран', pause: 'Пауза', copy_url: 'Скопировать URL',
+    level_minus: 'Уменьшить уровень', level_plus: 'Повысить уровень',
+    share_text: 'Играй в HexStacker Party с друзьями',
   },
 
   it: {
@@ -462,13 +559,22 @@ var LOCALES = {
     waiting_for_host_to_continue: 'In attesa di {name}...',
     n_lines: { one: '{count} linea', other: '{count} linee' },
     level_n: 'Livello {level}', player: 'Giocatore', level_heading: 'Livello',
-    enter_name: 'Inserisci nome...', copied: 'Copiato', touchpad: 'Touchpad',
-    privacy: 'Privacy', imprint: 'Note legali', back_to_game: '← Indietro',
+    enter_name: 'Scrivi il nome...', copied: 'Copiato', touchpad: 'Touchpad',
+    privacy: 'Privacy', imprint: 'Note legali', back: 'Indietro',
     stacked_by: 'Creato da Tim', music_by: 'Musica di FoxSynergy',
     hex_lines_level: 'Linee {lines}  Livello {level}',
     swipe: 'Scorrere', tap: 'Toccare', flick: 'Lanciare',
     gesture_move: 'muovere', gesture_rotate: 'ruotare',
     gesture_drop: 'rilasciare', gesture_hold: 'tenere',
+    settings_title: 'IMPOSTAZIONI', settings_done: 'OK',
+    settings_game_music: 'Musica', settings_touch_sounds: 'Suoni touch',
+    settings_haptics: 'Vibrazione', settings_haptics_hint: 'Non funziona su tutti i dispositivi',
+    settings_haptic_off: 'Off', settings_haptic_light: 'Lieve',
+    settings_haptic_medium: 'Media', settings_haptic_strong: 'Forte',
+    settings_sensitivity: 'Sensibilità',
+    fullscreen: 'Schermo intero', pause: 'Pausa', copy_url: 'Copia URL',
+    level_minus: 'Diminuisci livello', level_plus: 'Aumenta livello',
+    share_text: 'Gioca a HexStacker Party con i tuoi amici',
   },
 
   tr: {
@@ -499,12 +605,21 @@ var LOCALES = {
     n_lines: { one: '{count} satır', other: '{count} satır' },
     level_n: 'Seviye {level}', player: 'Oyuncu', level_heading: 'Seviye',
     enter_name: 'İsim gir...', copied: 'Kopyalandı', touchpad: 'Touchpad',
-    privacy: 'Gizlilik', imprint: 'Künye', back_to_game: '← Geri',
+    privacy: 'Gizlilik', imprint: 'Künye', back: 'Geri',
     stacked_by: 'Yapımcı: Tim', music_by: 'Müzik: FoxSynergy',
     hex_lines_level: 'Satır {lines}  Seviye {level}',
     swipe: 'Kaydır', tap: 'Dokun', flick: 'Fırlat',
     gesture_move: 'hareket ettir', gesture_rotate: 'döndür',
     gesture_drop: 'bırak', gesture_hold: 'tut',
+    settings_title: 'AYARLAR', settings_done: 'TAMAM',
+    settings_game_music: 'Oyun müziği', settings_touch_sounds: 'Dokunma sesleri',
+    settings_haptics: 'Titreşim', settings_haptics_hint: 'Her cihazda çalışmayabilir',
+    settings_haptic_off: 'Kapalı', settings_haptic_light: 'Hafif',
+    settings_haptic_medium: 'Orta', settings_haptic_strong: 'Güçlü',
+    settings_sensitivity: 'Hassasiyet',
+    fullscreen: 'Tam ekran', pause: 'Duraklat', copy_url: 'URL\'yi kopyala',
+    level_minus: 'Seviyeyi azalt', level_plus: 'Seviyeyi artır',
+    share_text: 'Arkadaşlarınla HexStacker Party oyna',
   }
 };
 
@@ -593,6 +708,11 @@ function translatePage() {
     phs[j].placeholder = t(phs[j].getAttribute('data-i18n-placeholder'));
   }
 
+  var arias = document.querySelectorAll('[data-i18n-aria-label]');
+  for (var a = 0; a < arias.length; a++) {
+    arias[a].setAttribute('aria-label', t(arias[a].getAttribute('data-i18n-aria-label')));
+  }
+
   // data-i18n-html renders the locale string as HTML. Only use for trusted
   // locale content — never pass user input through this attribute.
   var htmlEls = document.querySelectorAll('[data-i18n-html]');
@@ -600,9 +720,17 @@ function translatePage() {
     htmlEls[h].innerHTML = t(htmlEls[h].getAttribute('data-i18n-html'));
   }
 
-  var titleEl = document.querySelector('title[data-i18n-title]');
-  if (titleEl) {
-    titleEl.textContent = t(titleEl.getAttribute('data-i18n-title'));
+  // data-i18n-title: sets textContent on the <title> element, sets the
+  // `title` attribute (hover tooltip) on any other element.
+  var titleEls = document.querySelectorAll('[data-i18n-title]');
+  for (var k = 0; k < titleEls.length; k++) {
+    var titleEl = titleEls[k];
+    var translated = t(titleEl.getAttribute('data-i18n-title'));
+    if (titleEl.tagName === 'TITLE') {
+      titleEl.textContent = translated;
+    } else {
+      titleEl.setAttribute('title', translated);
+    }
   }
 
   document.documentElement.lang = _locale;

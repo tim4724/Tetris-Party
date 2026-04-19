@@ -356,7 +356,12 @@ function renderGameResults(results) {
 
     var stats = document.createElement('div');
     stats.className = 'result-stats';
-    stats.innerHTML = '<span>' + t('n_lines', { count: r.lines || 0 }) + '</span><span>' + t('level_n', { level: r.level || 1 }) + '</span>';
+    var linesSpan = document.createElement('span');
+    linesSpan.textContent = t('n_lines', { count: r.lines || 0 });
+    var levelSpan = document.createElement('span');
+    levelSpan.textContent = t('level_n', { level: r.level || 1 });
+    stats.appendChild(linesSpan);
+    stats.appendChild(levelSpan);
 
     info.appendChild(nameEl);
     info.appendChild(stats);

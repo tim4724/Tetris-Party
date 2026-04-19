@@ -88,7 +88,7 @@ if (navigator.share) {
     e.preventDefault();
     navigator.share({
       title: 'HexStacker Party',
-      text: 'Play HexStacker Party with your friends',
+      text: t('share_text'),
       url: 'https://hexstacker.com'
     }).catch(function(err) {
       // AbortError = user cancelled the sheet — do nothing.
@@ -175,6 +175,7 @@ newGameResultsBtn.addEventListener('click', function() {
 
 // --- Mute ---
 if (muted) muteBtn.querySelector('.sound-waves').style.display = 'none';
+muteBtn.setAttribute('aria-checked', muted ? 'false' : 'true');
 
 function setDisplayMuted(next) {
   next = !!next;
@@ -182,6 +183,7 @@ function setDisplayMuted(next) {
   muted = next;
   try { localStorage.setItem('stacker_muted', muted ? '1' : '0'); } catch (e) { /* iframe sandbox */ }
   muteBtn.querySelector('.sound-waves').style.display = muted ? 'none' : '';
+  muteBtn.setAttribute('aria-checked', muted ? 'false' : 'true');
   if (music) {
     music.muted = muted;
     if (music.masterGain) {
@@ -209,6 +211,9 @@ fullscreenBtn.addEventListener('click', function() {
   } else {
     document.exitFullscreen().catch(function() {});
   }
+});
+document.addEventListener('fullscreenchange', function() {
+  fullscreenBtn.setAttribute('aria-checked', document.fullscreenElement ? 'true' : 'false');
 });
 
 // --- Pause (display-side buttons) ---
