@@ -58,9 +58,7 @@ var Gallery = (function() {
     players: 4,
     viewAs: 0,
     level: 1,
-    lang: 'en',
-    cardWidth: 440,
-    rowCardWidth: 180
+    lang: 'en'
   };
   function loadState() {
     try {
