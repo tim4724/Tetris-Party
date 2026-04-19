@@ -204,7 +204,7 @@ var LOCALES = {
     gesture_drop: 'Fallen', gesture_hold: 'Halten',
     settings_title: 'EINSTELLUNGEN', settings_done: 'FERTIG',
     settings_game_music: 'Musik', settings_touch_sounds: 'Touch-Sounds',
-    settings_haptics: 'Vibration', settings_haptics_hint: 'Klappt nicht auf jedem Gerät',
+    settings_haptics: 'Vibration', settings_haptics_hint: 'Funktioniert nicht mit jedem Gerät',
     settings_haptic_off: 'Aus', settings_haptic_light: 'Leicht',
     settings_haptic_medium: 'Mittel', settings_haptic_strong: 'Stark',
     settings_sensitivity: 'Empfindlichkeit',
