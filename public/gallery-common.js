@@ -203,6 +203,10 @@ var Gallery = (function() {
     var title = document.createElement('span');
     var titleText = document.createTextNode(opts.title);
     title.appendChild(titleText);
+    // Appended even when opts.tag is falsy — _setLabel writes to this node
+    // unconditionally when viewAs changes, so it has to exist from the start.
+    // Empty span is a harmless no-op in layout (the .tag rule has no box
+    // properties that would render with empty content).
     var tagEl = document.createElement('span');
     tagEl.className = 'tag';
     tagEl.textContent = opts.tag ? ' ' + opts.tag : '';
@@ -285,9 +289,13 @@ var Gallery = (function() {
         // the IntersectionObserver enqueue and the actual load would leave
         // the card showing stale content forever (the queued task captures
         // url by value, not by reference to _initialUrl).
-        if (card._pendingUrl && card._pendingUrl !== url) {
-          var pending = card._pendingUrl;
-          card._pendingUrl = null;
+        //
+        // Always clear _pendingUrl — even when pending === url — so a later
+        // _setUrl on this card doesn't mistake a stale stash for a fresh
+        // chase request and bounce back to the prior URL.
+        var pending = card._pendingUrl;
+        card._pendingUrl = null;
+        if (pending && pending !== url) {
           wrap.classList.add('pending');
           loadUrl(pending);
         }
