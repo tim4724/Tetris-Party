@@ -12,7 +12,10 @@ function buildLevelPlaceholder() {
   var ph = document.createElement('div');
   ph.className = 'level-controls level-placeholder';
   ph.setAttribute('aria-hidden', 'true');
-  ph.innerHTML = '<span class="level-heading">' + t('level_heading') + '</span><span class="level-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><line x1="2" y1="7" x2="12" y2="7"/></svg></span><span class="level-label">1</span><span class="level-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><line x1="2" y1="7" x2="12" y2="7"/><line x1="7" y1="2" x2="7" y2="12"/></svg></span>';
+  // Static scaffold — no translated content in the markup, so innerHTML is
+  // safe. Locale strings are injected via textContent below.
+  ph.innerHTML = '<span class="level-heading"></span><span class="level-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><line x1="2" y1="7" x2="12" y2="7"/></svg></span><span class="level-label">1</span><span class="level-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><line x1="2" y1="7" x2="12" y2="7"/><line x1="7" y1="2" x2="7" y2="12"/></svg></span>';
+  ph.querySelector('.level-heading').textContent = t('level_heading');
   return ph;
 }
 
@@ -183,7 +186,13 @@ function updatePlayerList() {
       if (!levelCtrl) {
         levelCtrl = document.createElement('div');
         levelCtrl.className = 'level-controls';
-        levelCtrl.innerHTML = '<span class="level-heading">' + t('level_heading') + '</span><button class="level-btn level-minus" aria-label="' + t('level_minus') + '"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><line x1="2" y1="7" x2="12" y2="7"/></svg></button><span class="level-label"></span><button class="level-btn level-plus" aria-label="' + t('level_plus') + '"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><line x1="2" y1="7" x2="12" y2="7"/><line x1="7" y1="2" x2="7" y2="12"/></svg></button>';
+        // Static scaffold only — translated strings are applied via
+        // textContent / setAttribute below so a locale value containing a
+        // quote or angle bracket can never escape into the markup.
+        levelCtrl.innerHTML = '<span class="level-heading"></span><button class="level-btn level-minus"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><line x1="2" y1="7" x2="12" y2="7"/></svg></button><span class="level-label"></span><button class="level-btn level-plus"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square"><line x1="2" y1="7" x2="12" y2="7"/><line x1="7" y1="2" x2="7" y2="12"/></svg></button>';
+        levelCtrl.querySelector('.level-heading').textContent = t('level_heading');
+        levelCtrl.querySelector('.level-minus').setAttribute('aria-label', t('level_minus'));
+        levelCtrl.querySelector('.level-plus').setAttribute('aria-label', t('level_plus'));
         card.appendChild(levelCtrl);
       }
       var lvl = info.startLevel || 1;
@@ -339,7 +348,12 @@ function renderResults(results) {
 
     var stats = document.createElement('div');
     stats.className = 'result-stats';
-    stats.innerHTML = '<span>' + t('n_lines', { count: res.lines || 0 }) + '</span><span>' + t('level_n', { level: res.level || 1 }) + '</span>';
+    var linesSpan = document.createElement('span');
+    linesSpan.textContent = t('n_lines', { count: res.lines || 0 });
+    var levelSpan = document.createElement('span');
+    levelSpan.textContent = t('level_n', { level: res.level || 1 });
+    stats.appendChild(linesSpan);
+    stats.appendChild(levelSpan);
 
     info.appendChild(nameEl);
     info.appendChild(stats);
