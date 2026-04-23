@@ -306,6 +306,12 @@ function onPeerJoined(clientId) {
     playerOrder.push(clientId);
     updatePlayerList();
     updateStartButton();
+    // Notify existing controllers that a palette slot just got claimed.
+    // The subsequent HELLO from the joiner takes onHello's reconnect path
+    // (player already in the Map) and does NOT broadcast, so without this
+    // call the other pickers would keep showing the new player's color as
+    // available until the next unrelated LOBBY_UPDATE.
+    broadcastLobbyUpdate();
   }
 }
 
