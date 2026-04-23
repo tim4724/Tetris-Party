@@ -216,7 +216,12 @@ function onWelcome(data) {
     playerColorIndex = data.colorIndex;
     playerColor = PLAYER_COLORS[data.colorIndex] || PLAYER_COLORS[0];
   } else {
-    playerColor = playerColor || PLAYER_COLORS[0];
+    // Defensive: the display always sends colorIndex, but if it's missing
+    // keep whatever we already have. Only seed a default when nothing is
+    // set — and seed both pieces so the picker still finds a selected
+    // swatch on the next render.
+    if (playerColorIndex == null) playerColorIndex = 0;
+    if (!playerColor) playerColor = PLAYER_COLORS[0];
   }
   if (Array.isArray(data.takenColorIndices)) takenColorIndices = data.takenColorIndices;
   document.body.style.setProperty('--player-color', playerColor);

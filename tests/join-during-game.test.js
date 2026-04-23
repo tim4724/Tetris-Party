@@ -25,7 +25,7 @@ describe('Display: onHello during non-LOBBY states', () => {
   function nextAvailableSlot() {
     var used = new Set();
     for (const entry of players) used.add(entry[1].playerIndex);
-    for (var i = 0; i < 4; i++) { if (!used.has(i)) return i; }
+    for (var i = 0; i < 8; i++) { if (!used.has(i)) return i; }
     return -1;
   }
 
@@ -252,7 +252,7 @@ describe('Display: playerOrder sorted by join time', () => {
   function nextAvailableSlot() {
     var used = new Set();
     for (const entry of players) used.add(entry[1].playerIndex);
-    for (var i = 0; i < 4; i++) { if (!used.has(i)) return i; }
+    for (var i = 0; i < 8; i++) { if (!used.has(i)) return i; }
     return -1;
   }
 

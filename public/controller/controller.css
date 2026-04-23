@@ -349,12 +349,6 @@ html, body {
   cursor: default;
 }
 
-/* --- Color picker — 8 swatches below the identity card. The player taps a
-   swatch to claim a palette slot; the picker sends SET_COLOR and the display
-   echoes the result back via LOBBY_UPDATE. Swatches that belong to other
-   players get .taken (disabled); the player's own current color gets a ring.
-   Hidden on game/gameover screens — visible on the lobby even while a late
-   joiner is waiting for the next round. --- */
 /* --- Color picker — zigzag row of flat-top hexes, rendered to per-swatch
    canvases. The hex shape and the level-matched style tier (NORMAL / PILLOW
    / NEON_FLAT) are stamped via getHexStamp() so swatches preview exactly
