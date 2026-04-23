@@ -133,7 +133,7 @@ body:has(#device-choice:not(.hidden)) .screen { display: none !important; }
   line-height: 0;
 }
 /* 2:1 cinematic crop — short enough that the whole overlay fits above
-   the fold on typical phones while still showing all four player
+   the fold on typical phones while still showing all three player
    boards. At ≤640h the chips collapse and `max-height` below grows. */
 .device-choice__screenshot {
   display: block;

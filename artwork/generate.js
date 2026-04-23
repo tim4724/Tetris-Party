@@ -11,7 +11,9 @@ const { PLAYER_COLORS } = require('../public/shared/theme.js');
 const { Piece } = require('../server/Piece.js');
 const { COLS: HEX_COLS, VISIBLE_ROWS: HEX_VISIBLE_ROWS } = require('../server/constants.js');
 
-const NAMES = ['Emma', 'Jake', 'Sofia', 'Liam'];
+// 3-player landscape scene — natural content aspect (~2:1) matches the
+// 2:1/16:9 frames better than 4 boards did, and cells render larger.
+const NAMES = ['Emma', 'Jake', 'Sofia'];
 const BANNER_DIR = __dirname;
 const BASE_URL = 'http://localhost:4100';
 
@@ -57,29 +59,15 @@ function hexBannerGrid3() {
   return grid;
 }
 
-function hexBannerGrid4() {
-  // Liam — Normal (level 4), with garbage. Height ~7
-  const grid = Array.from({ length: HEX_VISIBLE_ROWS }, () => Array(HEX_COLS).fill(0));
-  grid[14] = [0,0,0,0,0,0,6,0,0,0,0];
-  grid[15] = [0,0,0,0,0,6,6,0,0,0,0];
-  grid[16] = [0,0,0,0,4,4,6,3,0,0,0];
-  grid[17] = [0,0,2,2,4,5,5,3,3,0,0];
-  grid[18] = [0,7,7,2,5,5,1,1,3,0,0];
-  grid[19] = [9,9,7,9,9,9,9,1,1,9,9];
-  grid[20] = [9,9,9,9,9,9,9,9,9,0,9];
-  return grid;
-}
-
-const HEX_BANNER_GRIDS = [hexBannerGrid1, hexBannerGrid2, hexBannerGrid3, hexBannerGrid4];
-const HEX_BANNER_LEVELS = [13, 8, 6, 4];
-const HEX_BANNER_LINES = [115, 60, 35, 18];
-const HEX_BANNER_PIECE_TYPES = ['J', 'I', 'O', 'S'];
-const HEX_BANNER_HOLD = ['Z', 'L', 'q', 'O'];
+const HEX_BANNER_GRIDS = [hexBannerGrid1, hexBannerGrid2, hexBannerGrid3];
+const HEX_BANNER_LEVELS = [13, 8, 6];
+const HEX_BANNER_LINES = [115, 60, 35];
+const HEX_BANNER_PIECE_TYPES = ['J', 'I', 'O'];
+const HEX_BANNER_HOLD = ['Z', 'L', 'q'];
 const HEX_BANNER_NEXT = [
   ['L', 'Z', 'I', 'p', 'O'],
   ['J', 'S', 'O', 'L', 'Z'],
   ['I', 'q', 'S', 'J', 'L'],
-  ['Z', 'J', 'L', 'I', 'p'],
 ];
 
 function buildHexBannerGameState(playerCount = NAMES.length) {
@@ -144,14 +132,42 @@ function buildHexBannerGameState(playerCount = NAMES.length) {
 
 // Gameplay banner variants — same scene, different aspect ratios.
 // gameplay-2x1.png is GitHub's social preview (configured in repo Settings).
+//
+// Phone frame 120 × 245 (aspect 1:2.04). Controller capture viewport
+// below (300 × 600) is tuned to the inner phone-screen area (114 × 228
+// after the 3px frame + 14px notch padding) so `object-fit: cover`
+// fills the screen without side-bars or bottom clipping.
+//
+// Each variant captures its own display at a viewport aspect matching
+// the frame's rendered display area (3 boards ≈ 17*3 × 25 cells, natural
+// ~2:1). Per-variant capture avoids horizontal dead-space or cropped
+// boards when the single-source capture is stretched into mismatched
+// frame aspects.
 const GAMEPLAY_VARIANTS = [
-  // Phone frame 120 × 245 (aspect 1:2.04). Controller capture viewport
-  // below (300 × 600) is tuned to the inner phone-screen area (114 × 228
-  // after the 3px frame + 14px notch padding) so `object-fit: cover`
-  // fills the screen without side-bars or bottom clipping.
-  { name: 'gameplay-2x1.png',  width: 1280, height: 640, phoneBottom: '18px', phoneHeight: '245px' },
-  { name: 'gameplay-21x9.png', width: 1280, height: 640, phoneBottom: '18px', phoneHeight: '245px', clipHeight: 540 },
-  { name: 'gameplay-16x9.png', width: 1280, height: 720, phoneBottom: '18px', phoneHeight: '245px', displayTop: '40px', pillTop: '30px' },
+  {
+    name: 'gameplay-2x1.png',
+    width: 1280, height: 640,
+    displayViewport: { width: 1224, height: 608 }, // ~2:1, matches frame
+    phoneHeight: '245px',
+  },
+  {
+    name: 'gameplay-21x9.png',
+    width: 1280, height: 640,
+    displayViewport: { width: 1440, height: 608 }, // ~2.37:1, matches 21:9 clip
+    phoneHeight: '245px',
+    // Frame is clipped to 540px of a 640 viewport, so a plain `bottom: 2%`
+    // would put the phones below the visible area. 17% lifts them so
+    // their bottom sits ~2% above the clipped frame's bottom.
+    phoneBottom: '17%',
+    clipHeight: 540,
+  },
+  {
+    name: 'gameplay-16x9.png',
+    width: 1280, height: 720,
+    displayViewport: { width: 1080, height: 608 }, // ~1.78:1, matches 16:9
+    phoneHeight: '245px',
+    pillTop: '30px',
+  },
 ];
 
 // Portrait 2-player variant — used as the device-choice hero image on
@@ -176,69 +192,50 @@ async function waitForFont(page) {
 async function generate() {
   const browser = await chromium.launch();
 
-  // --- Phase 1: Capture hex display with injected game state ---
-  console.log('Capturing hex display...');
-  const hexContext = await browser.newContext({
-    viewport: { width: 1440, height: 608 },
-    deviceScaleFactor: 4,
-  });
-  const hexPage = await hexContext.newPage();
+  // Captures the display at a specific viewport with N players injected.
+  // Per-variant viewport lets each banner frame fill without dead space
+  // or cropped boards when the image is stretched to 100% width.
+  async function captureDisplay(viewport, playerCount) {
+    const ctx = await browser.newContext({ viewport, deviceScaleFactor: 4 });
+    const page = await ctx.newPage();
+    try {
+      await page.goto(`${BASE_URL}/?test=1`, { timeout: 5000 });
+    } catch {
+      console.error(`Could not connect to ${BASE_URL}`);
+      console.error('Start it with: PORT=4100 node server/index.js');
+      await browser.close();
+      process.exit(1);
+    }
+    await waitForFont(page);
 
-  try {
-    await hexPage.goto(`${BASE_URL}/?test=1`, { timeout: 5000 });
-  } catch {
-    console.error(`Could not connect to ${BASE_URL}`);
-    console.error('Start it with: PORT=4100 node server/index.js');
-    await browser.close();
-    process.exit(1);
+    const injectPlayers = NAMES.slice(0, playerCount).map((name, i) => ({ id: `player${i + 1}`, name }));
+    await page.evaluate((p) => window.__TEST__.addPlayers(p), injectPlayers);
+
+    const gameState = buildHexBannerGameState(playerCount);
+    await page.evaluate((s) => {
+      window.__TEST__.injectGameState(s);
+      startRenderLoop();
+    }, gameState);
+
+    await page.evaluate(() => {
+      document.getElementById('game-toolbar').style.display = 'none';
+    });
+    await page.waitForTimeout(300);
+    const base64 = (await page.screenshot()).toString('base64');
+    await ctx.close();
+    return base64;
   }
 
-  await waitForFont(hexPage);
+  // --- Phase 1: Capture hex display per variant ---
+  console.log('Capturing hex displays...');
+  for (const v of GAMEPLAY_VARIANTS) {
+    v._displayBase64 = await captureDisplay(v.displayViewport, NAMES.length);
+    console.log(`  Display captured for ${v.name} (${v.displayViewport.width}x${v.displayViewport.height}, ${NAMES.length} players)`);
+  }
 
-  const hexPlayers = NAMES.map((name, i) => ({ id: `player${i + 1}`, name }));
-  await hexPage.evaluate((p) => window.__TEST__.addPlayers(p), hexPlayers);
-
-  const hexGameState = buildHexBannerGameState();
-  await hexPage.evaluate((s) => {
-    window.__TEST__.injectGameState(s);
-    startRenderLoop();
-  }, hexGameState);
-
-  await hexPage.evaluate(() => {
-    document.getElementById('game-toolbar').style.display = 'none';
-  });
-  await hexPage.waitForTimeout(300);
-
-  const hexDisplayBase64 = (await hexPage.screenshot()).toString('base64');
-  console.log('  Display captured (4 players)');
-
-  // --- Phase 1b: Capture hex display with 2 players for the portrait variant ---
-  // A separate context so the auto-layout re-runs with count=2 and the two
-  // boards fill the width. Viewport tuned to suit the portrait banner crop.
-  console.log('Capturing hex display (2 players, portrait)...');
-  const hex2Context = await browser.newContext({
-    viewport: PORTRAIT_VARIANT.displayViewport,
-    deviceScaleFactor: 4,
-  });
-  const hex2Page = await hex2Context.newPage();
-  await hex2Page.goto(`${BASE_URL}/?test=1`, { timeout: 5000 });
-  await waitForFont(hex2Page);
-
-  const hex2Players = NAMES.slice(0, PORTRAIT_VARIANT.players).map((name, i) => ({ id: `player${i + 1}`, name }));
-  await hex2Page.evaluate((p) => window.__TEST__.addPlayers(p), hex2Players);
-
-  const hex2GameState = buildHexBannerGameState(PORTRAIT_VARIANT.players);
-  await hex2Page.evaluate((s) => {
-    window.__TEST__.injectGameState(s);
-    startRenderLoop();
-  }, hex2GameState);
-
-  await hex2Page.evaluate(() => {
-    document.getElementById('game-toolbar').style.display = 'none';
-  });
-  await hex2Page.waitForTimeout(300);
-  const hex2DisplayBase64 = (await hex2Page.screenshot()).toString('base64');
-  console.log('  Display captured (2 players)');
+  // Portrait variant — 2 players, dedicated viewport.
+  const hex2DisplayBase64 = await captureDisplay(PORTRAIT_VARIANT.displayViewport, PORTRAIT_VARIANT.players);
+  console.log(`  Display captured for ${PORTRAIT_VARIANT.name} (${PORTRAIT_VARIANT.players} players)`);
 
   // --- Phase 2: Capture real controllers via Party-Server ---
   console.log('Capturing controllers...');
@@ -263,7 +260,6 @@ async function generate() {
   const roomCode = joinUrl.split('/').pop();
   console.log(`  Room created: ${roomCode}`);
 
-  // Join 4 controllers
   // Viewport aspect 300 × 600 (1:2) matches the inner phone-screen area
   // in banner.html (114 × 228 after the 3px frame + 14px notch padding).
   // Matching aspects means `object-fit: cover` on the inner <img>
@@ -337,7 +333,7 @@ async function generate() {
     // Inject hex display screenshot
     await page.evaluate((hex) => {
       document.getElementById('display-hex-img').src = `data:image/png;base64,${hex}`;
-    }, hexDisplayBase64);
+    }, options._displayBase64);
 
     // Inject controller screenshots
     await page.evaluate((ctrls) => {
@@ -346,20 +342,15 @@ async function generate() {
       });
     }, controllerBase64s);
 
-    if (typeof options.phoneBottom === 'string') {
-      await page.evaluate((phoneBottom) => {
-        document.documentElement.style.setProperty('--phone-bottom', phoneBottom);
-      }, options.phoneBottom);
-    }
     if (typeof options.phoneHeight === 'string') {
       await page.evaluate((phoneHeight) => {
         document.documentElement.style.setProperty('--phone-height', phoneHeight);
       }, options.phoneHeight);
     }
-    if (typeof options.displayTop === 'string') {
-      await page.evaluate((displayTop) => {
-        document.documentElement.style.setProperty('--display-top', displayTop);
-      }, options.displayTop);
+    if (typeof options.phoneBottom === 'string') {
+      await page.evaluate((phoneBottom) => {
+        document.documentElement.style.setProperty('--phone-bottom', phoneBottom);
+      }, options.phoneBottom);
     }
     if (typeof options.pillTop === 'string') {
       await page.evaluate((pillTop) => {
