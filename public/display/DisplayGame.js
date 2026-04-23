@@ -281,9 +281,10 @@ function runGameLocally() {
   lastMusicLevel = 0;
 
   var Game = window.GameEngine.Game;
-  // Sort by slot index so game engine order matches board positions
+  // Sort by join time so game engine order matches the lobby's board
+  // positions (first joiner leftmost). See calculateLayout() — same rule.
   playerOrder.sort(function(a, b) {
-    return (players.get(a)?.playerIndex ?? 0) - (players.get(b)?.playerIndex ?? 0);
+    return (players.get(a)?.joinedAt ?? Infinity) - (players.get(b)?.joinedAt ?? Infinity);
   });
   // Snapshot playerOrder at game start — prevents mid-game layout drift
   playerOrder = playerOrder.slice();

@@ -22,9 +22,11 @@ function buildLevelPlaceholder() {
 // --- Layout Calculation ---
 function calculateLayout() {
   if (!ctx || playerOrder.length === 0) return;
-  // Sort by slot index so board positions match player colors (P1 left, P2 right, etc.)
+  // Sort by join time so board positions are stable across color changes
+  // and sticky-host behavior — first joiner is leftmost, last joiner
+  // rightmost, color pick has no effect on seat.
   playerOrder.sort(function(a, b) {
-    return (players.get(a)?.playerIndex ?? 0) - (players.get(b)?.playerIndex ?? 0);
+    return (players.get(a)?.joinedAt ?? Infinity) - (players.get(b)?.joinedAt ?? Infinity);
   });
   clearStampCache();
 
@@ -133,12 +135,11 @@ function updatePlayerList() {
   }
 
   // Cards pack tightly: N players fill the first N slots. Ordering follows
-  // the palette (PLAYER_COLORS order), so a color change can reshuffle
-  // positions — two players with indices [0, 5] occupy slots 0 and 1, not 0
-  // and 5. Mirrors the board layout in calculateLayout(), which already
-  // sorts playerOrder by playerIndex before positioning.
+  // join time so a player's seat is stable across color changes — color
+  // picks recolor the card in place rather than swapping slots with a
+  // neighbor. Same rule used by calculateLayout() for the game boards.
   var sortedPlayers = Array.from(players.entries()).sort(function(a, b) {
-    return a[1].playerIndex - b[1].playerIndex;
+    return (a[1].joinedAt ?? Infinity) - (b[1].joinedAt ?? Infinity);
   });
   var visibleSlots = Math.max(placeholderSlots, sortedPlayers.length);
 
@@ -149,18 +150,6 @@ function updatePlayerList() {
   playerListEl.classList.toggle('pl--sm', bucketCount <= 4);
   playerListEl.classList.toggle('pl--lg', bucketCount > 4);
 
-  // Pre-mutation snapshot: remember which playerId sat in each slot and clone
-  // any filled card so we can spawn a fade-out ghost when a player vacates
-  // the slot (color-change moves cards between slots — the fade gives the
-  // viewer's eye a handoff rather than a sudden pop to the empty placeholder).
-  var preIds = new Array(totalSlots);
-  var preCards = new Array(totalSlots);
-  for (var p = 0; p < totalSlots; p++) {
-    var preSlot = playerListEl.children[p];
-    preIds[p] = preSlot.dataset.playerId || null;
-    preCards[p] = preIds[p] ? preSlot.querySelector('.player-card').cloneNode(true) : null;
-  }
-
   for (var j = 0; j < totalSlots; j++) {
     var slot = playerListEl.children[j];
     var card = slot.querySelector('.player-card');
@@ -169,7 +158,7 @@ function updatePlayerList() {
     // Hide slots beyond visible range
     slot.style.display = j < visibleSlots ? '' : 'none';
 
-    // Nth filled slot gets the Nth player from the palette-sorted list.
+    // Nth filled slot gets the Nth player from the join-sorted list.
     var playerId = null;
     var info = null;
     if (j < sortedPlayers.length) {
@@ -177,7 +166,6 @@ function updatePlayerList() {
       info = sortedPlayers[j][1];
     }
     var wasEmpty = card.classList.contains('empty');
-    var playerChanged = preIds[j] && playerId && preIds[j] !== playerId;
 
     if (info) {
       var color = PLAYER_COLORS[info.playerIndex] || '#fff';
@@ -186,7 +174,7 @@ function updatePlayerList() {
       card.classList.remove('empty');
       card.dataset.playerId = playerId;
       slot.dataset.playerId = playerId;
-      if (wasEmpty || playerChanged) {
+      if (wasEmpty) {
         card.classList.remove('join-pop');
         void card.offsetWidth;
         card.classList.add('join-pop');
@@ -227,35 +215,6 @@ function updatePlayerList() {
       }
     }
   }
-
-  // Leave-fade for any slot that was filled pre-update and is now empty.
-  // The clone was captured before the slot's in-place DOM mutation, so it
-  // still shows the departing player's name + color while fading out. The
-  // live card sits underneath in its empty state; the ghost overlays it via
-  // absolute positioning so the flex layout is undisturbed.
-  for (var q = 0; q < totalSlots; q++) {
-    var nowId = playerListEl.children[q].dataset.playerId || null;
-    if (preIds[q] && !nowId && preCards[q]) {
-      spawnLeaveFadeGhost(playerListEl.children[q], preCards[q]);
-    }
-  }
-}
-
-function spawnLeaveFadeGhost(slotEl, ghostCard) {
-  ghostCard.classList.remove('join-pop');
-  ghostCard.classList.add('leave-fade');
-  ghostCard.style.position = 'absolute';
-  ghostCard.style.inset = '0';
-  ghostCard.style.pointerEvents = 'none';
-  slotEl.appendChild(ghostCard);
-  var cleanup = function() {
-    if (ghostCard.parentNode) ghostCard.parentNode.removeChild(ghostCard);
-  };
-  ghostCard.addEventListener('animationend', cleanup, { once: true });
-  // Belt-and-braces — if animationend never fires (e.g. element removed by
-  // a concurrent updatePlayerList mid-animation), clean up after the keyframe
-  // duration + a small cushion.
-  setTimeout(cleanup, 350);
 }
 
 function updateStartButton() {

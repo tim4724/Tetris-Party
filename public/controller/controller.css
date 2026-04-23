@@ -422,7 +422,7 @@ html, body {
 }
 
 .color-swatch.selected > canvas {
-  filter: drop-shadow(0 0 4px var(--swatch-color, #fff)) drop-shadow(0 0 10px var(--swatch-color, #fff));
+  filter: drop-shadow(0 0 4px var(--swatch-color, #fff));
 }
 
 .color-swatch.taken {
