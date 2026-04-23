@@ -92,17 +92,18 @@
     <img class="display-img" id="display-hex-img" alt="">
     <div class="overlay-gradient"></div>
 
-    <div class="phone" id="phone-0" style="--phone-left: 16%">
+    <!-- Phone-left values align each phone near the bottom-right of its
+         board. 3 boards at frame width split the display into thirds
+         (slot centers at 16.7%, 50%, 83.3%); phones sit ~4% right of
+         each, mirroring the offset used in the 4-player layout. -->
+    <div class="phone" id="phone-0" style="--phone-left: 21%">
       <div class="phone-screen"><img class="controller-img" id="ctrl-0" alt=""></div>
     </div>
-    <div class="phone" id="phone-1" style="--phone-left: 41%">
+    <div class="phone" id="phone-1" style="--phone-left: 54%">
       <div class="phone-screen"><img class="controller-img" id="ctrl-1" alt=""></div>
     </div>
-    <div class="phone" id="phone-2" style="--phone-left: 66%">
+    <div class="phone" id="phone-2" style="--phone-left: 87%">
       <div class="phone-screen"><img class="controller-img" id="ctrl-2" alt=""></div>
-    </div>
-    <div class="phone" id="phone-3" style="--phone-left: 90%">
-      <div class="phone-screen"><img class="controller-img" id="ctrl-3" alt=""></div>
     </div>
   </div>
 </body>
