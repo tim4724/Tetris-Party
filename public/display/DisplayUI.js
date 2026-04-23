@@ -242,7 +242,6 @@ function updatePlayerList() {
 }
 
 function spawnLeaveFadeGhost(slotEl, ghostCard) {
-  slotEl.style.position = 'relative';
   ghostCard.classList.remove('join-pop');
   ghostCard.classList.add('leave-fade');
   ghostCard.style.position = 'absolute';

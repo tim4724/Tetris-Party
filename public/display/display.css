@@ -437,6 +437,9 @@ body.airconsole #qr-container,
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* Anchor absolutely-positioned leave-fade ghosts (spawned by
+     updatePlayerList when a filled slot empties) within the slot. */
+  position: relative;
   flex: 0 0 var(--card-w, 200px);
   /* Override default min-width:auto on flex items — otherwise the slot
      expands to card min-content width (level controls) and breaks the
