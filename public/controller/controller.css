@@ -367,11 +367,9 @@ html, body {
   display: flex;
   align-items: stretch;
   height: calc(var(--hex-h) * 1.5);
-  margin-top: 14px;
-  /* Breathing room before the START button (or waiting banner for
-     non-hosts). Isolated to the lobby since the picker only exists
-     there — name and results screens are untouched. */
-  margin-bottom: 28px;
+  /* Symmetric margins match the identity card's 14px vertical padding,
+     keeping a consistent rhythm. Isolated to the lobby. */
+  margin: 14px 0;
   animation: fadeUp 0.5s 0.35s ease-out both;
 }
 
