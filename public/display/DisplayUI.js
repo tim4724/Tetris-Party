@@ -132,12 +132,15 @@ function updatePlayerList() {
     playerListEl.appendChild(slot);
   }
 
-  // Find the highest occupied slot to know which cards to show
-  var highestOccupied = -1;
-  for (const entry of players) {
-    if (entry[1].playerIndex > highestOccupied) highestOccupied = entry[1].playerIndex;
-  }
-  var visibleSlots = Math.max(placeholderSlots, highestOccupied + 1);
+  // Cards pack tightly: N players fill the first N slots. Ordering follows
+  // the palette (PLAYER_COLORS order), so a color change can reshuffle
+  // positions — two players with indices [0, 5] occupy slots 0 and 1, not 0
+  // and 5. Mirrors the board layout in calculateLayout(), which already
+  // sorts playerOrder by playerIndex before positioning.
+  var sortedPlayers = Array.from(players.entries()).sort(function(a, b) {
+    return a[1].playerIndex - b[1].playerIndex;
+  });
+  var visibleSlots = Math.max(placeholderSlots, sortedPlayers.length);
 
   // In AirConsole empty slots are hidden, so the layout bucket is driven by
   // actual player count; elsewhere use the visible-slot count (incl. placeholders).
@@ -166,15 +169,12 @@ function updatePlayerList() {
     // Hide slots beyond visible range
     slot.style.display = j < visibleSlots ? '' : 'none';
 
-    // Find player assigned to this slot by playerIndex
+    // Nth filled slot gets the Nth player from the palette-sorted list.
     var playerId = null;
     var info = null;
-    for (const entry of players) {
-      if (entry[1].playerIndex === j) {
-        playerId = entry[0];
-        info = entry[1];
-        break;
-      }
+    if (j < sortedPlayers.length) {
+      playerId = sortedPlayers[j][0];
+      info = sortedPlayers[j][1];
     }
     var wasEmpty = card.classList.contains('empty');
     var playerChanged = preIds[j] && playerId && preIds[j] !== playerId;
