@@ -368,6 +368,10 @@ html, body {
   align-items: stretch;
   height: calc(var(--hex-h) * 1.5);
   margin-top: 14px;
+  /* Breathing room before the START button (or waiting banner for
+     non-hosts). Isolated to the lobby since the picker only exists
+     there — name and results screens are untouched. */
+  margin-bottom: 28px;
   animation: fadeUp 0.5s 0.35s ease-out both;
 }
 
