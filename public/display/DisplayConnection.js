@@ -297,8 +297,17 @@ function onPeerJoined(clientId) {
     playerName: 'P' + (index + 1),
     playerIndex: index,
     startLevel: 1,
-    lastPingTime: Date.now()
+    lastPingTime: Date.now(),
+    // joinedAt: monotonic tiebreaker for sticky host election (oldest-joined
+    // present player becomes host when the current host leaves). Never
+    // mutated after this — survives color changes and reconnects.
+    joinedAt: Date.now()
   });
+
+  // First joiner in a pristine room owns the host slot. Subsequent joiners
+  // do not — sticky host means the slot only moves when the current host
+  // leaves (see onPeerLeft / electNextHost).
+  if (hostClientId == null) hostClientId = clientId;
 
   // Only add to playerOrder in lobby — late joiners wait for next game.
   // playerOrder is snapshotted at game start by runGameLocally().
@@ -319,6 +328,18 @@ function onPeerLeft(clientId) {
   if (!players.has(clientId)) return;
 
   cleanupPlayerInput(clientId);
+
+  // Sticky host: transfer the slot immediately if the departing player
+  // held it, in ANY room state. Doing this BEFORE any subsequent mutation
+  // (including the disconnectedQRs flag added by the PLAYING branch below)
+  // ensures the reassignment is picked up by the LOBBY_UPDATE broadcasts
+  // that the state-specific branches trigger. Consequence: a reconnecting
+  // mid-game host does NOT reclaim — they were promoted to a regular
+  // player the instant their WS dropped. This is the intended behavior
+  // per the "sticky host" design.
+  if (hostClientId === clientId) {
+    hostClientId = electNextHost(clientId);
+  }
 
   if (roomState === ROOM_STATE.PLAYING || roomState === ROOM_STATE.COUNTDOWN) {
     if (playerOrder.indexOf(clientId) >= 0) {

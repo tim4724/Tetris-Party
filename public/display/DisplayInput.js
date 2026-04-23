@@ -149,8 +149,11 @@ function onHello(fromId, msg) {
     playerName: playerName,
     playerIndex: index,
     startLevel: 1,
-    lastPingTime: Date.now()
+    lastPingTime: Date.now(),
+    // Tiebreaker for sticky host election — see onPeerJoined comment.
+    joinedAt: Date.now()
   });
+  if (hostClientId == null) hostClientId = fromId;
   if (roomState === ROOM_STATE.LOBBY) {
     playerOrder.push(fromId);
   }
