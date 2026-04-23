@@ -189,6 +189,17 @@ function showDeviceChoice(toastKey, keepClientId) {
   if (typeof closeSettingsOverlay === 'function') closeSettingsOverlay();
   if (party) { party.close(); party = null; }
 
+  // Collapse the URL to "/" so a user copying the address from this screen
+  // shares the app root rather than a dead room link. replaceState keeps
+  // the history stack unchanged. Skipped for gallery/test iframes: their
+  // URL bar isn't user-visible, and their ?test=/?scenario= params are
+  // read by connect() and other harness code.
+  var searchParams = new URLSearchParams(location.search);
+  var isTestFrame = searchParams.get('test') === '1' || searchParams.get('scenario');
+  if (!isTestFrame && (location.pathname !== '/' || location.search)) {
+    try { history.replaceState(null, '', '/'); } catch (_) { /* sandboxed iframe */ }
+  }
+
   // The toast element has role="status" + aria-live="polite", so changing
   // textContent is enough to announce it via screen readers — no manual
   // aria-hidden juggling needed.
