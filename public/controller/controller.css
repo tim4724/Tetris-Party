@@ -363,9 +363,13 @@ html, body {
    honeycomb zigzag. The `.taken` and `.selected` states stack on top of
    the canvas via CSS (no re-blit needed). --- */
 #color-picker {
-  --hex-w: clamp(34px, 9vw, 44px);
-  --hex-h: calc(var(--hex-w) * 0.866); /* sqrt(3)/2 * width → flat-top hex aspect */
-  --hex-overlap: calc(var(--hex-w) * -0.25); /* interlocks columns at 1.5 × circumradius */
+  /* Pick the hex width off the viewport (but capped) so phones get a
+     readable size without overflowing the identity card on narrow widths.
+     Buffer aspect (102 × 88) ≈ 1.159 — CSS width/height match it so the
+     canvas doesn't scale non-uniformly and the hex stays undistorted. */
+  --hex-w: clamp(40px, 11vw, 52px);
+  --hex-h: calc(var(--hex-w) * (88 / 102));
+  --hex-overlap: calc(var(--hex-w) * -0.27);
   display: flex;
   align-items: stretch;
   height: calc(var(--hex-h) * 1.5);
@@ -383,9 +387,10 @@ html, body {
   border: 0;
   background: transparent;
   cursor: pointer;
-  /* Enlarge the hit target without changing the visual hex size. */
   position: relative;
-  transition: transform var(--transition-fast), filter var(--transition-fast);
+  /* No transform transitions — a tier re-paint should swap pixels
+     instantly with no size animation. */
+  transition: filter var(--transition-fast);
 }
 
 .color-swatch:first-child {
@@ -412,12 +417,7 @@ html, body {
   transition: filter var(--transition-fast);
 }
 
-.color-swatch:active:not(.taken):not(.selected) {
-  transform: scale(0.92);
-}
-
 .color-swatch.selected {
-  transform: scale(1.12);
   z-index: 1;
 }
 

@@ -88,6 +88,17 @@ function showLobbyUI() {
 // applies grayscale+opacity to flatten any remaining color variation.
 var COLOR_PICKER_TAKEN_HEX = '#4a4a4a';
 
+// Fixed canvas buffer for every picker swatch. Pinning these means a
+// repaint (e.g. on level change re-tiering) never reassigns canvas.width —
+// which would clear the buffer and re-anchor DPR, causing a one-frame
+// flicker as the hex jumped by a sub-pixel. CSS width:100%/height:100%
+// scales the buffer to the live button rect. Sized to fit the hex stamp's
+// output (including its internal padding) at 2× the largest clamp()
+// button size, giving crisp rendering on DPR ≤ 2 and acceptable downscale
+// on DPR 3.
+var COLOR_PICKER_CANVAS_H = 88;
+var COLOR_PICKER_CANVAS_W = 102;  // ≈ height / sin(60°) + stamp padding
+
 // Repaint the 8-swatch color picker. Each swatch is a <button> containing a
 // <canvas>; we redraw the canvas on every call so the style tier follows
 // the current startLevel (NORMAL / PILLOW / NEON_FLAT) and swatches preview
@@ -110,27 +121,26 @@ function renderColorPicker() {
   }
 }
 
-// Draw a single flat-top hex into the swatch's canvas. The source stamp is
-// cached per (tier, color, size) by getHexStamp; we just blit it centered.
-// Early-returns (no-op) when CanvasUtils isn't loaded yet — the fadeUp CSS
-// animation on the container keeps the empty boxes from flashing.
+// Draw a single flat-top hex into the swatch's fixed-size canvas buffer.
+// The source stamp is cached per (tier, color, size) by getHexStamp; we
+// just blit it centered. Buffer dims are pinned at buildColorPicker time so
+// repeated repaints (level changes, taken toggles) do not resize the canvas
+// — resizing clears it and re-anchors DPR, which manifested as a one-frame
+// jump on tier swap. Early-returns when CanvasUtils isn't loaded yet.
 function paintColorSwatch(btn, tier, color) {
   var canvas = btn.firstChild;
   if (!canvas || typeof getHexStamp !== 'function') return;
-  var dpr = window.devicePixelRatio || 1;
-  var rect = btn.getBoundingClientRect();
-  var w = rect.width, h = rect.height;
-  if (w <= 0 || h <= 0) return;
-  canvas.width = Math.round(w * dpr);
-  canvas.height = Math.round(h * dpr);
-  canvas.style.width = w + 'px';
-  canvas.style.height = h + 'px';
+  var w = canvas.width, h = canvas.height;
   var ctx = canvas.getContext('2d');
-  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, w, h);
-  var stamp = getHexStamp(tier, color, h);
-  var sw = stamp.cssW || (stamp.width / dpr);
-  var sh = stamp.cssH || (stamp.height / dpr);
+  // Stamp size is the hex's drawn height; pass a value slightly under the
+  // buffer height so the stamp's internal padding fits without overflow.
+  var stampSize = h - 8;
+  var stamp = getHexStamp(tier, color, stampSize);
+  var dpr = (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
+  var sw = stamp.cssW != null ? stamp.cssW : stamp.width / dpr;
+  var sh = stamp.cssH != null ? stamp.cssH : stamp.height / dpr;
   ctx.drawImage(stamp, (w - sw) / 2, (h - sh) / 2, sw, sh);
   btn.style.setProperty('--swatch-color', color);
 }
@@ -148,6 +158,8 @@ function buildColorPicker() {
     btn.setAttribute('aria-checked', 'false');
     btn.setAttribute('aria-label', t('color_choose', { n: i + 1 }));
     var canvas = document.createElement('canvas');
+    canvas.width = COLOR_PICKER_CANVAS_W;
+    canvas.height = COLOR_PICKER_CANVAS_H;
     btn.appendChild(canvas);
     colorPickerEl.appendChild(btn);
   }
