@@ -25,6 +25,9 @@ var playerOrder = [];          // compact list of active clientIds for game layo
 var hostClientId = null;       // sticky host — the first joiner owns this slot; handoff happens
                                // only when the host actually leaves via onPeerLeft. Color changes
                                // do not affect it. See getHostClientId() / electNextHost() below.
+var _joinSequence = 0;         // monotonic counter for player.joinedAt — Date.now() collides
+                               // when two peers arrive in the same ms, which matters for the
+                               // electNextHost tiebreak and calculateLayout's stable sort.
 var roomState = ROOM_STATE.LOBBY;
 
 // Valid room state transitions
@@ -90,6 +93,7 @@ function resetRoomData() {
   players.clear();
   playerOrder = [];
   hostClientId = null;
+  _joinSequence = 0;
   paused = false;
   setAutoPaused(false);
   clearLateJoinerGraceTimer();

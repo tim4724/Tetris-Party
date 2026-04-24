@@ -76,8 +76,10 @@ function showLobbyUI() {
   statusDetail.textContent = '';
 
   showScreen('lobby');
-  // Paint the picker after the lobby is visible so the swatch canvases
-  // can measure their rects. Inside .hidden (display:none) they report 0.
+  // Paint after showScreen so that updateHostVisibility (below) sees
+  // currentScreen === 'lobby' and wires up host-gated UI. The picker
+  // itself uses a fixed-size canvas buffer so it doesn't depend on
+  // visibility for measurement.
   renderColorPicker();
   // Must run after showScreen so currentScreen === 'lobby' when we gate UI.
   updateHostVisibility();

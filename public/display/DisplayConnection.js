@@ -299,10 +299,12 @@ function onPeerJoined(clientId) {
     playerIndex: index,
     startLevel: 1,
     lastPingTime: Date.now(),
-    // joinedAt: monotonic tiebreaker for sticky host election (oldest-joined
-    // present player becomes host when the current host leaves). Never
-    // mutated after this — survives color changes and reconnects.
-    joinedAt: Date.now()
+    // Monotonic tiebreaker for sticky host election (oldest-joined present
+    // player becomes host when the current host leaves) and for lobby/game
+    // board sort order. Never mutated after this — survives color changes
+    // and reconnects. Using a sequence counter instead of Date.now() so
+    // two peers arriving in the same millisecond still get distinct values.
+    joinedAt: ++_joinSequence
   });
 
   // First joiner in a pristine room owns the host slot. Subsequent joiners

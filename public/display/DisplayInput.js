@@ -150,8 +150,10 @@ function onHello(fromId, msg) {
     playerIndex: index,
     startLevel: 1,
     lastPingTime: Date.now(),
-    // Tiebreaker for sticky host election — see onPeerJoined comment.
-    joinedAt: Date.now()
+    // Tiebreaker for sticky host election — see onPeerJoined. This branch
+    // only runs if HELLO beats the relay's peer_joined event; normally
+    // onPeerJoined gets here first and onHello takes the reconnect path.
+    joinedAt: ++_joinSequence
   });
   if (hostClientId == null) hostClientId = fromId;
   if (roomState === ROOM_STATE.LOBBY) {
