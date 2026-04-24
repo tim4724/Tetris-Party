@@ -264,7 +264,8 @@ function onDisplayRejoined(partyRoomCode, clients) {
       isHost: id === hostId,
       hostName: hostName,
       hostColorIndex: hostColorIndex,
-      takenColorIndices: takenColorIndices
+      takenColorIndices: takenColorIndices,
+      displayMuted: !!muted
     };
     if (!isLateJoiner) {
       welcomeMsg.alive = lastAliveState[id] != null ? lastAliveState[id] : true;
