@@ -16,7 +16,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { execSync, spawnSync } = require('child_process');
+const { execFileSync, spawnSync } = require('child_process');
 const os = require('os');
 const { PIECE_COLORS } = require('../public/shared/theme.js');
 
@@ -177,7 +177,7 @@ async function generateICO(svgPath, icoPath) {
     } finally {
       await browser.close();
     }
-    execSync(['magick', ...frames, icoPath].join(' '), { stdio: 'inherit' });
+    execFileSync('magick', [...frames, icoPath], { stdio: 'inherit' });
     return true;
   } finally {
     fs.rmSync(tmp, { recursive: true, force: true });

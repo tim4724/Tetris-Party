@@ -1027,7 +1027,7 @@
       title: 'HEX STACKER', subtitle: '',
       titleLayout: 'split3',
       subtitleStyle: 'pill', subtitleSize: 60, subtitleYOffset: -48,
-showTitle: true, titleSize: 168, titleY: 472,
+      showTitle: true, titleSize: 168, titleY: 472,
       overrideSize: true, globalSize: 42,
       overrideTrail: true, globalTrail: 364,
       pieces: [
@@ -1048,7 +1048,7 @@ showTitle: true, titleSize: 168, titleY: 472,
       title: 'HEX STACKER', subtitle: 'PARTY',
       titleLayout: 'default',
       subtitleStyle: 'letterSpaced', subtitleSize: 50, subtitleYOffset: 12,
-showTitle: true, titleSize: 130, titleY: 320,
+      showTitle: true, titleSize: 130, titleY: 320,
       overrideSize: true, globalSize: 36,
       overrideTrail: true, globalTrail: 220,
       pieces: [
@@ -1533,9 +1533,9 @@ showTitle: true, titleSize: 130, titleY: 320,
     document.getElementById('p-subtitle-size-v').textContent = STATE.subtitleSize ?? 60;
     document.getElementById('p-subtitle-y').value = STATE.subtitleYOffset ?? 0;
     document.getElementById('p-subtitle-y-v').textContent = STATE.subtitleYOffset ?? 0;
-document.getElementById('p-bg-style').value = STATE.bgStyle ?? 'radial';
+    document.getElementById('p-bg-style').value = STATE.bgStyle ?? 'radial';
     document.getElementById('p-palette').value = STATE.palette ?? 'classic';
-    document.getElementById('p-cell-style').value = STATE.cellStyle ?? 'classic';
+    document.getElementById('p-cell-style').value = STATE.cellStyle ?? 'normal';
     updateSwatchPreview();
   }
 
@@ -1618,7 +1618,6 @@ document.getElementById('p-bg-style').value = STATE.bgStyle ?? 'radial';
     const h = parseInt(params.get('h'), 10) || STATE.canvasH;
     STATE.canvasW = w; STATE.canvasH = h;
 
-    const canvas = document.getElementById('preview');
     canvas.width = w;
     canvas.height = h;
     canvas.style.width = w + 'px';
