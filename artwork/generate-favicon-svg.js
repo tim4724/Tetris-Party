@@ -135,8 +135,10 @@ ${cells}
 // SVG radial gradients faithfully; ImageMagick's built-in SVG renderer drops
 // gradient fills, which is why we don't use `magick svg.svg PNG:` here.
 async function generateICO(svgPath, icoPath) {
+  // spawnSync sets `error` (ENOENT) when the binary is missing, and a
+  // non-zero `status` when it ran but failed. Either case is "skip and warn".
   const magick = spawnSync('magick', ['-version'], { encoding: 'utf8' });
-  if (magick.status !== 0) {
+  if (magick.error || magick.status !== 0) {
     console.warn('magick not found on PATH — skipping favicon.ico generation.');
     console.warn('Install ImageMagick (e.g. `brew install imagemagick`) and re-run to produce favicon.ico.');
     return false;

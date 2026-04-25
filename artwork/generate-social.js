@@ -4,6 +4,8 @@
 // Captures artwork/builder.html in headless mode using the `social` STAGES
 // entry and writes public/artwork/social-preview.png (1280×640).
 // Usage: node artwork/generate-social.js
+// Note: builder.html also accepts ?w=N&h=N to override the stage's canvas
+// dims for hi-res or non-canonical captures.
 
 const { chromium } = require('playwright');
 const path = require('path');

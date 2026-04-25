@@ -5,6 +5,8 @@
 // entry and writes artwork/cover-art.png (1024×1024). Not served over
 // HTTP, so no public/ copy is made.
 // Usage: node artwork/generate-cover.js
+// Note: builder.html also accepts ?w=N&h=N to override the stage's canvas
+// dims for hi-res or non-canonical captures.
 
 const { chromium } = require('playwright');
 const path = require('path');

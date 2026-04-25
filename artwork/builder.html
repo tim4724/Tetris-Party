@@ -401,7 +401,7 @@
   function hexToRgb(hex){const m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);return m?{r:+('0x'+m[1]),g:+('0x'+m[2]),b:+('0x'+m[3])}:null;}
   function clamp255(v){return Math.max(0,Math.min(255,Math.round(v)));}
   function lighten(hex,pct){const c=hexToRgb(hex);if(!c)return hex;const f=1+pct/100;return `rgb(${clamp255(c.r*f)},${clamp255(c.g*f)},${clamp255(c.b*f)})`;}
-  function darken(hex,pct){const c=hexToRgb(hex);if(!c)return hex;const f=1-pct/100;return `rgb(${Math.round(c.r*f)},${Math.round(c.g*f)},${Math.round(c.b*f)})`;}
+  function darken(hex,pct){const c=hexToRgb(hex);if(!c)return hex;const f=1-pct/100;return `rgb(${clamp255(c.r*f)},${clamp255(c.g*f)},${clamp255(c.b*f)})`;}
   function rgba(hex,a){const c=hexToRgb(hex);if(!c)return hex;return `rgba(${c.r},${c.g},${c.b},${a})`;}
 
   // Precomputed flat-top hex unit vertices — mirrors CanvasUtils.HEX_UNIT_VERTICES
@@ -1414,7 +1414,10 @@
     if (drag) {
       drag = null;
       canvas.style.cursor = '';
-      buildStageParams();
+      // Skip the rebuild if a sidebar input has focus — rebuilding nukes the
+      // DOM and drops keyboard focus mid-edit. Stale shown values resync on
+      // next click/edit. Render itself is independent of the sidebar.
+      if (!stageParamsEl.contains(document.activeElement)) buildStageParams();
     }
   });
   canvas.addEventListener('mousemove', (e) => {
@@ -1610,7 +1613,7 @@
       // load and abort before screenshotting, so a renamed/typo'd stage
       // fails loudly instead of silently emitting default-state art.
       window.__BUILDER_ERROR__ = `headless: unknown stage: ${mode}`;
-      throw new Error(window.__BUILDER_ERROR__);
+      return false;
     }
     loadStage(mode);
 
