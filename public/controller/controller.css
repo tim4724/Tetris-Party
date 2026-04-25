@@ -1595,21 +1595,33 @@ body.airconsole #ac-status-overlay.hidden { display: none; }
   }
 }
 
-/* Short landscape with enough vertical room (> 300px):
-   bring the title back on Name + Lobby, compacted so it doesn't crowd the
-   input/card. The h ≤ 220 rule below still hides the whole brand when the
-   soft keyboard collapses the viewport. */
+/* Short landscape with enough vertical room (> 300px) — name screen has
+   room to bring the title back. The lobby is handled separately below
+   because its color-picker honeycomb needs more vertical room. */
 @media (orientation: landscape) and (min-aspect-ratio: 5/4) and (max-height: 499px) and (min-height: 301px) {
-  .controller-shell__frame--name .controller-shell__title,
+  .controller-shell__frame--name .controller-shell__title {
+    display: block;
+    animation: none;
+  }
+
+  /* Restore portrait-style gap between title and input. */
+  .controller-shell__frame--name .controller-shell__body {
+    margin-top: 24px;
+  }
+}
+
+/* Lobby needs enough vertical room for the color picker honeycomb +
+   identity card + START button before the title can return. Below this
+   threshold the title stays hidden so the picker doesn't shove the
+   START button off-screen. */
+@media (orientation: landscape) and (min-aspect-ratio: 5/4) and (max-height: 499px) and (min-height: 400px) {
   .controller-shell__frame--lobby .controller-shell__title {
     display: block;
     animation: none;
   }
 
-  /* Restore portrait-style gap between title and input/card. */
-  .controller-shell__frame--name .controller-shell__body,
   .controller-shell__frame--lobby .controller-shell__body {
-    margin-top: 24px;
+    margin-top: 16px;
   }
 }
 
