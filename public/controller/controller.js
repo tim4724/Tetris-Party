@@ -722,6 +722,10 @@ if (colorPickerEl) {
     if (isNaN(idx)) return;
     vibrate(15);
     sendToDisplay(MSG.SET_COLOR, { colorIndex: idx });
+    // Note: the preferred-color localStorage write happens in
+    // ControllerGame.onLobbyUpdate when the display CONFIRMS the
+    // change — we don't optimistically persist a tap that may lose to
+    // a concurrent picker collision.
   });
 }
 

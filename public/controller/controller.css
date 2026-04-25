@@ -361,15 +361,19 @@ html, body {
      readable size without overflowing the identity card on narrow widths.
      Buffer aspect (102 × 88) ≈ 1.159 — CSS width/height match it so the
      canvas doesn't scale non-uniformly and the hex stays undistorted. */
-  --hex-w: clamp(40px, 11vw, 52px);
+  /* Honeycomb of 8 hexes — two rows of four, every hex sharing an edge
+     with its neighbor (same packing the in-game board uses). Bigger
+     tap targets than the single-row strip since the picker is half as
+     wide. Hexes are absolutely positioned so the two rows interlock
+     with no flex-line gap between them. */
+  --hex-w: clamp(56px, 18vw, 76px);
   --hex-h: calc(var(--hex-w) * (88 / 102));
-  --hex-overlap: calc(var(--hex-w) * -0.27);
-  display: flex;
-  align-items: stretch;
-  height: calc(var(--hex-h) * 1.5);
-  /* Symmetric margins match the identity card's 14px vertical padding,
-     keeping a consistent rhythm. Isolated to the lobby. */
-  margin: 14px 0;
+  position: relative;
+  /* Width = 4 hexes at 0.75 × hex-w spacing → 3.25 × hex-w */
+  width: calc(var(--hex-w) * 3.25);
+  /* Height = row 2 low hex bottom = hex-h + 1.5 × hex-h = 2.5 × hex-h */
+  height: calc(var(--hex-h) * 2.5);
+  margin: 14px auto;
   animation: fadeUp 0.5s 0.35s ease-out both;
 }
 
@@ -378,40 +382,38 @@ html, body {
   -webkit-appearance: none;
   width: var(--hex-w);
   height: var(--hex-h);
-  margin-left: var(--hex-overlap);
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
-  position: relative;
+  position: absolute;
   /* No transform transitions — a tier re-paint should swap pixels
      instantly with no size animation. */
   transition: filter var(--transition-fast);
 }
 
-.color-swatch:first-child {
-  margin-left: 0;
-}
-
-/* Odd children (1st, 3rd, …) ride high; even children (2nd, 4th, …) ride low.
-   CSS nth-child is 1-indexed. The container's 1.5 × hex-h height accommodates
-   both lanes so the zigzag lives entirely within one row without pushing
-   siblings. */
-.color-swatch:nth-child(even) {
-  align-self: flex-end;
-}
-
-.color-swatch:nth-child(odd) {
-  align-self: flex-start;
-}
+/* Honeycomb positions. Within each 4-hex row, columns 1 & 3 ride high
+   (top edge at row baseline) and columns 2 & 4 ride low (top edge at
+   row baseline + hex-h/2). Row 2 starts at y = hex-h, exactly where
+   row 1's high hexes end — so the two rows share edges. */
+.color-swatch:nth-child(1) { left: 0;                        top: 0; }
+.color-swatch:nth-child(2) { left: calc(var(--hex-w) * 0.75); top: calc(var(--hex-h) * 0.5); }
+.color-swatch:nth-child(3) { left: calc(var(--hex-w) * 1.5);  top: 0; }
+.color-swatch:nth-child(4) { left: calc(var(--hex-w) * 2.25); top: calc(var(--hex-h) * 0.5); }
+.color-swatch:nth-child(5) { left: 0;                        top: var(--hex-h); }
+.color-swatch:nth-child(6) { left: calc(var(--hex-w) * 0.75); top: calc(var(--hex-h) * 1.5); }
+.color-swatch:nth-child(7) { left: calc(var(--hex-w) * 1.5);  top: var(--hex-h); }
+.color-swatch:nth-child(8) { left: calc(var(--hex-w) * 2.25); top: calc(var(--hex-h) * 1.5); }
 
 .color-swatch > canvas {
   display: block;
   width: 100%;
   height: 100%;
   /* drop-shadow follows the hex alpha, not the button rect — so the
-     selection glow hugs the shape instead of bleeding into a halo square. */
-  transition: filter var(--transition-fast);
+     selection glow hugs the shape instead of bleeding into a halo square.
+     Transform transition powers the press-down tactile feedback. */
+  transition: filter var(--transition-fast), transform var(--transition-fast);
+  transform-origin: center;
 }
 
 .color-swatch.selected {
@@ -419,16 +421,19 @@ html, body {
 }
 
 .color-swatch.selected > canvas {
-  filter: drop-shadow(0 0 4px var(--swatch-color, #fff));
+  filter: drop-shadow(0 0 5px var(--swatch-color, #fff)) drop-shadow(0 0 10px var(--swatch-color, #fff));
+}
+
+/* Press feedback — quick scale-down on tap, springs back when released.
+   Excludes taken swatches (which already have pointer-events: none, so
+   :active never fires there in practice — belt-and-braces). */
+.color-swatch:not(.taken):active > canvas {
+  transform: scale(0.93);
 }
 
 .color-swatch.taken {
   pointer-events: none;
   cursor: default;
-}
-
-.color-swatch.taken > canvas {
-  filter: grayscale(1) brightness(0.55) opacity(0.55);
 }
 
 .status-banner {
