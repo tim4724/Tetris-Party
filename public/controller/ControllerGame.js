@@ -187,7 +187,17 @@ function paintColorSwatch(btn, tier, color, isTaken) {
 var _previousSessionColorIndex = null;
 function captureSessionColorIndex() {
   var raw = null;
-  try { raw = localStorage.getItem('stacker_color_index'); } catch (e) { /* iframe sandbox */ }
+  // Prefer the AC server snapshot when present — it's frozen at hydration
+  // time and isn't overwritten by the same-session persistColorIndex that
+  // fires from onWelcome (which can land before this capture on reconnect,
+  // because HELLO is sometimes sent before our wrap can intercept).
+  if (typeof localStorage !== 'undefined'
+      && typeof localStorage.getServerSnapshot === 'function') {
+    raw = localStorage.getServerSnapshot('stacker_color_index');
+  }
+  if (raw == null) {
+    try { raw = localStorage.getItem('stacker_color_index'); } catch (e) { /* iframe sandbox */ }
+  }
   console.log('[color-debug] captureSessionColorIndex raw=', raw, 'prev was=', _previousSessionColorIndex);
   if (raw == null) return;
   var idx = parseInt(raw, 10);
