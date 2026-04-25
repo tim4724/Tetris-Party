@@ -271,10 +271,7 @@
         <h2>Stage</h2>
         <div class="field">
           <label>Stage</label>
-          <select id="p-stage">
-            <option value="cover" selected>Cover (1024×1024)</option>
-            <option value="social">Social (1280×640)</option>
-          </select>
+          <select id="p-stage"></select>
         </div>
       </section>
 
@@ -1134,7 +1131,7 @@
     container.appendChild(titleField);
 
     container.appendChild(rangeField('titleSize', 'Title size', 60, 180, 2, STATE.titleSize ?? 110));
-    container.appendChild(rangeField('titleY', 'Title y', 40, 500, 4, STATE.titleY ?? 140));
+    container.appendChild(rangeField('titleY', 'Title y', 40, STATE.canvasH || 1024, 4, STATE.titleY ?? 140));
 
     // Global size/trail override — when checked, applies to every piece
     // without overwriting its individual values. Uncheck to restore.
@@ -1433,10 +1430,18 @@
     canvas.style.cursor = pieceAt(STATE.pieces, x, y) >= 0 ? 'grab' : 'default';
   });
 
-  // Stage selector — switching always discards the current STATE (a stage
-  // owns its title, palette, pieces, etc.). If the user wants to preserve
-  // edits, they should Copy snippet first.
-  document.getElementById('p-stage').addEventListener('change', (e) => {
+  // Stage selector — populated from STAGES so adding a stage only touches
+  // one place. Switching always discards the current STATE (a stage owns
+  // its title, palette, pieces, etc.). If the user wants to preserve edits,
+  // they should Copy snippet first.
+  const stageSel = document.getElementById('p-stage');
+  for (const [key, stage] of Object.entries(STAGES)) {
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = `${key[0].toUpperCase()}${key.slice(1)} (${stage.canvasW}×${stage.canvasH})`;
+    stageSel.appendChild(opt);
+  }
+  stageSel.addEventListener('change', (e) => {
     loadStage(e.target.value);
     resizeCanvas();
     syncSharedControls();
