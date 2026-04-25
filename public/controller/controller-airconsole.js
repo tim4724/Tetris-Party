@@ -7,20 +7,20 @@
 // and calls party.connect() — works with AirConsole instead.
 // =====================================================================
 
-AirConsoleAdapter.neutralizeLocalStorage();
-
 var airconsole = new AirConsole({
   orientation: AirConsole.ORIENTATION_PORTRAIT,
   silence_inactive_players: false
 });
 
+// Replace window.localStorage with an AC-backed shim BEFORE Settings.init()
+// runs in controller.js. The shim's allowlist excludes stacker_muted (the
+// display's music key — defaults on every session), stacker_player_name,
+// and clientId_* (AC owns identity); haptic, sensitivity, touch-sounds,
+// and color-index round-trip via the SDK.
+AirConsoleAdapter.installAirConsoleStorage(airconsole);
+
 // Capture early onReady — the SDK may fire it before our adapter is wired up.
-var _acEarlyReadyCode;
-var _acEarlyReady = false;
-airconsole.onReady = function(code) {
-  _acEarlyReady = true;
-  _acEarlyReadyCode = code;
-};
+var replayEarlyReady = AirConsoleAdapter.captureEarlyReady(airconsole);
 
 // controller.js reads roomCode from location.pathname and in AirConsole that
 // parses to "controller.html". We live with it — the adapter routes messages
@@ -37,10 +37,10 @@ PartyConnection = function() {
   return new AirConsoleAdapter(airconsole, { role: 'controller' });
 };
 
-// Wrap connect() to inject AirConsole nickname/locale on top of the adapter's
-// onReady. Re-wrap on every call — _originalConnect() creates a fresh
-// AirConsoleAdapter whose _wireAirConsole overwrites ac.onReady, so a one-shot
-// wrap would be silently dropped on reconnect.
+// Wrap connect() to inject AirConsole nickname + persistent-data load on
+// top of the adapter's onReady. Re-wrap on every call — _originalConnect()
+// creates a fresh AirConsoleAdapter whose _wireAirConsole overwrites
+// ac.onReady, so a one-shot wrap would be silently dropped on reconnect.
 var _originalConnect = connect;
 connect = function() {
   // In AC mode party is created once by the first call to this wrapper and
@@ -49,101 +49,29 @@ connect = function() {
   // Bail on re-entry (e.g. visibilitychange refiring before the first onReady
   // lands) so we don't orphan an in-flight adapter with a replacement.
   if (party) return;
-  // Set nickname before connect sends HELLO (early-ready race)
-  var nick = airconsole.getNickname(airconsole.getDeviceId());
-  if (nick) playerName = nick;
   _originalConnect();
   var _adapterOnReady = airconsole.onReady;
   airconsole.onReady = function(code) {
+    // Pull the AC profile nickname into playerName before HELLO leaves.
+    // The display falls back to "P<slot>" if this is empty, so the guard
+    // here is just to avoid passing undefined into downstream code.
     var nickname = airconsole.getNickname(airconsole.getDeviceId());
     if (nickname) playerName = nickname;
-    // Per the AirConsole checklist: "the game and the controller may have
-    // different languages" — each device uses its own.
-    AirConsoleAdapter.applyLocale(airconsole);
-    // Now that getUID() is valid, load the user's persisted settings.
-    // ControllerSettings.init already tried at page load but UID was null;
-    // initAirConsolePersistence is idempotent (re-installs onPersistentDataLoaded
-    // and re-issues requestPersistentData).
-    if (typeof ControllerSettings !== 'undefined' && ControllerSettings.initAirConsolePersistence) {
-      ControllerSettings.initAirConsolePersistence();
-    }
-    if (_adapterOnReady) _adapterOnReady.call(airconsole, code);
+    // getDeviceId() / getUID() are only valid after onReady. Trigger the
+    // persistent-data fetch now; ControllerSettings.reload() runs once the
+    // shim's cache populates so user values overwrite the defaults applied
+    // synchronously during page-load Settings.init().
+    window.localStorage.onLoad(function() { ControllerSettings.reload(); });
+    window.localStorage.requestLoad();
+    _adapterOnReady.call(airconsole, code);
   };
   // Replay the captured-early onReady into the freshly-wired adapter.
-  // The SDK fires onReady at most once per session, so reconnect paths rely
-  // on this manual replay to bring a new adapter to ready. Guard on
-  // !party.connected so already-connected sessions don't double-fire; the
-  // adapter's _fireReady is itself idempotent, so this is belt-and-suspenders.
-  if (_acEarlyReady && party && !party.connected) {
-    airconsole.onReady(_acEarlyReadyCode);
-  }
+  // No-op if the SDK hasn't fired yet — the live fire will reach the
+  // wrapped onReady normally.
+  replayEarlyReady();
 };
 
-// Populate settings version label. Build script replaces __AC_VERSION__
-// with the actual version. In AC mode the /api/version fetch in controller.js
-// fails (cross-origin), so this is the only source of truth — but in local
-// dev the placeholder is unsubstituted, so fall back to /api/version.
-(function() {
-  var el = document.getElementById('settings-version');
-  if (!el) return;
-  var v = '__AC_VERSION__';
-  if (v.indexOf('__') !== 0) {
-    el.textContent = v;
-  } else {
-    fetch('/api/version').then(function(r) { return r.json(); }).then(function(d) {
-      el.textContent = d.version || '';
-    }).catch(function() {});
-  }
-})();
-
-// Drive the sensitivity slider via pointer events. Chromium's native
-// <input type="range"> doesn't update its value on touch-drag when hosted
-// inside an iframe (confirmed via tests/e2e/airconsole-slider.spec.js):
-// pointermove/touchmove fire but no 'input' follows. Tap still works because
-// it's a single down+up. We map pointer X to slider value ourselves and
-// dispatch 'input' so the existing handler in controller.js picks it up.
-(function() {
-  var slider = document.getElementById('sensitivity-slider');
-  if (!slider) return;
-  var dragging = false;
-  function setFromPointer(e) {
-    var rect = slider.getBoundingClientRect();
-    var ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    var min = parseFloat(slider.min) || 0;
-    var max = parseFloat(slider.max) || 1;
-    var step = parseFloat(slider.step) || 0;
-    var v = min + ratio * (max - min);
-    if (step > 0) v = Math.round((v - min) / step) * step + min;
-    v = Math.max(min, Math.min(max, v));
-    // Assign first and compare the browser-normalized strings. Our computed
-    // v carries float noise (e.g. 1.1500000000000001) that the slider
-    // normalizes to "1.15", so comparing our raw String(v) to slider.value
-    // would always differ and fire a redundant 'input' (and the accompanying
-    // vibrate from controller.js) on every pointermove.
-    var prev = slider.value;
-    slider.value = String(v);
-    if (slider.value !== prev) {
-      slider.dispatchEvent(new Event('input', { bubbles: true }));
-    }
-  }
-  slider.addEventListener('pointerdown', function(e) {
-    dragging = true;
-    slider.setPointerCapture(e.pointerId);
-    setFromPointer(e);
-    e.preventDefault();
-  });
-  slider.addEventListener('pointermove', function(e) {
-    if (!dragging) return;
-    setFromPointer(e);
-  });
-  function end(e) {
-    if (!dragging) return;
-    dragging = false;
-    try { slider.releasePointerCapture(e.pointerId); } catch (_) {}
-  }
-  slider.addEventListener('pointerup', end);
-  slider.addEventListener('pointercancel', end);
-})();
+AirConsoleAdapter.injectVersionLabel('settings-version');
 
 // AirConsole status overlay: show "Loading..." until lobby, show errors.
 var _acStatusOverlay = document.getElementById('ac-status-overlay');
@@ -163,14 +91,14 @@ showScreen = function(name) {
 // Closes the settings popup too — non-AC mode gets that for free via the
 // page navigation, but here the page stays alive and a stale settings
 // overlay would otherwise sit on top of the AC status overlay.
-// `keepClientId` is deliberately ignored — AC neutralizes localStorage
-// (see AirConsoleAdapter.neutralizeLocalStorage), so there's nothing to
-// keep or clear; identity is owned by the SDK.
+// `keepClientId` is deliberately ignored — the AC storage shim doesn't
+// allowlist clientId_* keys, so there's nothing to keep or clear; identity
+// is owned by the SDK (see AirConsoleAdapter.installAirConsoleStorage).
 bailToWelcome = function(toastKey /*, keepClientId */) {
   if (gameCancelled) return;
   gameCancelled = true;
   stopPing();
-  if (typeof closeSettingsOverlay === 'function') closeSettingsOverlay();
+  closeSettingsOverlay();
   if (_acStatusOverlay) {
     _acStatusOverlay.textContent = toastKey ? t(toastKey) : '';
     _acStatusOverlay.classList.toggle('hidden', !toastKey);
@@ -196,10 +124,8 @@ performDisconnect = function() {};
 // which the iframe permissions policy usually blocks outright.
 function _acVibrate(pattern) {
   // Respect the user's haptic-strength setting (off/light/medium/strong).
-  if (typeof ControllerSettings !== 'undefined' && ControllerSettings.scaleVibration) {
-    pattern = ControllerSettings.scaleVibration(pattern);
-    if (pattern === null) return;
-  }
+  pattern = ControllerSettings.scaleVibration(pattern);
+  if (pattern === null) return;
   // AirConsole SDK takes only a single duration. Collapse array patterns
   // (hard drop's [8, 8, 8]) by summing the on-durations — even indices are
   // vibrate, odd are pauses — so the total energy survives even though the
@@ -210,12 +136,10 @@ function _acVibrate(pattern) {
     pattern = total;
   }
   // After the array-collapse above, `pattern` is always a number (or we
-  // returned early on null). Nothing else reaches this point.
-  if (typeof pattern === 'number' && pattern > 0) {
-    airconsole.vibrate(pattern);
-  }
+  // returned early on null). Skip 0 to avoid a no-op SDK call.
+  if (pattern > 0) airconsole.vibrate(pattern);
 }
 // Overrides ControllerState.js#vibrate (global) and the TouchInput prototype.
 vibrate = _acVibrate;
-if (window.TouchInput) TouchInput.prototype._haptic = _acVibrate;
+TouchInput.prototype._haptic = _acVibrate;
 
