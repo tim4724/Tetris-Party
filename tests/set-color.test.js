@@ -156,6 +156,19 @@ describe('Display: onSetColor', () => {
     assert.strictEqual(sent.length, 0);
   });
 
+  test('rejects an active participant during COUNTDOWN', () => {
+    // Same lockout as PLAYING — covered separately so a refactor that
+    // narrowed the guard from "!== LOBBY" to "=== PLAYING" would fail
+    // here instead of silently unlocking the countdown window.
+    seedPlayer(players, 'a', 0);
+    playerOrder.push('a');
+    roomState = ROOM_STATE.COUNTDOWN;
+
+    onSetColor(players, playerOrder, roomState, party, 'a', { colorIndex: 5 });
+    assert.strictEqual(players.get('a').playerIndex, 0);
+    assert.strictEqual(sent.length, 0);
+  });
+
   test('accepts a late joiner (not in playerOrder) during PLAYING', () => {
     seedPlayer(players, 'a', 0);
     playerOrder.push('a');

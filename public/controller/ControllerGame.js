@@ -118,8 +118,16 @@ function renderColorPicker() {
     btn.classList.toggle('selected', isMine);
     btn.classList.toggle('taken', isTaken);
     btn.setAttribute('aria-checked', isMine ? 'true' : 'false');
-    if (isTaken) btn.setAttribute('aria-disabled', 'true');
-    else btn.removeAttribute('aria-disabled');
+    if (isTaken) {
+      btn.setAttribute('aria-disabled', 'true');
+      // Pull taken swatches out of tab order so keyboard users don't
+      // land on a focusable-but-inert button. CSS already blocks mouse
+      // taps via pointer-events: none.
+      btn.setAttribute('tabindex', '-1');
+    } else {
+      btn.removeAttribute('aria-disabled');
+      btn.removeAttribute('tabindex');
+    }
     var stampColor = isTaken ? COLOR_PICKER_TAKEN_HEX : PLAYER_COLORS[idx];
     paintColorSwatch(btn, tier, stampColor);
   }

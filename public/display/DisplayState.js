@@ -20,8 +20,9 @@ var lastRoomCode = null;
 var gameState = null;
 var players = new Map();       // clientId -> { playerName, playerIndex, startLevel, lastPingTime, joinedAt }
                                // color is derived via PLAYER_COLORS[playerIndex] — never stored
-var playerOrder = [];          // compact list of active clientIds for game layout (join order)
-                               // lobby UI uses playerIndex on each player for slot positioning
+var playerOrder = [];          // compact list of active clientIds for game layout. Lobby cards
+                               // and in-game boards both sort by joinedAt; playerIndex is the
+                               // chosen color slot only.
 var hostClientId = null;       // sticky host — the first joiner owns this slot; handoff happens
                                // only when the host actually leaves via onPeerLeft. Color changes
                                // do not affect it. See getHostClientId() / electNextHost() below.
