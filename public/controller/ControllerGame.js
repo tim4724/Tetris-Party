@@ -223,6 +223,12 @@ function buildColorPicker() {
     canvas.width = COLOR_PICKER_CANVAS_W;
     canvas.height = COLOR_PICKER_CANVAS_H;
     btn.appendChild(canvas);
+    // Hex-clipped hit overlay — see .color-swatch in controller.css for
+    // the rationale (rectangular buttons would steal slanted-edge clicks
+    // from honeycomb neighbours).
+    var hit = document.createElement('span');
+    hit.className = 'color-swatch__hit';
+    btn.appendChild(hit);
     colorPickerEl.appendChild(btn);
   }
 }
