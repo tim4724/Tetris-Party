@@ -24,7 +24,7 @@ airconsole.onReady = function(code) {
 
 // controller.js reads roomCode from location.pathname and in AirConsole that
 // parses to "controller.html". We live with it — the adapter routes messages
-// by AC device ID, not roomCode, and showDeviceChoice is overridden below to
+// by AC device ID, not roomCode, and bailToWelcome is overridden below to
 // surface errors via the AirConsole status overlay. We can't normalize the
 // URL via history.replaceState because the SDK's isDeviceInSameLocation_
 // compares URLs and a mismatch breaks message routing silently.
@@ -44,7 +44,7 @@ PartyConnection = function() {
 var _originalConnect = connect;
 connect = function() {
   // In AC mode party is created once by the first call to this wrapper and
-  // the SDK owns the lifecycle — `performDisconnect` and `showDeviceChoice` are
+  // the SDK owns the lifecycle — `performDisconnect` and `bailToWelcome` are
   // both overridden to skip the close-and-null path, so party stays set.
   // Bail on re-entry (e.g. visibilitychange refiring before the first onReady
   // lands) so we don't orphan an in-flight adapter with a replacement.
@@ -156,15 +156,21 @@ showScreen = function(name) {
   }
 };
 
-// Override showDeviceChoice to surface errors via the AirConsole status overlay
-// instead of the end screen (AirConsole has its own home/lobby navigation).
-// Still clear game state so stale incoming messages can't re-trigger game logic.
-// keepClientId (second arg) is deliberately ignored — AirConsole manages
-// device identity via its SDK, not via localStorage. party.close() is also
-// skipped because the AirConsole adapter's lifecycle is owned by the SDK.
-showDeviceChoice = function(toastKey /*, keepClientId */) {
+// `bailToWelcome` in ControllerConnection.js does `location.replace('/')`,
+// which would break out of the AC-owned iframe. Surface the bail reason
+// through the AC status overlay instead — AC owns home/lobby navigation.
+// Clears game state so stale incoming messages can't re-trigger game logic.
+// Closes the settings popup too — non-AC mode gets that for free via the
+// page navigation, but here the page stays alive and a stale settings
+// overlay would otherwise sit on top of the AC status overlay.
+// `keepClientId` is deliberately ignored — AC neutralizes localStorage
+// (see AirConsoleAdapter.neutralizeLocalStorage), so there's nothing to
+// keep or clear; identity is owned by the SDK.
+bailToWelcome = function(toastKey /*, keepClientId */) {
+  if (gameCancelled) return;
   gameCancelled = true;
   stopPing();
+  if (typeof closeSettingsOverlay === 'function') closeSettingsOverlay();
   if (_acStatusOverlay) {
     _acStatusOverlay.textContent = toastKey ? t(toastKey) : '';
     _acStatusOverlay.classList.toggle('hidden', !toastKey);

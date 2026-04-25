@@ -72,6 +72,7 @@ document.addEventListener('visibilitychange', function() {
 // + the size-based media query in display.css. The element keeps its
 // .hidden class permanently — dismiss/restore only toggle the root class.
 var deviceChoice = document.getElementById('device-choice');
+var deviceChoiceToast = document.getElementById('device-choice-toast');
 var deviceChoiceShareBtn = document.getElementById('device-choice-share');
 var deviceChoiceContinueBtn = document.getElementById('device-choice-continue');
 
@@ -99,6 +100,45 @@ if (deviceChoiceShareBtn) {
     HexStacker.share(t('share_text'));
   });
 }
+
+// Show a bail toast inside the device-choice overlay. Auto-hides after
+// 5s so the overlay doesn't keep advertising a stale reason after the
+// user has had a chance to read it. Re-callable: each call resets the
+// timer (used by the gallery replay button).
+var _bailToastTimer = null;
+function showBailToast(key) {
+  if (!deviceChoiceToast) return;
+  deviceChoiceToast.textContent = t(key);
+  deviceChoiceToast.classList.remove('hidden');
+  clearTimeout(_bailToastTimer);
+  _bailToastTimer = setTimeout(function() {
+    deviceChoiceToast.classList.add('hidden');
+  }, 5000);
+}
+
+// Controller-side errors navigate here with `?bail=<i18n_key>` so the
+// device-choice overlay (mobile-visible via CSS media query) surfaces
+// context like "Room Not Found" or "Game ended". Desktop viewports hide
+// the overlay, so populating the toast is a no-op there — the user just
+// lands on the welcome screen silently, which is the intended behavior.
+// The param is stripped via replaceState so a reload doesn't re-toast.
+// Allow-list known keys so a crafted /?bail=<arbitrary text> URL can't
+// inject a phishy message into the toast.
+var BAIL_KEYS = ['room_not_found', 'game_full', 'game_ended'];
+(function applyBailToast() {
+  var params = new URLSearchParams(location.search);
+  var bailKey = params.get('bail');
+  if (!bailKey || BAIL_KEYS.indexOf(bailKey) === -1) return;
+  showBailToast(bailKey);
+  params.delete('bail');
+  var qs = params.toString();
+  try { history.replaceState(null, '', location.pathname + (qs ? '?' + qs : '')); } catch (_) { /* sandboxed */ }
+  // Move focus into the overlay so keyboard / screen-reader users land on
+  // the primary action when the bail lands them on the mobile overlay.
+  // Only fires when the overlay is actually visible (getBoundingClientRect
+  // width > 0), which is desktop-safe — the media query hides it there.
+  restoreDeviceChoice();
+})();
 
 // --- Button Event Listeners ---
 newGameBtn.addEventListener('click', function() {
