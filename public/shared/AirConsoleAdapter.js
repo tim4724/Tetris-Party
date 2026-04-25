@@ -203,14 +203,6 @@ class AirConsoleAdapter {
       stacker_color_index: 1
     };
     var cache = {};
-    // Frozen snapshot of values that arrived from the AC server, captured
-    // once during onPersistentDataLoaded and never mutated by setItem.
-    // Lets callers like ControllerGame.captureSessionColorIndex read the
-    // *previous-session* value even after a same-session persistColorIndex
-    // has overwritten `cache` (this happens on reconnect: HELLO can fire
-    // before hydration, so onWelcome's persistColorIndex lands in cache
-    // before proceed runs the capture).
-    var serverSnapshot = {};
     var loaded = false;
     var loadCallbacks = [];
 
@@ -230,11 +222,9 @@ class AirConsoleAdapter {
       // reflects state at request time, so its response can be stale
       // relative to what the user just wrote. Any key already in cache is
       // therefore the local source of truth; only fill empties from server.
-      // serverSnapshot mirrors the server values regardless — see its decl.
       for (var k in entry) {
-        if (ALLOWLIST[k] && entry[k] !== null && entry[k] !== undefined) {
-          serverSnapshot[k] = String(entry[k]);
-          if (!(k in cache)) cache[k] = String(entry[k]);
+        if (ALLOWLIST[k] && entry[k] !== null && entry[k] !== undefined && !(k in cache)) {
+          cache[k] = String(entry[k]);
         }
       }
       loaded = true;
@@ -278,15 +268,6 @@ class AirConsoleAdapter {
         return keys[i] || null;
       },
       get length() { return Object.keys(cache).length; },
-      // Returns the value that came back from the AC server, regardless of
-      // any local setItem since hydration. Use this when you need the
-      // *previous-session* value of a key — e.g. the preferred-color
-      // capture, where onWelcome may have already overwritten `cache` via
-      // persistColorIndex by the time the consumer reads.
-      getServerSnapshot: function(key) {
-        return Object.prototype.hasOwnProperty.call(serverSnapshot, key)
-          ? serverSnapshot[key] : null;
-      },
       // Register a callback to fire once persistent data has hydrated.
       // Fires immediately if already loaded. Used by Settings to re-apply
       // user values after the async AC fetch lands (Settings.init() runs
