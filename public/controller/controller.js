@@ -68,9 +68,14 @@ function handleMessage(data) {
         onDisplayMuted(data);
         break;
       case MSG.DISPLAY_CLOSED:
-        // Skip the "game ended" toast if the user was still on the name
-        // screen when the display went away — they never joined anything.
-        bailToWelcome(currentScreen === 'name' ? undefined : 'game_ended');
+        // "Game ended" only applies if a game actually ran — name/lobby
+        // screens (joined but never started) get a quiet bail instead of
+        // a misleading toast.
+        bailToWelcome(
+          currentScreen === 'game' || currentScreen === 'gameover'
+            ? 'game_ended'
+            : undefined
+        );
         break;
       case MSG.RETURN_TO_LOBBY:
         waitingForNextGame = false;
