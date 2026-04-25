@@ -163,7 +163,11 @@ showScreen = function(name) {
 // Closes the settings popup too — non-AC mode gets that for free via the
 // page navigation, but here the page stays alive and a stale settings
 // overlay would otherwise sit on top of the AC status overlay.
-bailToWelcome = function(toastKey) {
+// `keepClientId` is deliberately ignored — AC neutralizes localStorage
+// (see AirConsoleAdapter.neutralizeLocalStorage), so there's nothing to
+// keep or clear; identity is owned by the SDK.
+bailToWelcome = function(toastKey /*, keepClientId */) {
+  if (gameCancelled) return;
   gameCancelled = true;
   stopPing();
   if (typeof closeSettingsOverlay === 'function') closeSettingsOverlay();

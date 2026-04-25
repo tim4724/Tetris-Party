@@ -14,14 +14,24 @@
 // fell out of a session on a phone. Optional toastKey is forwarded as
 // `?bail=<key>` so the display can surface context ("Room Not Found",
 // "Game ended") on the overlay; desktop lands silently since the overlay
-// isn't shown there. localStorage is left alone: tab-replacement relies
-// on the newer tab still owning clientId_<room>, and stale entries from
-// dead rooms are harmless (the relay rejects unknown clientIds on join).
-function bailToWelcome(toastKey) {
-  // Set gameCancelled before navigating so the onClose handler (which
-  // usually fires right after a relay-rejecting close) early-exits and
-  // doesn't flash the reconnect overlay during the navigation window.
+// isn't shown there.
+//
+// Sets gameCancelled before navigating so the onClose handler (which
+// usually fires right after a relay-rejecting close) early-exits and
+// doesn't flash the reconnect overlay during the navigation window. The
+// `if (gameCancelled) return;` guard makes the function safe against
+// double-invocation when two error paths fire in the same tick.
+//
+// Clears the per-room clientId from localStorage so a future visit to
+// the same room URL starts fresh. The exception is tab-replacement
+// (`keepClientId`): the newer tab is using that clientId as its
+// auto-reconnect anchor — removing it would orphan that session.
+function bailToWelcome(toastKey, keepClientId) {
+  if (gameCancelled) return;
   gameCancelled = true;
+  if (!keepClientId) {
+    try { localStorage.removeItem('clientId_' + roomCode); } catch (e) { /* iframe sandbox */ }
+  }
   location.replace(toastKey ? '/?bail=' + encodeURIComponent(toastKey) : '/');
 }
 
@@ -73,9 +83,9 @@ function connect() {
     stopPing();
     if (gameCancelled) return;
     if (meta && meta.replaced) {
-      // The newer tab that evicted us now owns the localStorage clientId;
-      // bailToWelcome leaves it alone so that tab's auto-reconnect works.
-      bailToWelcome();
+      // keepClientId=true: the newer tab is using clientId_<room> as its
+      // auto-reconnect anchor — clearing it would orphan that session.
+      bailToWelcome(undefined, true);
       return;
     }
     if (currentScreen !== 'game') return;
