@@ -67,16 +67,18 @@ connect = function() {
     // then has nothing to compare against. The 2 s timeout protects
     // against an SDK that never fires onPersistentDataLoaded.
     var fired = false;
-    function proceed() {
+    function proceed(reason) {
       if (fired) return;
       fired = true;
+      console.log('[color-debug] proceed fired by', reason,
+                  'cache stacker_color_index=', _acStorage.getItem('stacker_color_index'));
       ControllerSettings.reload();
       captureSessionColorIndex();
       _adapterOnReady.call(airconsole, code);
     }
-    _acStorage.onLoad(proceed);
+    _acStorage.onLoad(function() { proceed('onLoad'); });
     _acStorage.requestLoad();
-    setTimeout(proceed, 2000);
+    setTimeout(function() { proceed('timeout'); }, 2000);
   };
   // Replay the captured-early onReady into the freshly-wired adapter.
   // No-op if the SDK hasn't fired yet — the live fire will reach the
