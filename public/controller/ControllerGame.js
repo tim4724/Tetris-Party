@@ -179,20 +179,28 @@ function paintColorSwatch(btn, tier, color, isTaken) {
   btn.style.setProperty('--swatch-color', color);
 }
 
-// Snapshot of the persisted color from the previous session, captured
-// once at script load. persistColorIndex() will overwrite localStorage
-// on the very first WELCOME, so we have to read it BEFORE that — the
-// snapshot is what reclaimPreferredColor compares against.
-var _previousSessionColorIndex = (function () {
+// Snapshot of the persisted color from the previous session. Captured at
+// script load in standalone mode; in AirConsole mode the storage shim
+// hydrates asynchronously after onReady, so the bootstrap re-runs the
+// capture from its onLoad callback. onLobbyUpdate's persistColorIndex is
+// gated on userPickedColor (see ControllerState.js), so display-driven
+// assignments don't clobber the previous-session value before reclaim
+// can read it.
+var _previousSessionColorIndex = null;
+function captureSessionColorIndex() {
   var raw = null;
   try { raw = localStorage.getItem('stacker_color_index'); } catch (e) { /* iframe sandbox */ }
-  if (raw == null) return null;
+  if (raw == null) return;
   var idx = parseInt(raw, 10);
-  return (isNaN(idx) || idx < 0 || idx >= PLAYER_COLORS.length) ? null : idx;
-})();
+  if (!isNaN(idx) && idx >= 0 && idx < PLAYER_COLORS.length) {
+    _previousSessionColorIndex = idx;
+  }
+}
+captureSessionColorIndex();
 
 // Save the player's current color so a future reload can reclaim it.
-// Called whenever the display confirms our colorIndex.
+// Called from onLobbyUpdate when userPickedColor is true (i.e. the user
+// actually tapped a swatch — display-assigned defaults are ignored).
 function persistColorIndex(idx) {
   try { localStorage.setItem('stacker_color_index', String(idx)); }
   catch (e) { /* iframe sandbox */ }
@@ -208,6 +216,11 @@ function reclaimPreferredColor() {
   if (_previousSessionColorIndex === playerColorIndex) return;
   if (typeof sendToDisplay !== 'function' || playerColorIndex == null) return;
   if (takenColorIndices && takenColorIndices.indexOf(_previousSessionColorIndex) >= 0) return;
+  // Don't override an in-flight user pick: if the user has tapped a
+  // swatch since this session started, that's their preference now —
+  // the previous-session value is moot. Narrow race where reclaim from
+  // onLoad could otherwise undo a tap that landed before hydration.
+  if (userPickedColor) return;
   sendToDisplay(MSG.SET_COLOR, { colorIndex: _previousSessionColorIndex });
 }
 
@@ -287,7 +300,12 @@ function onWelcome(data) {
   if (data.colorIndex != null) {
     playerColorIndex = data.colorIndex;
     playerColor = PLAYER_COLORS[data.colorIndex] || PLAYER_COLORS[0];
-    persistColorIndex(data.colorIndex);
+    // Don't persist the display-assigned color here — it's not a user
+    // choice. Persisting it would clobber the previous-session preference
+    // before reclaimPreferredColor gets a chance to read it. The user's
+    // explicit picks are persisted in onLobbyUpdate (display echoes the
+    // accepted SET_COLOR back), which is the only signal that a colorIndex
+    // is actually the user's selection.
   } else {
     // Defensive: the display always sends colorIndex, but if it's missing
     // keep whatever we already have. Only seed a default when nothing is
@@ -389,7 +407,13 @@ function onLobbyUpdate(data) {
     document.body.style.setProperty('--player-color', playerColor);
     playerIdentity.style.setProperty('--player-color', playerColor);
     gameScreen.style.setProperty('--player-color', playerColor);
-    persistColorIndex(data.colorIndex);
+    // Persist only user-initiated changes (see userPickedColor decl in
+    // ControllerState.js). Display-driven assignments — initial slot,
+    // reconnect-default, reclaim's own SET_COLOR confirmation — must
+    // not write here: in AC mode an early LOBBY_UPDATE landing before
+    // the persistent-data fetch resolves would clobber the previous-
+    // session preference in cache.
+    if (userPickedColor) persistColorIndex(data.colorIndex);
   }
   if (Array.isArray(data.takenColorIndices)) takenColorIndices = data.takenColorIndices;
   applyHostInfo(data);

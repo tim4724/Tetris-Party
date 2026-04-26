@@ -347,6 +347,18 @@ sensitivitySlider.addEventListener('input', function () {
   vibrate(8);
 });
 
+// Re-sync the settings overlay whenever Settings state changes — covers
+// AirConsole hydration arriving while the overlay is already open: the
+// initial sync ran with defaults, Settings.reload() updates state, this
+// listener pushes the new state back into the DOM. Closed-overlay calls
+// no-op (the open path runs syncs from scratch when the user reopens).
+ControllerSettings.onChange(function () {
+  if (!settingsOverlay || settingsOverlay.classList.contains('hidden')) return;
+  syncMuteControllerToggle();
+  syncHapticButtons();
+  syncSensitivityControls();
+});
+
 function resizePreviewCanvas() {
   // Make the canvas drawing buffer match its displayed size (at device
   // pixel ratio) so the dot markers, tick marks, and chevrons render crisp
@@ -439,11 +451,17 @@ settingsCloseBtn.addEventListener('click', function () {
 });
 
 // Fetch version for the footer. Best-effort: falls back silently in tests.
-fetch('/api/version').then(function (r) { return r.json(); }).then(function (data) {
-  var label = data.version || '';
-  if (!data.isProduction && data.commit) label += ' (#' + data.commit + ')';
-  if (settingsVersionEl) settingsVersionEl.textContent = label;
-}).catch(function () {});
+// Skipped in AirConsole mode — the bootstrap already populates the label
+// via injectVersionLabel (build-time substitution of __AC_VERSION__, with
+// /api/version as a same-origin dev fallback). A second fetch from here
+// would race with that and risk overwriting it on local-dev origins.
+if (!skipNameScreen) {
+  fetch('/api/version').then(function (r) { return r.json(); }).then(function (data) {
+    var label = data.version || '';
+    if (!data.isProduction && data.commit) label += ' (#' + data.commit + ')';
+    if (settingsVersionEl) settingsVersionEl.textContent = label;
+  }).catch(function () {});
+}
 
 // --- Sensitivity preview (static two-dot visual + live drag tester) ---
 var _previewDrag = null;
@@ -721,11 +739,14 @@ if (colorPickerEl) {
     var idx = parseInt(btn.dataset.idx, 10);
     if (isNaN(idx)) return;
     vibrate(15);
+    // Mark this session as user-initiated picking. onLobbyUpdate will
+    // persist any subsequent confirmed color change. Without this flag,
+    // LOBBY_UPDATE-driven assignments (initial slot, reconnect default)
+    // would clobber the previous-session preference before reclaim can
+    // act on it. Don't persist here optimistically — a concurrent
+    // collision may reject this SET_COLOR and we'd save the wrong index.
+    userPickedColor = true;
     sendToDisplay(MSG.SET_COLOR, { colorIndex: idx });
-    // Note: the preferred-color localStorage write happens in
-    // ControllerGame.onLobbyUpdate when the display CONFIRMS the
-    // change — we don't optimistically persist a tap that may lose to
-    // a concurrent picker collision.
   });
 }
 
